@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Build outputs
+dist/
+*/dist/
+.expo/
+*/.expo/
+target/
+**/target/
+build/
+bin/
+
+# Environment files and credentials (never commit secrets)
+.env
+**/.env
+.env*.local
+!.env.example
+!*/.env.example
+
+# Logs and PID files
+*.log
+logs/
+*.pid
+
+# Backups
+backups/
+
+# Python caches and virtualenvs
+__pycache__/
+*/__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+venv/
+.venv/
+env/
+
+# IDE and OS files
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
