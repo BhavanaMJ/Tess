@@ -232,3 +232,4 @@ class _TrajectoryCardState extends State<TrajectoryCard> {
     );
   }
 }
+

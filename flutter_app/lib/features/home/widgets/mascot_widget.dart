@@ -7,6 +7,7 @@ enum MascotState {
   listening,
   speaking,
   intervening,
+  planning,
   attention,
   happy,
   error,
@@ -64,6 +65,8 @@ class _MascotWidgetState extends State<MascotWidget>
       case MascotState.intervening:
       case MascotState.attention:
         return 'O_O!';
+      case MascotState.planning:
+        return '[o_o]';
       case MascotState.error:
         return 'x_x';
       case MascotState.idle:
@@ -78,6 +81,7 @@ class _MascotWidgetState extends State<MascotWidget>
       case MascotState.thinking:
         return AppColors.violetLight;
       case MascotState.listening:
+      case MascotState.planning:
         return AppColors.cyan;
       case MascotState.speaking:
         return AppColors.success;

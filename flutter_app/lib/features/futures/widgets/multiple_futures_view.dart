@@ -312,3 +312,4 @@ class _MultipleFuturesViewState extends State<MultipleFuturesView> {
     );
   }
 }
+

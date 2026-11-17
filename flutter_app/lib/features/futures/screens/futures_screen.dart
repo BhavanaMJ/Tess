@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../home/widgets/mascot_widget.dart';
+import '../../interventions/screens/interventions_screen.dart';
 import '../models/future_prediction_model.dart';
 import '../services/future_service.dart';
 import '../widgets/accuracy_metrics_view.dart';
@@ -124,6 +125,15 @@ class _FuturesScreenState extends State<FuturesScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.bolt_rounded, color: AppColors.amber),
+            tooltip: 'Proactive Interventions',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const InterventionsScreen()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.refresh_rounded, color: AppColors.cyan),
             tooltip: 'Recalculate Projections',

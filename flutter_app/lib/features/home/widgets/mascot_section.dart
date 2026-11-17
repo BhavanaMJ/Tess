@@ -19,6 +19,7 @@ class MascotSection extends StatelessWidget {
       case MascotState.speaking:
         return AppColors.success;
       case MascotState.thinking:
+      case MascotState.planning:
         return AppColors.cyan;
       case MascotState.attention:
       case MascotState.intervening:

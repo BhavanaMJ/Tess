@@ -329,3 +329,4 @@ class _ForecastViewState extends State<ForecastView> {
     );
   }
 }
+

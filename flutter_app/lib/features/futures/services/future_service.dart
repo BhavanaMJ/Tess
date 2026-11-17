@@ -117,3 +117,4 @@ class FutureService {
     await _apiClient.post('/api/v1/future/analyze');
   }
 }
+
