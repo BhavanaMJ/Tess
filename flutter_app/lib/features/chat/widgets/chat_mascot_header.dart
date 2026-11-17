@@ -144,3 +144,4 @@ class ChatMascotHeader extends StatelessWidget {
     );
   }
 }
+

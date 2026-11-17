@@ -124,3 +124,4 @@ In `ChatScreen._handleSendMessage()`, the response text is scanned for contextua
 - If the response references `overdue`, `risk`, `warning`, `alert`, or `attention`, the mascot transitions to **ATTENTION** (`O_O!`).
 - Standard successful answers trigger **HAPPY** (`^_^`).
 - Network dropouts trigger **ERROR** (`x_x`).
+
