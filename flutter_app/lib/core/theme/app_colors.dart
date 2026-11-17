@@ -18,6 +18,7 @@ class AppColors {
   // Telemetry & Status
   static const Color success = Color(0xFF34D399);
   static const Color warning = Color(0xFFFBBF24);
+  static const Color amber = Color(0xFFFBBF24);
   static const Color danger = Color(0xFFFB7185);
   static const Color neutral = Color(0xFF94A3B8);
 

@@ -9,6 +9,7 @@ enum MascotState {
   intervening,
   attention,
   happy,
+  error,
 }
 
 /// Animated Living Holographic Mascot Orb
@@ -63,6 +64,8 @@ class _MascotWidgetState extends State<MascotWidget>
       case MascotState.intervening:
       case MascotState.attention:
         return 'O_O!';
+      case MascotState.error:
+        return 'x_x';
       case MascotState.idle:
         return '•_•';
     }
@@ -80,6 +83,7 @@ class _MascotWidgetState extends State<MascotWidget>
         return AppColors.success;
       case MascotState.intervening:
       case MascotState.attention:
+      case MascotState.error:
         return AppColors.danger;
       case MascotState.idle:
         return AppColors.violet;

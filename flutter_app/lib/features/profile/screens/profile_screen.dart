@@ -5,6 +5,7 @@ import '../../../core/network/api_client.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/tess_button.dart';
 import '../../../shared/widgets/tess_card.dart';
+import '../../memory/screens/memory_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final AuthService? authService;
@@ -223,6 +224,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _buildSettingRow(Icons.lock_outline, 'Auth Provider', 'Supabase GoTrue (JWT)'),
                   const Divider(color: AppColors.border, height: 16),
                   _buildSettingRow(Icons.vpn_key_outlined, 'Session State', 'Active & Persisted'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Personal Memory Bank Tile
+            TessCard(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const MemoryScreen()),
+                );
+              },
+              child: Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.cyan.withOpacity(0.15),
+                      border: Border.all(color: AppColors.cyan.withOpacity(0.5)),
+                    ),
+                    child: const Icon(Icons.psychology_outlined, color: AppColors.cyan, size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'PERSONAL MEMORY BANK',
+                          style: TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'View & manage persistent context continuity',
+                          style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
                 ],
               ),
             ),
