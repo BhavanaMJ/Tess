@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../agent/screens/agent_screen.dart';
 import '../../home/widgets/mascot_widget.dart';
 import '../models/intervention_model.dart';
 import '../services/intervention_service.dart';
@@ -223,6 +224,16 @@ class _InterventionsScreenState extends State<InterventionsScreen> {
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.psychology_rounded, color: AppColors.cyan),
+            tooltip: 'Agent Action Core',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AgentScreen()),
+              );
+            },
+          ),
+          IconButton(
             icon: _isEvaluating
                 ? const SizedBox(
                     width: 16.0,
@@ -373,6 +384,18 @@ class _InterventionsScreenState extends State<InterventionsScreen> {
     );
   }
 
+  void _delegateToAgent(InterventionModel item) {
+    final objective = item.message.isNotEmpty
+        ? item.message
+        : (item.title.isNotEmpty ? item.title : 'Take corrective action on trajectory risk');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AgentScreen(initialObjective: objective),
+      ),
+    );
+  }
+
   Widget _buildActiveContent() {
     if (_isLoading) {
       return const Padding(
@@ -401,6 +424,7 @@ class _InterventionsScreenState extends State<InterventionsScreen> {
           onAccept: () => _handleUserDecision(item, 'ACTED'),
           onPostpone: () => _handleUserDecision(item, 'LATER'),
           onDismiss: () => _handleUserDecision(item, 'DISMISS'),
+          onDelegateToAgent: () => _delegateToAgent(item),
         );
       }).toList(),
     );
@@ -469,3 +493,4 @@ class _InterventionsScreenState extends State<InterventionsScreen> {
     );
   }
 }
+

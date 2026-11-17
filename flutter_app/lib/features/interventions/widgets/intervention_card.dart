@@ -9,6 +9,7 @@ class InterventionCard extends StatelessWidget {
   final VoidCallback? onAccept;
   final VoidCallback? onPostpone;
   final VoidCallback? onDismiss;
+  final VoidCallback? onDelegateToAgent;
 
   const InterventionCard({
     super.key,
@@ -17,6 +18,7 @@ class InterventionCard extends StatelessWidget {
     this.onAccept,
     this.onPostpone,
     this.onDismiss,
+    this.onDelegateToAgent,
   });
 
   Color get _priorityColor {
@@ -264,7 +266,22 @@ class InterventionCard extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        if (intervention.deferredUntil != null) ...[
+        if (intervention.isActed && onDelegateToAgent != null) ...[
+          const Spacer(),
+          TextButton.icon(
+            onPressed: onDelegateToAgent,
+            icon: const Icon(Icons.psychology_rounded, size: 14.0, color: AppColors.cyan),
+            label: const Text(
+              'PLAN WITH AGENT',
+              style: TextStyle(
+                fontFamily: 'monospace',
+                fontSize: 10.5,
+                fontWeight: FontWeight.bold,
+                color: AppColors.cyan,
+              ),
+            ),
+          ),
+        ] else if (intervention.deferredUntil != null) ...[
           const Spacer(),
           Text(
             'Until ${intervention.deferredUntil!.hour}:${intervention.deferredUntil!.minute.toString().padLeft(2, '0')}',
@@ -279,3 +296,4 @@ class InterventionCard extends StatelessWidget {
     );
   }
 }
+

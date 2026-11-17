@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/tess_button.dart';
 import '../../../shared/widgets/tess_card.dart';
+import '../../agent/screens/agent_screen.dart';
 import '../models/dashboard_model.dart';
 import '../services/dashboard_service.dart';
 import '../widgets/daily_intelligence.dart';
@@ -120,6 +121,16 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.psychology_rounded, color: AppColors.cyan, size: 22),
+            tooltip: 'Agent Action Core',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AgentScreen()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.refresh, color: AppColors.cyan, size: 20),
             tooltip: 'Refresh Telemetry',
