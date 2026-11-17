@@ -116,3 +116,4 @@ class DailyIntelligence extends StatelessWidget {
     );
   }
 }
+

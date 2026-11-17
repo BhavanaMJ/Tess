@@ -80,3 +80,4 @@ class MascotSection extends StatelessWidget {
     );
   }
 }
+
