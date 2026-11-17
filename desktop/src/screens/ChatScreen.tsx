@@ -2,7 +2,25 @@ import React, { useEffect, useState, useRef } from 'react';
 import { apiService } from '../services/api';
 import { Conversation, Message } from '../types';
 import { useMascot } from '../contexts/MascotContext';
-import { Plus, Send, MessageSquare, Bot, User, AlertCircle, Mic, MicOff, Monitor, X } from 'lucide-react';
+import {
+  Plus,
+  Send,
+  MessageSquare,
+  Bot,
+  User,
+  AlertCircle,
+  Mic,
+  MicOff,
+  Monitor,
+  X,
+  Copy,
+  Check,
+  Sparkles,
+  Compass,
+  Clock,
+  ShieldAlert,
+  ArrowRight
+} from 'lucide-react';
 
 export const ChatScreen: React.FC = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -12,6 +30,7 @@ export const ChatScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // Phase 8: Voice Assistant state
   const [isRecording, setIsRecording] = useState(false);
@@ -22,11 +41,12 @@ export const ChatScreen: React.FC = () => {
   // Phase 8: Screen Understanding state
   const [capturedImageBlob, setCapturedImageBlob] = useState<Blob | null>(null);
   const [screenPreviewUrl, setScreenPreviewUrl] = useState<string | null>(null);
-  const [screenQuery, setScreenQuery] = useState('Explain what is on this screen and any errors.');
+  const [screenQuery, setScreenQuery] = useState('Explain what is on this screen and any potential errors.');
   const [analyzingScreen, setAnalyzingScreen] = useState(false);
 
   const { setState: setMascotState } = useMascot();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -75,7 +95,7 @@ export const ChatScreen: React.FC = () => {
 
   const handleNewConversation = async () => {
     try {
-      const newConv = await apiService.createConversation('Desktop Conversation');
+      const newConv = await apiService.createConversation('Companion Dialogue');
       setConversations((prev) => [newConv, ...prev]);
       setCurrentConvId(newConv.id);
       setMessages([]);
@@ -84,28 +104,25 @@ export const ChatScreen: React.FC = () => {
     }
   };
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputText.trim() || !currentConvId || sending) return;
+  const handleSendMessage = async (textToSend?: string) => {
+    const text = textToSend || inputText.trim();
+    if (!text || !currentConvId || sending) return;
 
-    const userText = inputText.trim();
-    setInputText('');
+    if (!textToSend) setInputText('');
     setSending(true);
     setMascotState('THINKING');
 
-    // Optimistic user message
     const tempMsg: Message = {
       id: 'temp-' + Date.now(),
       conversation_id: currentConvId,
       role: 'user',
-      content: userText,
+      content: text,
       created_at: new Date().toISOString()
     };
     setMessages((prev) => [...prev, tempMsg]);
 
     try {
-      const res = await apiService.sendMessage(currentConvId, userText);
-      // Assistant response message
+      const res = await apiService.sendMessage(currentConvId, text);
       const botMsg: Message = {
         id: 'bot-' + Date.now(),
         conversation_id: currentConvId,
@@ -123,16 +140,20 @@ export const ChatScreen: React.FC = () => {
     }
   };
 
-  // Phase 8: Voice Interaction Handler
+  const copyToClipboard = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  // Phase 8: Voice Assistant Handler
   const toggleVoiceRecording = async () => {
-    // If currently playing audio, allow voice interruption
     if (currentAudioRef.current) {
       currentAudioRef.current.pause();
       currentAudioRef.current = null;
     }
 
     if (isRecording) {
-      // Stop recording
       if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
         mediaRecorderRef.current.stop();
       }
@@ -140,16 +161,13 @@ export const ChatScreen: React.FC = () => {
       return;
     }
 
-    // Start user-authorized microphone recording
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       audioChunksRef.current = [];
       const recorder = new MediaRecorder(stream);
 
       recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
-          audioChunksRef.current.push(e.data);
-        }
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
       };
 
       recorder.onstop = async () => {
@@ -163,7 +181,6 @@ export const ChatScreen: React.FC = () => {
         try {
           const res = await apiService.voiceInteract(audioBlob);
 
-          // Add messages to chat
           if (currentConvId) {
             const userMsg: Message = {
               id: 'voice-user-' + Date.now(),
@@ -182,7 +199,6 @@ export const ChatScreen: React.FC = () => {
             setMessages((prev) => [...prev, userMsg, botMsg]);
           }
 
-          // Play synthesized audio response
           if (res.audio_base64) {
             setMascotState('SPEAKING');
             const audio = new Audio(`data:audio/wav;base64,${res.audio_base64}`);
@@ -208,7 +224,7 @@ export const ChatScreen: React.FC = () => {
       setIsRecording(true);
       setMascotState('LISTENING');
     } catch (err: any) {
-      setError('Microphone access denied or unavailable: ' + err.message);
+      setError('Microphone access denied: ' + err.message);
       setMascotState('ERROR');
     }
   };
@@ -254,7 +270,7 @@ export const ChatScreen: React.FC = () => {
         id: 'screen-user-' + Date.now(),
         conversation_id: currentConvId,
         role: 'user',
-        content: `[Screen Capture Query]: ${screenQuery}`,
+        content: `[Visual Telemetry Query]: ${screenQuery}`,
         created_at: new Date().toISOString()
       };
       const botMsg: Message = {
@@ -276,21 +292,31 @@ export const ChatScreen: React.FC = () => {
     }
   };
 
+  const quickActionPrompts = [
+    { label: 'Priority Check', prompt: 'What should I prioritize today?' },
+    { label: 'Future Simulation', prompt: 'Show me where my current trajectory is taking me.' },
+    { label: 'Procrastination Audit', prompt: 'What important work am I postponing?' },
+    { label: 'Task Execution', prompt: 'Help me complete an overdue task on OpenProject.' }
+  ];
+
   return (
-    <div className="flex h-full" style={{ height: 'calc(100vh - 64px)' }}>
-      {/* Conversations List Sub-sidebar */}
+    <div className="flex h-full" style={{ height: 'calc(100vh - 68px)' }}>
+      {/* CONVERSATION THREAD RAIL */}
       <div
-        className="flex flex-col border-r"
+        className="flex flex-col border-r select-none"
         style={{
           width: '260px',
           backgroundColor: 'var(--bg-secondary)',
           borderColor: 'var(--border)'
         }}
       >
-        <div className="p-3 border-b" style={{ borderColor: 'var(--border)' }}>
-          <button onClick={handleNewConversation} className="btn-primary w-full text-xs justify-center">
+        <div className="p-3 border-b border-[rgba(255,255,255,0.06)]">
+          <button
+            onClick={handleNewConversation}
+            className="btn-primary w-full text-xs justify-center"
+          >
             <Plus style={{ width: '0.9rem', height: '0.9rem' }} />
-            <span>New Conversation</span>
+            <span>New Dialogue</span>
           </button>
         </div>
 
@@ -301,86 +327,229 @@ export const ChatScreen: React.FC = () => {
               <button
                 key={conv.id}
                 onClick={() => setCurrentConvId(conv.id)}
-                className="flex items-center gap-2.5 p-2 rounded-lg text-xs w-full text-left truncate cursor-pointer transition-colors"
+                className="flex items-center gap-2.5 p-2 rounded-lg text-xs w-full text-left truncate cursor-pointer transition-all"
                 style={{
-                  backgroundColor: isSelected ? 'var(--bg-card)' : 'transparent',
-                  color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)',
-                  border: isSelected ? '1px solid var(--border)' : '1px solid transparent'
+                  backgroundColor: isSelected ? 'rgba(139, 92, 246, 0.12)' : 'transparent',
+                  color: isSelected ? '#FFFFFF' : 'var(--text-secondary)',
+                  border: isSelected ? '1px solid rgba(139, 92, 246, 0.35)' : '1px solid transparent'
                 }}
               >
-                <MessageSquare style={{ width: '0.9rem', height: '0.9rem', flexShrink: 0 }} />
-                <span className="truncate">{conv.title || 'Conversation'}</span>
+                <MessageSquare
+                  style={{
+                    width: '0.85rem',
+                    height: '0.85rem',
+                    color: isSelected ? '#A78BFA' : 'var(--text-muted)',
+                    flexShrink: 0
+                  }}
+                />
+                <span className="truncate">{conv.title || 'Untitled Session'}</span>
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Chat Messages Panel */}
-      <div className="flex-1 flex flex-col h-full bg-primary">
+      {/* CHAT MESSAGES & COMPOSER CONTAINER */}
+      <div className="flex-1 flex flex-col h-full bg-primary relative overflow-hidden">
         {error && (
           <div
-            className="flex items-center gap-2 p-3 text-xs"
-            style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger)', borderBottom: '1px solid var(--border)' }}
+            className="p-3 text-xs flex items-center justify-between border-b"
+            style={{
+              backgroundColor: 'rgba(251, 113, 133, 0.1)',
+              borderColor: 'rgba(251, 113, 133, 0.3)',
+              color: '#FB7185'
+            }}
           >
-            <AlertCircle style={{ width: '1rem', height: '1rem' }} />
-            <span>{error}</span>
+            <div className="flex items-center gap-2">
+              <AlertCircle style={{ width: '1rem', height: '1rem' }} />
+              <span>{error}</span>
+            </div>
+            <button
+              onClick={() => setError(null)}
+              className="text-muted hover:text-primary cursor-pointer"
+              style={{ background: 'none', border: 'none' }}
+            >
+              <X style={{ width: '0.9rem', height: '0.9rem' }} />
+            </button>
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
-          {messages.length === 0 && !loading && (
-            <div className="text-center text-muted my-auto text-sm">
-              <Bot style={{ width: '2rem', height: '2rem', margin: '0 auto 0.5rem', color: 'var(--accent)' }} />
-              <div>Start a conversation with TESS.</div>
-              <div className="text-xs text-muted mt-1">Ask questions, request actions, or discuss your tasks.</div>
+        {/* SCREEN ANALYSIS PREVIEW BANNER */}
+        {screenPreviewUrl && (
+          <div
+            className="p-3 border-b flex items-center gap-4 bg-[rgba(34,211,238,0.06)] border-[rgba(34,211,238,0.25)]"
+          >
+            <img
+              src={screenPreviewUrl}
+              alt="Screen Preview"
+              className="w-24 h-16 object-cover rounded-md border border-[rgba(34,211,238,0.3)] shadow-md"
+            />
+            <div className="flex-1 flex flex-col gap-1.5">
+              <span className="text-xs font-mono font-semibold text-[#22D3EE] uppercase tracking-wider">
+                Screen Telemetry Captured
+              </span>
+              <input
+                type="text"
+                className="tess-input text-xs py-1"
+                placeholder="Question about your screen..."
+                value={screenQuery}
+                onChange={(e) => setScreenQuery(e.target.value)}
+              />
             </div>
-          )}
-
-          {messages.map((msg) => {
-            const isUser = msg.role === 'user';
-            return (
-              <div
-                key={msg.id}
-                className={`flex gap-3 max-w-2xl ${isUser ? 'self-end flex-row-reverse' : 'self-start'}`}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={confirmScreenAnalysis}
+                disabled={analyzingScreen}
+                className="btn-cyan text-xs py-1.5 px-3"
               >
+                {analyzingScreen ? 'Analyzing...' : 'Analyze'}
+              </button>
+              <button
+                onClick={() => {
+                  setScreenPreviewUrl(null);
+                  setCapturedImageBlob(null);
+                }}
+                className="p-1.5 text-muted hover:text-primary rounded cursor-pointer"
+                style={{ background: 'none', border: 'none' }}
+              >
+                <X style={{ width: '1rem', height: '1rem' }} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* MESSAGE STREAM */}
+        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
+          {messages.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-8 select-none">
+              <div className="w-14 h-14 rounded-full bg-[rgba(139,92,246,0.12)] border border-[rgba(139,92,246,0.35)] flex items-center justify-center mb-3">
+                <Sparkles style={{ width: '1.75rem', height: '1.75rem', color: '#A78BFA' }} />
+              </div>
+              <h3 className="text-base font-bold text-primary m-0 tracking-wide">
+                TESS Continuous Dialogue
+              </h3>
+              <p className="text-xs text-muted max-w-sm mt-1.5 leading-relaxed">
+                I remember your context, synchronize with your OpenProject workspace, and predict future trajectories.
+              </p>
+
+              {/* Quick Action Suggestions */}
+              <div className="grid grid-cols-2 gap-2 mt-6 max-w-md w-full">
+                {quickActionPrompts.map((item, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSendMessage(item.prompt)}
+                    className="p-2.5 rounded-lg text-left text-xs bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] hover:border-[rgba(139,92,246,0.4)] hover:bg-[rgba(139,92,246,0.06)] text-secondary hover:text-primary transition-all cursor-pointer flex items-center justify-between group"
+                  >
+                    <span>{item.label}</span>
+                    <ArrowRight style={{ width: '0.75rem', height: '0.75rem', opacity: 0.5 }} />
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            messages.map((msg) => {
+              const isUser = msg.role === 'user';
+              return (
                 <div
-                  className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{
-                    backgroundColor: isUser ? 'var(--accent)' : 'var(--bg-card)',
-                    border: '1px solid var(--border)'
-                  }}
+                  key={msg.id}
+                  className={`flex items-start gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}
                 >
-                  {isUser ? (
-                    <User style={{ width: '0.85rem', height: '0.85rem', color: 'white' }} />
-                  ) : (
-                    <Bot style={{ width: '0.85rem', height: '0.85rem', color: 'var(--accent)' }} />
+                  {!isUser && (
+                    <div
+                      className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{
+                        backgroundColor: 'rgba(139, 92, 246, 0.15)',
+                        border: '1px solid rgba(139, 92, 246, 0.4)',
+                        color: '#A78BFA'
+                      }}
+                    >
+                      <Bot style={{ width: '0.95rem', height: '0.95rem' }} />
+                    </div>
+                  )}
+
+                  <div
+                    className="flex flex-col group relative"
+                    style={{ maxWidth: '78%' }}
+                  >
+                    <div
+                      className="p-3.5 rounded-2xl text-xs leading-relaxed transition-all"
+                      style={{
+                        backgroundColor: isUser
+                          ? 'rgba(139, 92, 246, 0.18)'
+                          : 'rgba(23, 26, 45, 0.85)',
+                        border: isUser
+                          ? '1px solid rgba(139, 92, 246, 0.4)'
+                          : '1px solid rgba(255, 255, 255, 0.08)',
+                        color: '#F8FAFC',
+                        boxShadow: isUser
+                          ? '0 4px 16px rgba(139, 92, 246, 0.15)'
+                          : '0 4px 20px rgba(0, 0, 0, 0.3)',
+                        backdropFilter: 'blur(16px)'
+                      }}
+                    >
+                      <div className="whitespace-pre-wrap">{msg.content}</div>
+                    </div>
+
+                    <div className="flex items-center gap-2 mt-1 px-1">
+                      <span className="font-mono text-[10px] text-muted">
+                        {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                      <button
+                        onClick={() => copyToClipboard(msg.content, msg.id)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-muted hover:text-primary cursor-pointer p-0"
+                        style={{ background: 'none', border: 'none' }}
+                        title="Copy message"
+                      >
+                        {copiedId === msg.id ? (
+                          <Check style={{ width: '0.75rem', height: '0.75rem', color: '#34D399' }} />
+                        ) : (
+                          <Copy style={{ width: '0.75rem', height: '0.75rem' }} />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {isUser && (
+                    <div
+                      className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: 'var(--text-secondary)'
+                      }}
+                    >
+                      <User style={{ width: '0.95rem', height: '0.95rem' }} />
+                    </div>
                   )}
                 </div>
+              );
+            })
+          )}
 
-                <div
-                  className="p-3 rounded-2xl text-sm"
-                  style={{
-                    backgroundColor: isUser ? 'var(--accent)' : 'var(--bg-card)',
-                    color: isUser ? '#FFFFFF' : 'var(--text-primary)',
-                    border: isUser ? 'none' : '1px solid var(--border)',
-                    lineHeight: '1.5'
-                  }}
-                >
-                  {msg.content}
-                </div>
-              </div>
-            );
-          })}
-
+          {/* Thinking Holographic Wave Indicator */}
           {sending && (
-            <div className="flex gap-3 self-start items-center text-xs text-muted">
-              <div className="w-7 h-7 rounded-full flex items-center justify-center bg-card border">
-                <Bot style={{ width: '0.85rem', height: '0.85rem', color: 'var(--accent)' }} />
+            <div className="flex items-center gap-3">
+              <div
+                className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 animate-pulse"
+                style={{
+                  backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                  border: '1px solid #8B5CF6',
+                  color: '#A78BFA'
+                }}
+              >
+                <Bot style={{ width: '0.95rem', height: '0.95rem' }} />
               </div>
-              <div className="p-3 rounded-2xl bg-card border text-xs text-muted flex items-center gap-2">
-                <span>TESS is thinking</span>
-                <span className="font-mono text-accent">...</span>
+              <div
+                className="p-3 rounded-2xl flex items-center gap-1.5"
+                style={{
+                  backgroundColor: 'rgba(23, 26, 45, 0.85)',
+                  border: '1px solid rgba(139, 92, 246, 0.3)'
+                }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6] animate-ping" />
+                <span className="text-xs font-mono text-[#A78BFA] tracking-wider uppercase ml-1">
+                  Synthesizing Response...
+                </span>
               </div>
             </div>
           )}
@@ -388,119 +557,84 @@ export const ChatScreen: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Screen Preview & Consent Modal */}
-        {screenPreviewUrl && (
-          <div className="p-4 border-t bg-secondary flex flex-col gap-3" style={{ borderColor: 'var(--border)' }}>
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-primary flex items-center gap-2">
-                <Monitor style={{ width: '1rem', height: '1rem', color: 'var(--accent)' }} />
-                <span>Screen Capture Preview (User Consent Required)</span>
-              </span>
-              <button
-                onClick={() => {
-                  setScreenPreviewUrl(null);
-                  setCapturedImageBlob(null);
+        {/* CHAT COMPOSER WITH VOICE & SCREEN AFFORDANCES */}
+        <div
+          className="p-4 border-t border-[rgba(255,255,255,0.06)]"
+          style={{ backgroundColor: 'var(--bg-secondary)' }}
+        >
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSendMessage();
+            }}
+            className="flex items-end gap-2"
+          >
+            {/* Voice Input Button */}
+            <button
+              type="button"
+              onClick={toggleVoiceRecording}
+              className={`p-2.5 rounded-xl transition-all cursor-pointer flex-shrink-0 ${
+                isRecording
+                  ? 'bg-[#FB7185] text-white shadow-[0_0_15px_#FB7185] animate-pulse'
+                  : 'bg-[rgba(255,255,255,0.04)] text-secondary hover:text-primary hover:bg-[rgba(255,255,255,0.08)]'
+              }`}
+              style={{ border: '1px solid var(--border)' }}
+              title={isRecording ? 'Stop Recording' : 'Voice Interaction'}
+            >
+              {isRecording ? (
+                <MicOff style={{ width: '1.05rem', height: '1.05rem' }} />
+              ) : (
+                <Mic style={{ width: '1.05rem', height: '1.05rem' }} />
+              )}
+            </button>
+
+            {/* Screen Capture Button */}
+            <button
+              type="button"
+              onClick={triggerScreenCapture}
+              className="p-2.5 rounded-xl bg-[rgba(255,255,255,0.04)] text-secondary hover:text-primary hover:bg-[rgba(255,255,255,0.08)] transition-all cursor-pointer flex-shrink-0"
+              style={{ border: '1px solid var(--border)' }}
+              title="Capture & Analyze Screen Telemetry"
+            >
+              <Monitor style={{ width: '1.05rem', height: '1.05rem' }} />
+            </button>
+
+            {/* Multiline Composer Input */}
+            <div className="flex-1 relative">
+              <textarea
+                ref={textareaRef}
+                className="tess-input resize-none py-2 px-3 text-xs"
+                placeholder={
+                  isRecording
+                    ? 'Listening to your voice...'
+                    : 'Communicate with TESS (Enter to send, Shift+Enter for newline)...'
+                }
+                rows={1}
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }
                 }}
-                className="text-muted hover:text-primary p-1"
-              >
-                <X style={{ width: '1rem', height: '1rem' }} />
-              </button>
-            </div>
-
-            <div className="flex gap-4 items-start">
-              <img
-                src={screenPreviewUrl}
-                alt="Captured screen preview"
-                className="w-48 h-28 object-cover rounded-lg border"
-                style={{ borderColor: 'var(--border)' }}
+                disabled={sending || isRecording}
+                style={{ minHeight: '40px', maxHeight: '120px' }}
               />
-              <div className="flex-1 flex flex-col gap-2">
-                <label className="text-xs text-muted">What would you like TESS to explain or investigate?</label>
-                <input
-                  type="text"
-                  className="tess-input w-full text-xs"
-                  value={screenQuery}
-                  onChange={(e) => setScreenQuery(e.target.value)}
-                  placeholder="e.g. Explain this error or describe the UI"
-                />
-                <div className="flex gap-2 mt-1">
-                  <button
-                    type="button"
-                    onClick={confirmScreenAnalysis}
-                    className="btn-primary text-xs"
-                    disabled={analyzingScreen}
-                  >
-                    {analyzingScreen ? 'Analyzing Context...' : 'Analyze Screen'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setScreenPreviewUrl(null);
-                      setCapturedImageBlob(null);
-                    }}
-                    className="btn-secondary text-xs"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
             </div>
-          </div>
-        )}
 
-        {/* Input Form */}
-        <form onSubmit={handleSendMessage} className="p-4 border-t flex gap-2 items-center" style={{ borderColor: 'var(--border)' }}>
-          {/* Screen Understanding trigger button */}
-          <button
-            type="button"
-            onClick={triggerScreenCapture}
-            className="p-2.5 rounded-xl border hover:border-accent transition-colors"
-            style={{
-              backgroundColor: 'var(--bg-secondary)',
-              borderColor: 'var(--border)',
-              color: 'var(--text-secondary)'
-            }}
-            title="Capture screen for TESS to explain"
-          >
-            <Monitor style={{ width: '1.1rem', height: '1.1rem' }} />
-          </button>
-
-          {/* Voice Assistant trigger button */}
-          <button
-            type="button"
-            onClick={toggleVoiceRecording}
-            className={`p-2.5 rounded-xl border transition-all ${
-              isRecording ? 'animate-pulse text-white' : 'text-secondary hover:border-accent'
-            }`}
-            style={{
-              backgroundColor: isRecording ? 'var(--danger)' : 'var(--bg-secondary)',
-              borderColor: isRecording ? 'var(--danger)' : 'var(--border)'
-            }}
-            title={isRecording ? 'Listening... Click to stop and send' : 'Speak to TESS'}
-          >
-            {isRecording ? (
-              <MicOff style={{ width: '1.1rem', height: '1.1rem' }} />
-            ) : (
-              <Mic style={{ width: '1.1rem', height: '1.1rem' }} />
-            )}
-          </button>
-
-          <input
-            type="text"
-            className="tess-input flex-1"
-            placeholder={isRecording ? "Listening to your voice..." : "Type a message to TESS..."}
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            disabled={sending || isRecording}
-          />
-
-          <button type="submit" className="btn-primary" disabled={!inputText.trim() || sending || isRecording}>
-            <Send style={{ width: '1rem', height: '1rem' }} />
-            <span>Send</span>
-          </button>
-        </form>
+            {/* Send Button */}
+            <button
+              type="submit"
+              disabled={!inputText.trim() || sending || isRecording}
+              className="btn-primary py-2 px-4 rounded-xl flex-shrink-0"
+              title="Transmit Message"
+            >
+              <Send style={{ width: '0.95rem', height: '0.95rem' }} />
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
 };
-

@@ -10,7 +10,11 @@ import {
   Play,
   Clock,
   ShieldAlert,
-  AlertCircle
+  AlertCircle,
+  ArrowRight,
+  Terminal,
+  Zap,
+  Check
 } from 'lucide-react';
 
 export const AgentActivityScreen: React.FC = () => {
@@ -32,7 +36,6 @@ export const AgentActivityScreen: React.FC = () => {
       if (data.length > 0 && !selectedPlan) {
         setSelectedPlan(data[0]);
       } else if (selectedPlan) {
-        // Refresh selected plan
         const updated = data.find((p) => p.id === selectedPlan.id);
         if (updated) setSelectedPlan(updated);
       }
@@ -98,12 +101,15 @@ export const AgentActivityScreen: React.FC = () => {
     setMascotState('ACTING');
 
     try {
-      const res = await apiService.executeAgentPlan(planId);
-      setStatusMessage({ text: 'Plan executed successfully on external system!' });
-      setMascotState('SUCCESS');
+      const updated = await apiService.executeAgentPlan(planId);
+      setStatusMessage({ text: `Execution finished with status: ${updated.status}` });
+      if (selectedPlan) {
+        setSelectedPlan({ ...selectedPlan, status: updated.status as any });
+      }
       await loadPlans();
+      setMascotState(updated.status === 'SUCCESS' ? 'SUCCESS' : 'ERROR');
     } catch (e: any) {
-      setStatusMessage({ text: e.message || 'Action execution failed', error: true });
+      setStatusMessage({ text: e.message || 'Execution failed', error: true });
       setMascotState('ERROR');
     } finally {
       setExecuting(false);
@@ -111,209 +117,244 @@ export const AgentActivityScreen: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full" style={{ height: 'calc(100vh - 64px)' }}>
-      {/* Plans Master List */}
+    <div
+      className="flex h-full"
+      style={{ height: 'calc(100vh - 68px)', position: 'relative', zIndex: 1 }}
+    >
+      {/* LEFT COLUMN: Objectives List */}
       <div
-        className="flex flex-col border-r"
+        className="flex flex-col border-r select-none"
         style={{
           width: '320px',
           backgroundColor: 'var(--bg-secondary)',
           borderColor: 'var(--border)'
         }}
       >
-        {/* Create Objective Input */}
-        <form onSubmit={handleCreateObjective} className="p-3 border-b" style={{ borderColor: 'var(--border)' }}>
-          <div className="flex gap-2">
+        <div className="p-3 border-b border-[rgba(255,255,255,0.06)]">
+          <form onSubmit={handleCreateObjective} className="flex flex-col gap-2">
+            <span className="text-[11px] font-mono text-muted uppercase tracking-wider">
+              Autonomous Objective:
+            </span>
             <input
               type="text"
-              className="tess-input py-1.5 text-xs"
-              placeholder="e.g. Update worklog with 2 hours"
+              className="tess-input text-xs"
+              placeholder="e.g. Log 1.5h on task #101"
               value={newObjective}
               onChange={(e) => setNewObjective(e.target.value)}
               disabled={creating}
             />
-            <button type="submit" className="btn-primary text-xs px-2.5" disabled={!newObjective.trim() || creating}>
-              <Plus style={{ width: '0.9rem', height: '0.9rem' }} />
+            <button
+              type="submit"
+              disabled={!newObjective.trim() || creating}
+              className="btn-primary text-xs justify-center"
+            >
+              <Plus style={{ width: '0.85rem', height: '0.85rem' }} />
+              <span>{creating ? 'Formulating Plan...' : 'Generate Agent Plan'}</span>
             </button>
-          </div>
-        </form>
+          </form>
+        </div>
 
-        <div className="flex-1 overflow-y-auto p-2 flex flex-col gap-2">
-          {plans.length === 0 && !loading && (
-            <div className="text-center text-xs text-muted py-8">
-              No agent plans found. Enter an objective above.
-            </div>
-          )}
-
+        <div className="flex-1 overflow-y-auto p-2 flex flex-col gap-1.5">
           {plans.map((p) => {
             const isSelected = selectedPlan?.id === p.id;
-            const isSuccess = p.status === 'SUCCESS';
-            const isFailed = p.status === 'FAILED';
             return (
               <div
                 key={p.id}
                 onClick={() => setSelectedPlan(p)}
-                className="tess-card p-3 cursor-pointer text-xs"
+                className="p-3 rounded-xl cursor-pointer transition-all"
                 style={{
-                  backgroundColor: isSelected ? 'var(--bg-card)' : 'transparent',
-                  borderColor: isSelected ? 'var(--accent)' : 'var(--border)'
+                  backgroundColor: isSelected ? 'rgba(139, 92, 246, 0.12)' : 'transparent',
+                  border: isSelected ? '1px solid rgba(139, 92, 246, 0.35)' : '1px solid transparent'
                 }}
               >
-                <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center justify-between mb-1">
                   <span
-                    className="font-bold px-2 py-0.5 rounded text-[10px]"
+                    className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full uppercase"
                     style={{
-                      backgroundColor: isSuccess ? '#10B98125' : isFailed ? '#EF444425' : '#F59E0B25',
-                      color: isSuccess ? 'var(--success)' : isFailed ? 'var(--danger)' : 'var(--warning)'
+                      backgroundColor:
+                        p.status === 'SUCCESS'
+                          ? 'rgba(52,211,153,0.15)'
+                          : p.status === 'READY'
+                          ? 'rgba(34,211,238,0.15)'
+                          : 'rgba(251,191,36,0.15)',
+                      color:
+                        p.status === 'SUCCESS'
+                          ? '#34D399'
+                          : p.status === 'READY'
+                          ? '#22D3EE'
+                          : '#FBBF24',
+                      border: '1px solid var(--border)'
                     }}
                   >
                     {p.status}
                   </span>
-                  <span className="text-[10px] text-muted">
+                  <span className="text-[10px] font-mono text-muted">
                     {p.steps?.length || 0} step(s)
                   </span>
                 </div>
-                <div className="font-medium text-primary line-clamp-2">{p.objective}</div>
+                <div className="text-xs font-semibold text-primary truncate tracking-tight">
+                  {p.objective}
+                </div>
               </div>
             );
           })}
         </div>
       </div>
 
-      {/* Plan Details & Execution Area */}
-      <div className="flex-1 overflow-y-auto p-6 bg-primary">
+      {/* RIGHT COLUMN: Plan Details, Safeguards, & Execution */}
+      <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 bg-primary">
         {statusMessage && (
           <div
-            className="p-3 mb-6 rounded-lg text-xs flex items-center gap-2"
+            className="p-3 rounded-xl text-xs flex items-center justify-between"
             style={{
-              backgroundColor: statusMessage.error ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)',
-              color: statusMessage.error ? 'var(--danger)' : 'var(--success)',
-              border: '1px solid var(--border)'
+              backgroundColor: statusMessage.error
+                ? 'rgba(251, 113, 133, 0.12)'
+                : 'rgba(52, 211, 153, 0.12)',
+              color: statusMessage.error ? '#FB7185' : '#34D399',
+              border: `1px solid ${statusMessage.error ? 'rgba(251, 113, 133, 0.3)' : 'rgba(52, 211, 153, 0.3)'}`
             }}
           >
-            {statusMessage.error ? (
-              <AlertCircle style={{ width: '1rem', height: '1rem' }} />
-            ) : (
-              <CheckCircle style={{ width: '1rem', height: '1rem' }} />
-            )}
             <span>{statusMessage.text}</span>
+            <button
+              onClick={() => setStatusMessage(null)}
+              className="text-muted hover:text-primary cursor-pointer font-bold"
+              style={{ background: 'none', border: 'none' }}
+            >
+              ×
+            </button>
           </div>
         )}
 
-        {!selectedPlan ? (
-          <div className="text-center text-muted py-16 text-sm">
-            <Bot style={{ width: '2.5rem', height: '2.5rem', margin: '0 auto 0.75rem', color: 'var(--accent)' }} />
-            Select an agent plan or create a new objective to review proposed actions.
-          </div>
-        ) : (
-          <div>
-            <div className="flex items-center justify-between pb-4 border-b mb-6" style={{ borderColor: 'var(--border)' }}>
-              <div>
-                <span className="text-[11px] font-mono font-bold text-accent">
-                  PLAN ID: {selectedPlan.id}
+        {selectedPlan ? (
+          <div className="flex flex-col gap-4">
+            {/* Header Card */}
+            <div className="tess-card p-5">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-mono text-xs text-muted uppercase tracking-wider">
+                  Plan Objective ID: {selectedPlan.id}
                 </span>
-                <h2 className="text-lg font-bold text-primary mt-1 m-0">
-                  {selectedPlan.objective}
-                </h2>
+                <span
+                  className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full uppercase"
+                  style={{
+                    backgroundColor: 'rgba(139, 92, 246, 0.15)',
+                    color: '#A78BFA',
+                    border: '1px solid rgba(139, 92, 246, 0.35)'
+                  }}
+                >
+                  Status: {selectedPlan.status}
+                </span>
               </div>
+              <h3 className="text-base font-bold text-primary m-0 tracking-tight">
+                {selectedPlan.objective}
+              </h3>
 
-              {/* Action Buttons */}
-              <div className="flex items-center gap-2">
+              {/* Action Safeguard Buttons */}
+              <div className="flex items-center gap-3 mt-4 pt-3 border-t border-[rgba(255,255,255,0.06)]">
                 {selectedPlan.status === 'READY' && (
-                  <>
-                    <button
-                      onClick={() => handleConfirmPlan(selectedPlan.id)}
-                      className="btn-primary text-xs"
-                    >
-                      <CheckCircle style={{ width: '0.9rem', height: '0.9rem' }} />
-                      <span>Confirm Plan</span>
-                    </button>
-                    <button
-                      onClick={() => handleCancelPlan(selectedPlan.id)}
-                      className="btn-secondary text-xs"
-                    >
-                      <XCircle style={{ width: '0.9rem', height: '0.9rem' }} />
-                      <span>Cancel</span>
-                    </button>
-                  </>
+                  <button
+                    onClick={() => handleConfirmPlan(selectedPlan.id)}
+                    className="btn-cyan text-xs"
+                  >
+                    <Check style={{ width: '0.85rem', height: '0.85rem' }} />
+                    <span>Confirm Action</span>
+                  </button>
                 )}
 
-                {(selectedPlan.status === 'READY' || selectedPlan.status === 'PLANNING') && (
+                {selectedPlan.status === 'READY' && (
                   <button
                     onClick={() => handleExecutePlan(selectedPlan.id)}
                     disabled={executing}
                     className="btn-primary text-xs"
-                    style={{ backgroundColor: 'var(--accent)' }}
                   >
-                    <Play style={{ width: '0.9rem', height: '0.9rem' }} />
-                    <span>{executing ? 'Executing...' : 'Execute Confirmed'}</span>
+                    <Play style={{ width: '0.85rem', height: '0.85rem' }} />
+                    <span>{executing ? 'Executing Steps...' : 'Execute Plan'}</span>
+                  </button>
+                )}
+
+                {selectedPlan.status !== 'SUCCESS' && selectedPlan.status !== 'CANCELLED' && (
+                  <button
+                    onClick={() => handleCancelPlan(selectedPlan.id)}
+                    className="btn-secondary text-xs"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    <XCircle style={{ width: '0.85rem', height: '0.85rem' }} />
+                    <span>Cancel Plan</span>
                   </button>
                 )}
               </div>
             </div>
 
-            {/* Steps & Tools List */}
-            <h4 className="text-sm font-bold text-primary mb-3">Planned Tool Operations:</h4>
-            <div className="flex flex-col gap-4">
-              {selectedPlan.steps?.map((step) => {
-                const isMediumOrHigh = step.risk_level === 'MEDIUM' || step.risk_level === 'HIGH';
-                const confStatus = step.confirmation?.status || 'PENDING';
-                return (
-                  <div key={step.id || step.step_order} className="tess-card p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-accent">
-                          Step {step.step_order}:
-                        </span>
-                        <span className="text-sm font-bold text-primary">{step.tool_name}</span>
-                      </div>
+            {/* Plan Steps Detailed List */}
+            <div className="tess-card p-5">
+              <h4 className="text-xs font-bold text-primary uppercase font-mono tracking-wider mb-3">
+                Execution Steps ({selectedPlan.steps?.length || 0})
+              </h4>
 
-                      <div className="flex items-center gap-2">
-                        {isMediumOrHigh && (
+              <div className="flex flex-col gap-2.5">
+                {selectedPlan.steps?.map((step: any, index: number) => {
+                  const isMediumOrHighRisk =
+                    step.risk_level?.toUpperCase() === 'HIGH' ||
+                    step.risk_level?.toUpperCase() === 'MEDIUM';
+                  return (
+                    <div
+                      key={index}
+                      className="p-3.5 rounded-xl flex flex-col gap-1.5 transition-colors"
+                      style={{
+                        backgroundColor: 'var(--bg-secondary)',
+                        border: '1px solid var(--border)'
+                      }}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs text-muted font-bold">
+                            #{index + 1}
+                          </span>
+                          <span className="font-mono text-xs font-semibold text-[#22D3EE]">
+                            {step.tool_name}
+                          </span>
+                        </div>
+
+                        {step.risk_level && (
                           <span
-                            className="text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1"
+                            className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full uppercase"
                             style={{
-                              backgroundColor: step.risk_level === 'HIGH' ? '#EF444425' : '#F59E0B25',
-                              color: step.risk_level === 'HIGH' ? 'var(--danger)' : 'var(--warning)'
+                              backgroundColor: isMediumOrHighRisk
+                                ? 'rgba(251, 113, 133, 0.15)'
+                                : 'rgba(52, 211, 153, 0.15)',
+                              color: isMediumOrHighRisk ? '#FB7185' : '#34D399',
+                              border: `1px solid ${isMediumOrHighRisk ? 'rgba(251, 113, 133, 0.3)' : 'rgba(52, 211, 153, 0.3)'}`
                             }}
                           >
-                            <ShieldAlert style={{ width: '0.75rem', height: '0.75rem' }} />
-                            {step.risk_level} RISK
+                            {step.risk_level.toUpperCase()} RISK
                           </span>
                         )}
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-secondary text-muted">
-                          CONFIRMATION: {confStatus}
-                        </span>
                       </div>
-                    </div>
 
-                    <div className="mt-2 text-xs text-muted">Parameters:</div>
-                    <pre
-                      className="font-mono text-xs p-3 rounded-lg mt-1 overflow-x-auto text-primary"
-                      style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
-                    >
-                      {JSON.stringify(step.parameters, null, 2)}
-                    </pre>
+                      <div className="text-xs text-secondary leading-relaxed">
+                        {step.description || 'Executes external system interaction.'}
+                      </div>
 
-                    {step.result && (
-                      <div className="mt-3">
-                        <div className="text-xs font-semibold text-success mb-1">Execution Result:</div>
-                        <pre
-                          className="font-mono text-xs p-3 rounded-lg overflow-x-auto text-primary"
-                          style={{ backgroundColor: 'rgba(16, 185, 129, 0.05)', border: '1px solid var(--border)' }}
-                        >
-                          {JSON.stringify(step.result, null, 2)}
+                      {step.arguments && (
+                        <pre className="font-mono text-[10px] p-2 rounded-lg bg-[rgba(0,0,0,0.4)] text-muted overflow-x-auto m-0 border border-[rgba(255,255,255,0.04)]">
+                          {JSON.stringify(step.arguments, null, 2)}
                         </pre>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
+          </div>
+        ) : (
+          <div className="tess-card text-center py-16">
+            <Bot style={{ width: '2.5rem', height: '2.5rem', color: 'var(--text-muted)', margin: '0 auto 0.5rem', opacity: 0.5 }} />
+            <div className="text-sm font-semibold text-primary">No Plan Selected</div>
+            <p className="text-xs text-muted mt-1 max-w-sm mx-auto">
+              Select an objective from the rail or generate a new agent plan.
+            </p>
           </div>
         )}
       </div>
     </div>
   );
 };
-

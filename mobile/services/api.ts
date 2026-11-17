@@ -155,6 +155,16 @@ export const apiService = {
     return handleResponse(response);
   },
 
+  async simulateFuture(horizon: string = "24h") {
+    const headers = await getHeaders();
+    const response = await safeFetch(`${BACKEND_URL}/api/v1/future/simulate`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ horizon }),
+    });
+    return handleResponse(response);
+  },
+
   async getFuturePredictions() {
     const headers = await getHeaders();
     const response = await safeFetch(`${BACKEND_URL}/api/v1/future/predictions`, { headers });

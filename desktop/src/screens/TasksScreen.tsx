@@ -8,7 +8,10 @@ import {
   Filter,
   AlertTriangle,
   Folder,
-  User
+  User,
+  ShieldCheck,
+  Zap,
+  Activity
 } from 'lucide-react';
 
 export const TasksScreen: React.FC = () => {
@@ -72,23 +75,35 @@ export const TasksScreen: React.FC = () => {
   });
 
   return (
-    <div className="flex-1 overflow-y-auto p-6" style={{ height: 'calc(100vh - 64px)' }}>
+    <div
+      className="flex-1 overflow-y-auto p-6"
+      style={{ height: 'calc(100vh - 68px)', position: 'relative', zIndex: 1 }}
+    >
       {/* Top action & metrics bar */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4 text-xs">
-          <div className="tess-card py-2 px-3">
-            <span className="text-muted">Total: </span>
-            <span className="font-bold text-primary">{tasks.length}</span>
+        <div className="flex items-center gap-3 text-xs">
+          <div className="tess-card py-2 px-3.5 flex items-center gap-2">
+            <Activity style={{ width: '0.85rem', height: '0.85rem', color: '#22D3EE' }} />
+            <span className="text-muted font-mono uppercase text-[11px]">Total:</span>
+            <span className="font-bold text-primary font-mono text-sm">{tasks.length}</span>
           </div>
-          <div className="tess-card py-2 px-3">
-            <span style={{ color: 'var(--danger)' }}>Overdue: </span>
-            <span className="font-bold" style={{ color: 'var(--danger)' }}>
+
+          <div
+            className="tess-card py-2 px-3.5 flex items-center gap-2"
+            style={{ borderColor: 'rgba(251, 113, 133, 0.3)' }}
+          >
+            <span className="font-mono uppercase text-[11px]" style={{ color: '#FB7185' }}>Overdue:</span>
+            <span className="font-bold font-mono text-sm" style={{ color: '#FB7185' }}>
               {summary?.overdue ?? 0}
             </span>
           </div>
-          <div className="tess-card py-2 px-3">
-            <span style={{ color: 'var(--warning)' }}>Due Today: </span>
-            <span className="font-bold" style={{ color: 'var(--warning)' }}>
+
+          <div
+            className="tess-card py-2 px-3.5 flex items-center gap-2"
+            style={{ borderColor: 'rgba(251, 191, 36, 0.3)' }}
+          >
+            <span className="font-mono uppercase text-[11px]" style={{ color: '#FBBF24' }}>Due Today:</span>
+            <span className="font-bold font-mono text-sm" style={{ color: '#FBBF24' }}>
               {summary?.due_today ?? 0}
             </span>
           </div>
@@ -97,8 +112,8 @@ export const TasksScreen: React.FC = () => {
         <button onClick={handleSync} disabled={syncing} className="btn-primary text-xs">
           <RefreshCw
             style={{
-              width: '0.9rem',
-              height: '0.9rem',
+              width: '0.85rem',
+              height: '0.85rem',
               animation: syncing ? 'spin 1s linear infinite' : 'none'
             }}
           />
@@ -108,25 +123,32 @@ export const TasksScreen: React.FC = () => {
 
       {statusMessage && (
         <div
-          className="p-3 mb-4 rounded-lg text-xs"
+          className="p-3 mb-4 rounded-xl text-xs flex items-center justify-between"
           style={{
-            backgroundColor: statusMessage.includes('failed') ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)',
-            color: statusMessage.includes('failed') ? 'var(--danger)' : 'var(--success)',
-            border: '1px solid var(--border)'
+            backgroundColor: statusMessage.includes('failed') ? 'rgba(251, 113, 133, 0.12)' : 'rgba(52, 211, 153, 0.12)',
+            color: statusMessage.includes('failed') ? '#FB7185' : '#34D399',
+            border: `1px solid ${statusMessage.includes('failed') ? 'rgba(251, 113, 133, 0.3)' : 'rgba(52, 211, 153, 0.3)'}`
           }}
         >
-          {statusMessage}
+          <span>{statusMessage}</span>
+          <button
+            onClick={() => setStatusMessage(null)}
+            className="text-muted hover:text-primary cursor-pointer font-bold"
+            style={{ background: 'none', border: 'none' }}
+          >
+            ×
+          </button>
         </div>
       )}
 
       {/* Filter toolbar */}
-      <div className="tess-card flex items-center justify-between mb-4 py-2 px-4">
+      <div className="tess-card flex items-center justify-between mb-4 py-2.5 px-4 bg-[rgba(11,13,24,0.6)]">
         <div className="flex items-center gap-3">
-          <Filter style={{ width: '0.9rem', height: '0.9rem', color: 'var(--text-muted)' }} />
-          <span className="text-xs text-muted font-medium">Filter by:</span>
+          <Filter style={{ width: '0.9rem', height: '0.9rem', color: '#22D3EE' }} />
+          <span className="text-xs font-mono uppercase text-muted tracking-wider">Filter:</span>
 
           <select
-            className="tess-input py-1 px-2 text-xs"
+            className="tess-input py-1 px-2.5 text-xs font-mono"
             style={{ width: 'auto' }}
             value={filterPriority}
             onChange={(e) => setFilterPriority(e.target.value)}
@@ -138,7 +160,7 @@ export const TasksScreen: React.FC = () => {
           </select>
 
           <select
-            className="tess-input py-1 px-2 text-xs"
+            className="tess-input py-1 px-2.5 text-xs font-mono"
             style={{ width: 'auto' }}
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
@@ -151,53 +173,56 @@ export const TasksScreen: React.FC = () => {
           </select>
         </div>
 
-        <div className="text-xs text-muted">
-          Showing {filteredTasks.length} of {tasks.length} tasks
+        <div className="text-xs font-mono text-muted">
+          Showing {filteredTasks.length} of {tasks.length} packages
         </div>
       </div>
 
       {/* Task List */}
       {loading ? (
-        <div className="text-center text-muted py-12 text-sm">Loading productivity tasks...</div>
+        <div className="text-center text-muted py-12 text-xs font-mono">Loading telemetry tasks...</div>
       ) : filteredTasks.length === 0 ? (
         <div className="tess-card text-center py-12">
           <CheckSquare style={{ width: '2rem', height: '2rem', color: 'var(--text-muted)', margin: '0 auto 0.5rem' }} />
-          <div className="text-sm font-semibold text-primary">No tasks match your filter</div>
+          <div className="text-sm font-semibold text-primary">No tasks match your active filter</div>
           <div className="text-xs text-muted mt-1">Try clearing filters or click Sync OpenProject.</div>
         </div>
       ) : (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2.5">
           {filteredTasks.map((task) => {
             const isOverdue = task.due_date && new Date(task.due_date) < new Date();
+            const isHighPriority = task.priority && task.priority.toUpperCase() === 'HIGH';
             return (
               <div
                 key={task.id}
-                className="tess-card flex items-center justify-between p-3.5 transition-colors"
+                className="tess-card flex items-center justify-between p-3.5 transition-all hover:border-[rgba(139,92,246,0.35)]"
+                style={{
+                  borderColor: isOverdue ? 'rgba(251, 113, 133, 0.35)' : 'var(--border)'
+                }}
               >
                 <div className="flex items-start gap-3 flex-1 min-w-0">
                   <span
-                    className="font-mono text-xs px-2 py-0.5 rounded font-semibold mt-0.5"
-                    style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--accent-light)' }}
+                    className="font-mono text-xs px-2 py-0.5 rounded-md font-semibold mt-0.5 bg-[rgba(139,92,246,0.12)] text-[#A78BFA] border border-[rgba(139,92,246,0.3)] shrink-0"
                   >
                     #{task.external_id}
                   </span>
-                  <div className="min-w-0">
-                    <div className="text-sm font-medium text-primary truncate">{task.title}</div>
-                    <div className="flex items-center gap-3 mt-1 text-xs text-muted">
+                  <div className="min-w-0 pr-3">
+                    <div className="text-xs font-semibold text-primary truncate tracking-tight">{task.title}</div>
+                    <div className="flex items-center gap-3 mt-1 text-[11px] text-muted font-mono">
                       {task.project && (
                         <span className="flex items-center gap-1">
-                          <Folder style={{ width: '0.8rem', height: '0.8rem' }} />
+                          <Folder style={{ width: '0.75rem', height: '0.75rem' }} />
                           {task.project}
                         </span>
                       )}
                       {task.assignee && (
                         <span className="flex items-center gap-1">
-                          <User style={{ width: '0.8rem', height: '0.8rem' }} />
+                          <User style={{ width: '0.75rem', height: '0.75rem' }} />
                           {task.assignee}
                         </span>
                       )}
                       {task.status && (
-                        <span className="px-1.5 py-0.2 rounded bg-secondary text-[11px]">
+                        <span className="px-1.5 py-0.2 rounded bg-[rgba(255,255,255,0.04)] text-[10px] text-secondary border border-[rgba(255,255,255,0.06)]">
                           {task.status}
                         </span>
                       )}
@@ -208,30 +233,26 @@ export const TasksScreen: React.FC = () => {
                 <div className="flex items-center gap-3 flex-shrink-0">
                   {task.due_date && (
                     <div
-                      className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded"
+                      className="flex items-center gap-1 text-[11px] font-mono px-2 py-1 rounded-md"
                       style={{
-                        backgroundColor: isOverdue ? '#EF444420' : 'var(--bg-secondary)',
-                        color: isOverdue ? 'var(--danger)' : 'var(--text-secondary)'
+                        backgroundColor: isOverdue ? 'rgba(251, 113, 133, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+                        color: isOverdue ? '#FB7185' : 'var(--text-secondary)',
+                        border: `1px solid ${isOverdue ? 'rgba(251, 113, 133, 0.3)' : 'var(--border)'}`
                       }}
                     >
-                      {isOverdue && <AlertTriangle style={{ width: '0.8rem', height: '0.8rem' }} />}
-                      <Clock style={{ width: '0.8rem', height: '0.8rem' }} />
+                      {isOverdue && <AlertTriangle style={{ width: '0.75rem', height: '0.75rem' }} />}
+                      <Clock style={{ width: '0.75rem', height: '0.75rem' }} />
                       <span>{task.due_date}</span>
                     </div>
                   )}
 
                   {task.priority && (
                     <span
-                      className="text-xs font-semibold px-2 py-0.5 rounded"
+                      className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full uppercase"
                       style={{
-                        backgroundColor:
-                          task.priority.toUpperCase() === 'HIGH'
-                            ? '#EF444420'
-                            : 'var(--bg-secondary)',
-                        color:
-                          task.priority.toUpperCase() === 'HIGH'
-                            ? 'var(--danger)'
-                            : 'var(--text-muted)'
+                        backgroundColor: isHighPriority ? 'rgba(251, 113, 133, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+                        color: isHighPriority ? '#FB7185' : 'var(--text-muted)',
+                        border: `1px solid ${isHighPriority ? 'rgba(251, 113, 133, 0.3)' : 'var(--border)'}`
                       }}
                     >
                       {task.priority}
@@ -246,4 +267,3 @@ export const TasksScreen: React.FC = () => {
     </div>
   );
 };
-

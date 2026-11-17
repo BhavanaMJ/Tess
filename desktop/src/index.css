@@ -1,19 +1,42 @@
 :root {
-  --bg-primary: #0D0D14;
-  --bg-secondary: #151522;
-  --bg-card: #1C1C2D;
-  --bg-card-hover: #222238;
-  --border: #28283D;
-  --text-primary: #F4F4F5;
-  --text-secondary: #A1A1AA;
-  --text-muted: #71717A;
+  /* Phase 13 Deep Layered Void Palette */
+  --bg-void: #05060A;
+  --bg-primary: #080910;
+  --bg-secondary: #0B0D18;
+  --bg-surface: #111426;
+  --bg-surface-elevated: #171A2D;
+  --bg-card: rgba(17, 20, 38, 0.72);
+  --bg-card-hover: rgba(28, 32, 54, 0.88);
+  
+  /* Hairline and Neon Borders */
+  --border: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-violet: rgba(139, 92, 246, 0.35);
+  --border-cyan: rgba(34, 211, 238, 0.35);
+
+  /* Typography Colors */
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #64748B;
+  --text-dim: #475569;
+
+  /* Dual Accents */
   --accent: #8B5CF6;
   --accent-light: #A78BFA;
   --accent-hover: #7C3AED;
-  --success: #10B981;
-  --warning: #F59E0B;
-  --danger: #EF4444;
-  --info: #3B82F6;
+  --accent-cyan: #22D3EE;
+  --accent-ice: #60A5FA;
+
+  /* Telemetry Status Colors */
+  --success: #34D399;
+  --warning: #FBBF24;
+  --danger: #FB7185;
+  --info: #38BDF8;
+
+  /* Spatial Glows */
+  --glow-violet: 0 0 25px rgba(139, 92, 246, 0.25);
+  --glow-cyan: 0 0 25px rgba(34, 211, 238, 0.25);
+  --glow-critical: 0 0 25px rgba(251, 113, 133, 0.3);
 }
 
 * {
@@ -32,7 +55,23 @@ html, body, #root {
   overflow: hidden;
 }
 
-/* Transparent window for mascot */
+/* Ambient cosmic mesh background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 15% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(34, 211, 238, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(11, 13, 24, 0.4) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Transparent window for native mascot */
 html.mascot-window,
 body.mascot-window,
 html.mascot-window #root,
@@ -40,21 +79,25 @@ body.mascot-window #root {
   background: transparent !important;
   background-color: transparent !important;
 }
+html.mascot-window::before,
+body.mascot-window::before {
+  display: none !important;
+}
 
-/* Custom Scrollbar */
+/* Futuristic Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
+  background: rgba(139, 92, 246, 0.2);
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3F3F56;
+  background: rgba(139, 92, 246, 0.5);
 }
 
 /* Common Layout Utilities */
@@ -98,101 +141,236 @@ body.mascot-window #root {
 .text-base { font-size: 1rem; }
 .text-lg { font-size: 1.125rem; }
 .text-xl { font-size: 1.25rem; }
+.text-2xl { font-size: 1.5rem; }
 .font-semibold { font-weight: 600; }
 .font-bold { font-weight: 700; }
-.font-mono { font-family: 'JetBrains Mono', monospace; }
+.font-mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
 .cursor-pointer { cursor: pointer; }
-.overflow-y-auto { overflow-y: auto; }
-.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.select-none { user-select: none; }
+.relative { position: relative; }
+.absolute { position: absolute; }
+.overflow-hidden { overflow: hidden; }
 
-/* Buttons */
-.btn-primary {
-  background-color: var(--accent);
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  cursor: pointer;
+/* Futuristic Spatial Cards & Panels */
+.tess-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.tess-card-elevated {
+  background: var(--bg-surface-elevated);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+}
+
+.tess-card-glow-violet {
+  border-color: var(--border-violet);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);
+}
+
+.tess-card-glow-cyan {
+  border-color: var(--border-cyan);
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.15);
+}
+
+.tess-card:hover {
+  border-color: rgba(139, 92, 246, 0.25);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+}
+
+/* Futuristic Neon Pill Tags */
+.tess-telemetry-tag {
   display: inline-flex;
   align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.tess-telemetry-tag-violet {
+  border-color: rgba(139, 92, 246, 0.3);
+  color: var(--accent-light);
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.tess-telemetry-tag-cyan {
+  border-color: rgba(34, 211, 238, 0.3);
+  color: var(--accent-cyan);
+  background: rgba(34, 211, 238, 0.08);
+}
+
+.tess-telemetry-tag-warning {
+  border-color: rgba(251, 191, 36, 0.3);
+  color: var(--warning);
+  background: rgba(251, 191, 36, 0.08);
+}
+
+.tess-telemetry-tag-danger {
+  border-color: rgba(251, 113, 133, 0.3);
+  color: var(--danger);
+  background: rgba(251, 113, 133, 0.08);
+}
+
+.tess-telemetry-tag-success {
+  border-color: rgba(52, 211, 153, 0.3);
+  color: var(--success);
+  background: rgba(52, 211, 153, 0.08);
+}
+
+/* Futuristic Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  transition: background-color 0.15s;
+  padding: 0.65rem 1.25rem;
+  background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.65rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+  transition: all 0.2s ease;
 }
-.btn-primary:hover {
-  background-color: var(--accent-hover);
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #9333EA 0%, #7C3AED 100%);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.45);
+  transform: translateY(-1px);
 }
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
 .btn-primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .btn-secondary {
-  background-color: var(--bg-card);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  transition: all 0.15s;
-}
-.btn-secondary:hover {
-  background-color: var(--bg-card-hover);
-  border-color: #3F3F56;
-}
-
-.btn-danger {
-  background-color: #EF444420;
-  color: #EF4444;
-  border: 1px solid #EF444440;
-  padding: 0.4rem 0.8rem;
-  border-radius: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: 0.65rem;
+  font-weight: 500;
   font-size: 0.875rem;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-.btn-danger:hover {
-  background-color: #EF444430;
+  transition: all 0.2s ease;
 }
 
-/* Card Styles */
-.tess-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  transition: border-color 0.15s;
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.15);
 }
-.tess-card:hover {
-  border-color: #3E3E58;
+
+.btn-cyan {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  background: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%);
+  color: #FFFFFF;
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  border-radius: 0.65rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(6, 182, 212, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-cyan:hover:not(:disabled) {
+  box-shadow: 0 6px 22px rgba(6, 182, 212, 0.45);
+  transform: translateY(-1px);
 }
 
 /* Inputs */
 .tess-input {
-  background-color: var(--bg-secondary);
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  background: rgba(5, 6, 10, 0.6);
   border: 1px solid var(--border);
-  color: var(--text-primary);
-  padding: 0.6rem 0.8rem;
   border-radius: 0.5rem;
+  color: var(--text-primary);
   font-size: 0.875rem;
   outline: none;
-  width: 100%;
-}
-.tess-input:focus {
-  border-color: var(--accent);
+  transition: all 0.2s ease;
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+.tess-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
 }
-.animate-fade-in {
-  animation: fadeIn 0.15s ease-out forwards;
+
+/* AI Holographic Keyframe Animations */
+@keyframes orbBreathing {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 12px var(--mascot-glow-color, rgba(139, 92, 246, 0.4)));
+  }
+  50% {
+    transform: scale(1.04);
+    filter: drop-shadow(0 0 24px var(--mascot-glow-color, rgba(139, 92, 246, 0.75)));
+  }
+}
+
+@keyframes orbitalClockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes orbitalCounterClockwise {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes holographicPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes telemetryScanner {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.animate-orb-breathing {
+  animation: orbBreathing 4s ease-in-out infinite;
+}
+
+.animate-orbital-cw {
+  animation: orbitalClockwise 12s linear infinite;
+}
+
+.animate-orbital-ccw {
+  animation: orbitalCounterClockwise 8s linear infinite;
+}
+
+.animate-hologram-pulse {
+  animation: holographicPulse 2.5s ease-in-out infinite;
 }

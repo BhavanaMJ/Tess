@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, ActivityIndicator, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  ScrollView,
+  SafeAreaView,
+  TouchableOpacity
+} from 'react-native';
 import { apiService } from '../services/api';
+import { colors } from '../theme/tokens';
 
 export default function TomorrowScreen({ navigation }: any) {
-  const [horizon, setHorizon] = useState('24h');
+  const [horizon, setHorizon] = useState<'24h' | '3d' | '7d'>('24h');
   const [simResult, setSimResult] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -11,16 +20,10 @@ export default function TomorrowScreen({ navigation }: any) {
     runSimulation(horizon);
   }, [horizon]);
 
-  const runSimulation = async (hz: string) => {
+  const runSimulation = async (hz: '24h' | '3d' | '7d') => {
     setLoading(true);
     try {
-      const result = await apiService.analyzeFuture(); // In a real app we'd pass horizon, but for now our API handles it
-      // Actually, we need to call simulate!
-      const sim = await fetch('http://10.0.2.2:8000/api/v1/future/simulate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ horizon: hz })
-      }).then(r => r.json());
+      const sim = await apiService.simulateFuture(hz);
       setSimResult(sim);
     } catch (e) {
       console.error(e);
@@ -30,79 +33,314 @@ export default function TomorrowScreen({ navigation }: any) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      {/* HEADER */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>MEET TOMORROW YOU</Text>
-        <Button title="Close" onPress={() => navigation.goBack()} />
+        <View>
+          <Text style={styles.headerTitle}>FUTURE ENGINE</Text>
+          <Text style={styles.headerSubtitle}>Probabilistic trajectory simulation</Text>
+        </View>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.closeBtn}
+        >
+          <Text style={styles.closeBtnText}>Close</Text>
+        </TouchableOpacity>
       </View>
 
+      {/* HORIZON SELECTOR */}
       <View style={styles.horizonSelector}>
-        <Button title="24h" onPress={() => setHorizon('24h')} color={horizon === '24h' ? '#9C27B0' : '#888'} />
-        <Button title="3d" onPress={() => setHorizon('3d')} color={horizon === '3d' ? '#9C27B0' : '#888'} />
-        <Button title="7d" onPress={() => setHorizon('7d')} color={horizon === '7d' ? '#9C27B0' : '#888'} />
+        {(['24h', '3d', '7d'] as const).map((hz) => (
+          <TouchableOpacity
+            key={hz}
+            onPress={() => setHorizon(hz)}
+            style={[
+              styles.horizonBtn,
+              horizon === hz && styles.horizonBtnActive
+            ]}
+          >
+            <Text
+              style={[
+                styles.horizonText,
+                horizon === hz && { color: colors.cyan }
+              ]}
+            >
+              {hz === '24h' ? 'Next 24 Hours' : hz === '3d' ? '3 Days' : '7 Days'}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
       {loading ? (
-        <ActivityIndicator size="large" color="#9C27B0" style={{marginTop: 50}}/>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.cyan} />
+          <Text style={styles.loadingText}>Simulating probabilistic trajectory...</Text>
+        </View>
       ) : simResult && simResult.scenario ? (
-        <ScrollView style={styles.content}>
-          <Text style={styles.trajectoryTitle}>YOUR CURRENT TRAJECTORY</Text>
-          <Text style={styles.subtitle}>If you continue as you are...</Text>
-
-          <View style={styles.timeline}>
-            {simResult.scenario.events.map((ev: any, index: number) => (
-              <View key={ev.id} style={styles.eventItem}>
-                <Text style={styles.eventTime}>{ev.relative_time}</Text>
-                <Text style={styles.eventTitle}>{ev.title}</Text>
-                <Text style={styles.eventDesc}>{ev.description}</Text>
-                {index < simResult.scenario.events.length - 1 && <Text style={styles.arrow}>↓</Text>}
+        <ScrollView
+          style={styles.content}
+          contentContainerStyle={{ paddingBottom: 32 }}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* PRIMARY TRAJECTORY CARD */}
+          <View style={styles.scenarioCard}>
+            <View style={styles.cardBadgeRow}>
+              <Text style={styles.cardBadgeTitle}>CURRENT TRAJECTORY</Text>
+              <View style={styles.confBadge}>
+                <Text style={styles.confBadgeText}>
+                  CONFIDENCE: {simResult.scenario.confidence || 'HIGH'}
+                </Text>
               </View>
-            ))}
+            </View>
+
+            <Text style={styles.scenarioSummary}>
+              {simResult.scenario.summary}
+            </Text>
+
+            {/* TIMELINE EVENTS */}
+            <View style={styles.timeline}>
+              {simResult.scenario.events?.map((ev: any, index: number) => (
+                <View key={ev.id || index} style={styles.eventItem}>
+                  <View style={styles.timeTag}>
+                    <Text style={styles.timeTagText}>{ev.relative_time}</Text>
+                  </View>
+                  <Text style={styles.eventTitle}>{ev.title}</Text>
+                  <Text style={styles.eventDesc}>{ev.description}</Text>
+                  {index < simResult.scenario.events.length - 1 && (
+                    <View style={styles.timelineConnector} />
+                  )}
+                </View>
+              ))}
+            </View>
           </View>
 
-          <Text style={styles.resultText}>Result: {simResult.scenario.summary}</Text>
-          <Text style={styles.metaText}>Likelihood: {simResult.scenario.confidence}</Text>
-          <Text style={styles.metaText}>A possible future — not a prediction of certainty.</Text>
-
+          {/* COUNTERFACTUAL ALTERNATIVE SCENARIO */}
           {simResult.alternative && (
-            <View style={styles.altSection}>
-              <Text style={styles.altTitle}>ONE CHANGE</Text>
-              <Text style={styles.altSubtitle}>There is another possible path.</Text>
-              
-              <Text style={styles.altAction}>{simResult.alternative.action}</Text>
-              
-              <Text style={styles.altLabel}>ALTERNATIVE TRAJECTORY</Text>
-              <Text style={styles.altEffect}>↓ {simResult.alternative.expected_effect}</Text>
+            <View style={styles.altCard}>
+              <View style={styles.cardBadgeRow}>
+                <Text style={[styles.cardBadgeTitle, { color: colors.violetLight }]}>
+                  RECOMMENDED INTERVENTION PATH
+                </Text>
+              </View>
+
+              <Text style={styles.altAction}>
+                {simResult.alternative.action}
+              </Text>
+
+              <View style={styles.altEffectBox}>
+                <Text style={styles.altEffectLabel}>PROJECTED OUTCOME SHIFT</Text>
+                <Text style={styles.altEffectText}>
+                  {simResult.alternative.expected_effect}
+                </Text>
+              </View>
             </View>
           )}
         </ScrollView>
       ) : (
-        <Text>Failed to load simulation.</Text>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Simulation unavailable. Please sync tasks first.</Text>
+        </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  header: { flexDirection: 'row', justifyContent: 'space-between', padding: 20, paddingTop: 50, backgroundColor: '#f0f0f0' },
-  headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#9C27B0' },
-  horizonSelector: { flexDirection: 'row', justifyContent: 'space-around', padding: 10, backgroundColor: '#eee' },
-  content: { padding: 20 },
-  trajectoryTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 5 },
-  subtitle: { fontSize: 14, color: '#666', marginBottom: 20 },
-  timeline: { borderLeftWidth: 2, borderColor: '#ddd', paddingLeft: 15, marginLeft: 10, marginBottom: 20 },
-  eventItem: { marginBottom: 15 },
-  eventTime: { fontSize: 12, color: '#888', fontWeight: 'bold' },
-  eventTitle: { fontSize: 16, fontWeight: 'bold', color: '#333' },
-  eventDesc: { fontSize: 14, color: '#555' },
-  arrow: { fontSize: 20, color: '#aaa', marginTop: 10, textAlign: 'center' },
-  resultText: { fontSize: 16, fontWeight: 'bold', color: '#FF3B30', marginTop: 10 },
-  metaText: { fontSize: 12, color: '#888', marginTop: 5, fontStyle: 'italic' },
-  altSection: { marginTop: 30, padding: 20, backgroundColor: '#f9f9f9', borderRadius: 10, borderWidth: 1, borderColor: '#eee' },
-  altTitle: { fontSize: 16, fontWeight: 'bold', color: '#00C853' },
-  altSubtitle: { fontSize: 14, color: '#666', marginBottom: 15 },
-  altAction: { fontSize: 16, fontWeight: 'bold', color: '#333', marginBottom: 20 },
-  altLabel: { fontSize: 14, fontWeight: 'bold', color: '#888', marginBottom: 10 },
-  altEffect: { fontSize: 15, color: '#00C853', fontWeight: 'bold' }
+  container: {
+    flex: 1,
+    backgroundColor: colors.bgPrimary
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 14,
+    paddingBottom: 14,
+    backgroundColor: colors.bgSecondary,
+    borderBottomWidth: 1,
+    borderColor: colors.border
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    fontFamily: 'monospace',
+    color: colors.cyan,
+    letterSpacing: 1.5
+  },
+  headerSubtitle: {
+    fontSize: 11,
+    color: colors.textMuted,
+    marginTop: 2
+  },
+  closeBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: colors.border
+  },
+  closeBtnText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.textSecondary
+  },
+  horizonSelector: {
+    flexDirection: 'row',
+    padding: 12,
+    gap: 8,
+    backgroundColor: colors.bgSecondary,
+    borderBottomWidth: 1,
+    borderColor: colors.border
+  },
+  horizonBtn: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 8,
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: colors.border
+  },
+  horizonBtnActive: {
+    backgroundColor: 'rgba(34, 211, 238, 0.12)',
+    borderColor: 'rgba(34, 211, 238, 0.35)'
+  },
+  horizonText: {
+    fontSize: 11,
+    fontFamily: 'monospace',
+    fontWeight: '700',
+    color: colors.textMuted
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 30
+  },
+  loadingText: {
+    fontSize: 12,
+    color: colors.textMuted,
+    marginTop: 12,
+    fontFamily: 'monospace'
+  },
+  content: {
+    flex: 1,
+    padding: 16
+  },
+  scenarioCard: {
+    backgroundColor: colors.bgSurface,
+    borderRadius: 14,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(34, 211, 238, 0.3)',
+    marginBottom: 16
+  },
+  cardBadgeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8
+  },
+  cardBadgeTitle: {
+    fontSize: 11,
+    fontFamily: 'monospace',
+    fontWeight: '700',
+    color: colors.cyan,
+    letterSpacing: 1
+  },
+  confBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    backgroundColor: 'rgba(34, 211, 238, 0.12)'
+  },
+  confBadgeText: {
+    fontSize: 9,
+    fontFamily: 'monospace',
+    fontWeight: '700',
+    color: colors.cyan
+  },
+  scenarioSummary: {
+    fontSize: 13,
+    color: colors.textPrimary,
+    lineHeight: 19,
+    marginBottom: 16
+  },
+  timeline: {
+    paddingLeft: 6
+  },
+  eventItem: {
+    marginBottom: 14,
+    position: 'relative'
+  },
+  timeTag: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginBottom: 4
+  },
+  timeTagText: {
+    fontSize: 9,
+    fontFamily: 'monospace',
+    color: colors.textMuted
+  },
+  eventTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    marginBottom: 2
+  },
+  eventDesc: {
+    fontSize: 11,
+    color: colors.textSecondary,
+    lineHeight: 16
+  },
+  timelineConnector: {
+    width: 2,
+    height: 12,
+    backgroundColor: 'rgba(34, 211, 238, 0.3)',
+    marginVertical: 4,
+    marginLeft: 6
+  },
+  altCard: {
+    backgroundColor: colors.bgSurface,
+    borderRadius: 14,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.35)'
+  },
+  altAction: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.textPrimary,
+    marginVertical: 8,
+    lineHeight: 18
+  },
+  altEffectBox: {
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.25)',
+    marginTop: 6
+  },
+  altEffectLabel: {
+    fontSize: 9,
+    fontFamily: 'monospace',
+    fontWeight: '700',
+    color: colors.violetLight,
+    letterSpacing: 1,
+    marginBottom: 2
+  },
+  altEffectText: {
+    fontSize: 11,
+    color: colors.textSecondary,
+    lineHeight: 16
+  }
 });

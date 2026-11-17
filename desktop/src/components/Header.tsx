@@ -1,7 +1,6 @@
 import React from 'react';
-import { RefreshCw, Eye, EyeOff } from 'lucide-react';
+import { RefreshCw, ExternalLink, Activity, Wifi } from 'lucide-react';
 import { useMascot } from '../contexts/MascotContext';
-import { getMascotDetails } from './Mascot';
 
 interface HeaderProps {
   title: string;
@@ -16,91 +15,95 @@ export const Header: React.FC<HeaderProps> = ({
   isSyncing = false,
   onRefresh
 }) => {
-  const { state: mascotState, floatingVisible, setFloatingVisible } = useMascot();
-  const mascotDetails = getMascotDetails(mascotState);
+  const { setFloatingVisible, state: mascotState } = useMascot();
 
   return (
     <header
-      className="flex items-center justify-between border-b px-6 py-4"
+      className="flex items-center justify-between px-6 select-none relative z-10"
       style={{
-        backgroundColor: 'var(--bg-primary)',
-        borderColor: 'var(--border)',
-        minHeight: '64px'
+        height: '68px',
+        backgroundColor: 'var(--bg-secondary)',
+        borderBottom: '1px solid var(--border)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)'
       }}
     >
       <div>
-        <h1 className="text-xl font-bold" style={{ margin: 0, color: 'var(--text-primary)' }}>
-          {title}
-        </h1>
+        <div className="flex items-center gap-2.5">
+          <h1 className="text-lg font-bold text-primary tracking-wide m-0">
+            {title}
+          </h1>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider bg-[rgba(139,92,246,0.12)] text-[#A78BFA] border border-[rgba(139,92,246,0.25)]">
+            AI CORE
+          </span>
+        </div>
         {subtitle && (
-          <p className="text-xs" style={{ margin: '0.2rem 0 0', color: 'var(--text-muted)' }}>
+          <p className="text-xs text-muted mt-0.5 m-0 font-medium">
             {subtitle}
           </p>
         )}
       </div>
 
       <div className="flex items-center gap-3">
-        {/* Mascot state indicator pill */}
-        <div
-          className="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium"
-          style={{
-            backgroundColor: `${mascotDetails.color}18`,
-            border: `1px solid ${mascotDetails.color}35`,
-            color: mascotDetails.color
-          }}
-        >
-          <span className="font-mono font-bold">{mascotDetails.face}</span>
-          <span>{mascotDetails.label}</span>
+        {/* Real-time System Sync Badge */}
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)]">
+          <span
+            className="w-2 h-2 rounded-full"
+            style={{
+              backgroundColor: isSyncing ? '#22D3EE' : '#34D399',
+              boxShadow: isSyncing
+                ? '0 0 8px #22D3EE'
+                : '0 0 8px #34D399',
+              animation: isSyncing ? 'pulse 1s infinite' : 'none'
+            }}
+          />
+          <span className="font-mono text-[11px] text-secondary tracking-wider">
+            {isSyncing ? 'SYNCING...' : 'LIVE'}
+          </span>
         </div>
 
-        {/* Floating Mascot Toggle */}
-        <button
-          onClick={() => setFloatingVisible(!floatingVisible)}
-          className="btn-secondary"
-          style={{ fontSize: '0.8rem', padding: '0.4rem 0.75rem' }}
-          title={floatingVisible ? 'Hide floating mascot' : 'Show floating mascot'}
-        >
-          {floatingVisible ? (
-            <>
-              <EyeOff style={{ width: '0.9rem', height: '0.9rem' }} />
-              <span>Hide Mascot</span>
-            </>
-          ) : (
-            <>
-              <Eye style={{ width: '0.9rem', height: '0.9rem' }} />
-              <span>Show Mascot</span>
-            </>
-          )}
-        </button>
+        {/* Mascot Presence State Indicator */}
+        <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[rgba(139,92,246,0.08)] border border-[rgba(139,92,246,0.25)]">
+          <Activity style={{ width: '0.85rem', height: '0.85rem', color: '#A78BFA' }} />
+          <span className="font-mono text-[11px] font-semibold text-[#A78BFA] tracking-wider uppercase">
+            {mascotState}
+          </span>
+        </div>
 
-        {/* Global Refresh Button */}
+        {/* Manual Refresh Telemetry Button */}
         {onRefresh && (
           <button
             onClick={onRefresh}
             disabled={isSyncing}
-            className="btn-secondary"
-            style={{ fontSize: '0.8rem', padding: '0.4rem 0.75rem' }}
-            title="Refresh cross-device data"
+            className="p-2 rounded-lg text-muted hover:text-primary transition-all duration-200 hover:bg-[rgba(255,255,255,0.05)] cursor-pointer"
+            style={{ background: 'none', border: '1px solid var(--border)' }}
+            title="Refresh System Data"
           >
             <RefreshCw
               style={{
-                width: '0.9rem',
-                height: '0.9rem',
+                width: '0.95rem',
+                height: '0.95rem',
                 animation: isSyncing ? 'spin 1s linear infinite' : 'none'
               }}
             />
-            <span>{isSyncing ? 'Syncing...' : 'Sync'}</span>
           </button>
         )}
-      </div>
 
-      <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
+        {/* Floating Mascot Launcher */}
+        <button
+          onClick={() => setFloatingVisible(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all duration-200"
+          style={{
+            backgroundColor: 'rgba(34, 211, 238, 0.1)',
+            color: '#22D3EE',
+            border: '1px solid rgba(34, 211, 238, 0.35)'
+          }}
+          title="Launch Floating Holographic Companion"
+        >
+          <ExternalLink style={{ width: '0.85rem', height: '0.85rem' }} />
+          <span>Hologram</span>
+        </button>
+      </div>
     </header>
   );
 };
-
