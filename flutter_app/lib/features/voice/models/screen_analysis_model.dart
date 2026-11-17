@@ -40,3 +40,4 @@ class ScreenAnalysisModel {
 
   String get resolutionDisplay => width > 0 && height > 0 ? '${width}x$height px' : 'Screen Capture';
 }
+

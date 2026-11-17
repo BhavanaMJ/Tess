@@ -72,3 +72,4 @@ class DeviceNotificationService {
     _permissionStatus = 'notDetermined';
   }
 }
+

@@ -102,3 +102,4 @@
   - FastAPI server running at `http://0.0.0.0:8000` with active endpoints `/api/v1/voice/transcribe`, `/synthesize`, `/interact`, `/devices/register`, `/devices`, and `/api/v1/screen/analyze`.
 - **Physical Device Limitations**:
   - Push notifications via Firebase Cloud Messaging (FCM) or Apple Push Notification service (APNs) require physical device credentials and a Google Play Services environment. Device registration with the TESS backend is fully implemented and tested.
+

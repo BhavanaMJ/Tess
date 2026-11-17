@@ -106,3 +106,4 @@ class AudioPlaybackService {
     _stateController.close();
   }
 }
+

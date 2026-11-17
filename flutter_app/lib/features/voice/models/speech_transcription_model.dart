@@ -38,3 +38,4 @@ class SpeechTranscriptionModel {
 
   bool get isEmpty => effectiveText.isEmpty;
 }
+

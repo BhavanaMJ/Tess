@@ -155,3 +155,4 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton>
     );
   }
 }
+

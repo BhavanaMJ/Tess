@@ -175,3 +175,4 @@ class _TranscriptReviewCardState extends State<TranscriptReviewCard> {
     );
   }
 }
+

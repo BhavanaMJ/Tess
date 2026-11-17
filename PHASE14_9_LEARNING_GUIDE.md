@@ -124,3 +124,4 @@ To prevent audio hardware locks and battery drain:
 - `WidgetsBindingObserver` listens for `AppLifecycleState.paused` and `AppLifecycleState.inactive`.
 - Recording timers and playback tickers are automatically paused or cancelled when the app moves to the background.
 - On user logout or session termination, cached device tokens and audio buffers are purged.
+

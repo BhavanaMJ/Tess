@@ -43,3 +43,4 @@ class VoiceInteractionModel {
 
   bool get hasAudio => audioBase64.isNotEmpty;
 }
+

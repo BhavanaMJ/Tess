@@ -43,3 +43,4 @@ class DeviceRegistrationModel {
 
   bool get isNotificationsEnabled => notificationPermission == 'granted';
 }
+

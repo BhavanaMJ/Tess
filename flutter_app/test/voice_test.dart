@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:tess/core/network/api_client.dart';
-import 'package:tess/features/chat/models/conversation_model.dart';
 import 'package:tess/features/chat/services/chat_service.dart';
 import 'package:tess/features/voice/controllers/voice_conversation_controller.dart';
 import 'package:tess/features/voice/models/audio_playback_state.dart';
