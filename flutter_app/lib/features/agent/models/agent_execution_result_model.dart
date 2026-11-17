@@ -29,3 +29,4 @@ class AgentExecutionResultModel {
 
   bool get isSuccess => status == 'success' && error == null;
 }
+

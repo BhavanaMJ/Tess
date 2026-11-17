@@ -302,4 +302,105 @@ class ApiClient {
       return false;
     }
   }
+
+  /// POST Multipart (File Upload for STT Audio and Screen Captures)
+  Future<dynamic> postMultipart(
+    String endpoint, {
+    required List<int> fileBytes,
+    required String filename,
+    required String fieldName,
+    Map<String, String>? fields,
+    Map<String, String>? headers,
+    bool requiresAuth = true,
+  }) async {
+    final uri = Uri.parse('${config.apiBaseUrl}$endpoint');
+    final request = http.MultipartRequest('POST', uri);
+
+    if (requiresAuth) {
+      final token = await _authService.getAccessToken();
+      if (token != null && token.isNotEmpty) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+    }
+    if (headers != null) {
+      request.headers.addAll(headers);
+    }
+    if (fields != null) {
+      request.fields.addAll(fields);
+    }
+
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        fieldName,
+        fileBytes,
+        filename: filename,
+      ),
+    );
+
+    try {
+      final streamedResponse = await _httpClient.send(request).timeout(config.timeout);
+      final response = await http.Response.fromStream(streamedResponse);
+      _log('POST (Multipart)', uri, statusCode: response.statusCode);
+      return _handleResponse(response);
+    } on SocketException catch (e) {
+      _log('POST (Multipart)', uri, error: 'SocketException: ${e.message}');
+      throw ApiException(
+        statusCode: 503,
+        message: 'Unable to reach TESS backend server at ${config.apiBaseUrl}.',
+      );
+    } on TimeoutException {
+      _log('POST (Multipart)', uri, error: 'Timeout after ${config.timeout.inSeconds}s');
+      throw ApiException(
+        statusCode: 408,
+        message: 'Request timed out after ${config.timeout.inSeconds} seconds.',
+      );
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      _log('POST (Multipart)', uri, error: e.toString());
+      throw ApiException(statusCode: 500, message: e.toString());
+    }
+  }
+
+  /// POST Request returning raw bytes (e.g. for TTS audio/wav responses)
+  Future<Uint8List> postForBytes(
+    String endpoint, {
+    dynamic body,
+    Map<String, String>? headers,
+    bool requiresAuth = true,
+  }) async {
+    final uri = Uri.parse('${config.apiBaseUrl}$endpoint');
+    try {
+      final requestHeaders = await _buildHeaders(
+        extraHeaders: headers,
+        requiresAuth: requiresAuth,
+      );
+      final encodedBody = body != null ? jsonEncode(body) : null;
+      final response = await _httpClient
+          .post(uri, headers: requestHeaders, body: encodedBody)
+          .timeout(config.timeout);
+
+      _log('POST (Bytes)', uri, statusCode: response.statusCode);
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return response.bodyBytes;
+      }
+      _handleResponse(response);
+      return Uint8List(0);
+    } on SocketException catch (e) {
+      _log('POST (Bytes)', uri, error: 'SocketException: ${e.message}');
+      throw ApiException(
+        statusCode: 503,
+        message: 'Unable to reach TESS backend server at ${config.apiBaseUrl}.',
+      );
+    } on TimeoutException {
+      _log('POST (Bytes)', uri, error: 'Timeout after ${config.timeout.inSeconds}s');
+      throw ApiException(
+        statusCode: 408,
+        message: 'Request timed out after ${config.timeout.inSeconds} seconds.',
+      );
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      _log('POST (Bytes)', uri, error: e.toString());
+      throw ApiException(statusCode: 500, message: e.toString());
+    }
+  }
 }

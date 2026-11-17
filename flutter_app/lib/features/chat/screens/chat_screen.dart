@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../home/widgets/mascot_widget.dart';
 import '../../memory/screens/memory_screen.dart';
+import '../../voice/screens/voice_screen.dart';
 import '../models/chat_message_model.dart';
 import '../models/conversation_model.dart';
 import '../services/chat_service.dart';
@@ -307,6 +308,16 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.mic_rounded, color: AppColors.cyan),
+            tooltip: 'Voice Interaction Core',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const VoiceScreen()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.psychology_outlined, color: AppColors.cyan),
             tooltip: 'Personal Memory Bank',

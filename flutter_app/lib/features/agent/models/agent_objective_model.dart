@@ -27,3 +27,4 @@ class AgentObjectiveModel {
     'Send email to team@project.org',
   ];
 }
+

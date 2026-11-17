@@ -69,3 +69,4 @@ class ActionConfirmationModel {
     return summary;
   }
 }
+
