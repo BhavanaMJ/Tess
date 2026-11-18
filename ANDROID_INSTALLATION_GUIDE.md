@@ -137,3 +137,4 @@ Once the app is launched on Android:
 3. **Notification Permission**: Tap Register Device -> allow Android 13+ notification prompt.
 4. **Dashboard**: Verify OpenProject metrics and Future Predictions load from FastAPI (`10.0.2.2:8000` or LAN IP).
 5. **Agent Workflow**: Create an objective, approve a step requiring confirmation, and observe the live execution update.
+

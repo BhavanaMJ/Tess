@@ -140,3 +140,4 @@ To ensure zero regressions across platforms:
 3. **Service Integration Tests**: Use `MockClient` to simulate FastAPI response schemas, status codes, and error conditions.
 4. **Static Analysis**: Enforce strict Dart linting rules (`flutter analyze`) with zero allowable warnings or errors.
 5. **Web Build Validation**: Run `flutter build web` to ensure clean tree-shaking and platform-agnostic imports.
+

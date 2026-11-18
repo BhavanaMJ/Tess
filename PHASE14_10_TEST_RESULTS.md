@@ -160,3 +160,4 @@ Compiling lib/main.dart for the Web...                             24.8s
 [✓] Network resources
     • All expected network resources are available.
 ```
+
