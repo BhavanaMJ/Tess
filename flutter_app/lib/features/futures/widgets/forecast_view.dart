@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../models/forecast_model.dart';
 import '../services/future_service.dart';
 
@@ -53,25 +55,30 @@ class _ForecastViewState extends State<ForecastView> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textMuted = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+    final chipBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Horizon Selector Bar
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 8.0),
           child: Row(
             children: [
-              const Text(
+              Text(
                 'FORECAST HORIZON:',
                 style: TextStyle(
-                  fontFamily: 'monospace',
                   fontSize: 11.0,
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 1.0,
-                  color: AppColors.textMuted,
+                  letterSpacing: 0.8,
+                  color: textMuted,
                 ),
               ),
-              const SizedBox(width: 12.0),
+              const SizedBox(width: AppSpacing.md),
               ..._horizons.map((h) {
                 final isSelected = _selectedHorizon == h;
                 return Padding(
@@ -86,17 +93,18 @@ class _ForecastViewState extends State<ForecastView> {
                       }
                     },
                     labelStyle: TextStyle(
-                      fontFamily: 'monospace',
                       fontSize: 11.0,
-                      fontWeight: FontWeight.bold,
-                      color: isSelected ? Colors.white : AppColors.textSecondary,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                      color: isSelected
+                          ? Colors.white
+                          : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
                     ),
-                    selectedColor: AppColors.violet,
-                    backgroundColor: AppColors.bgSurface,
+                    selectedColor: AppColors.tessTeal,
+                    backgroundColor: chipBg,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                      borderRadius: AppRadius.pill,
                       side: BorderSide(
-                        color: isSelected ? AppColors.violet : AppColors.border,
+                        color: isSelected ? AppColors.tessTeal : borderColor,
                       ),
                     ),
                   ),
@@ -110,32 +118,44 @@ class _ForecastViewState extends State<ForecastView> {
           const Padding(
             padding: EdgeInsets.all(48.0),
             child: Center(
-              child: CircularProgressIndicator(color: AppColors.cyan),
+              child: CircularProgressIndicator(color: AppColors.tessTeal),
             ),
           )
         else if (_errorMessage != null)
-          _buildErrorCard()
+          _buildErrorCard(isDark)
         else if (_forecast != null)
-          _buildForecastContent(_forecast!),
+          _buildForecastContent(_forecast!, isDark),
       ],
     );
   }
 
-  Widget _buildForecastContent(LongTermForecastModel forecast) {
-    final burnoutColor = forecast.isHighBurnoutRisk ? AppColors.danger : AppColors.success;
+  Widget _buildForecastContent(LongTermForecastModel forecast, bool isDark) {
+    final burnoutColor = forecast.isHighBurnoutRisk ? AppColors.accentDanger : AppColors.accentSuccess;
+    final cardBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textMuted = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Metrics Matrix
           Container(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
-              color: AppColors.bgSurface,
-              borderRadius: BorderRadius.circular(12.0),
-              border: Border.all(color: AppColors.border),
+              color: cardBg,
+              borderRadius: AppRadius.card,
+              border: Border.all(color: borderColor),
+              boxShadow: [
+                BoxShadow(
+                  color: isDark ? Colors.black.withOpacity(0.2) : Colors.black.withOpacity(0.03),
+                  blurRadius: 8.0,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Column(
               children: [
@@ -145,44 +165,46 @@ class _ForecastViewState extends State<ForecastView> {
                     _buildMetricTile(
                       'PROJECTED BACKLOG',
                       '${forecast.projectedBacklog} items',
-                      AppColors.cyan,
+                      AppColors.tessTeal,
+                      textMuted,
                     ),
-                    Container(width: 1.0, height: 36.0, color: AppColors.border),
+                    Container(width: 1.0, height: 36.0, color: borderColor),
                     _buildMetricTile(
                       'COMPLETION FORECAST',
                       '${forecast.completionForecast} items',
-                      AppColors.violetLight,
+                      AppColors.vibrantMint,
+                      textMuted,
                     ),
-                    Container(width: 1.0, height: 36.0, color: AppColors.border),
+                    Container(width: 1.0, height: 36.0, color: borderColor),
                     _buildMetricTile(
                       'BURNOUT RISK',
                       '${forecast.burnoutRiskPercentage.toInt()}%',
                       burnoutColor,
+                      textMuted,
                     ),
                   ],
                 ),
                 if (forecast.uncertaintyRange.isNotEmpty) ...[
-                  const SizedBox(height: 16.0),
-                  const Divider(color: AppColors.border, height: 1.0),
-                  const SizedBox(height: 12.0),
+                  const SizedBox(height: AppSpacing.md),
+                  Divider(color: borderColor, height: 1.0),
+                  const SizedBox(height: AppSpacing.sm),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'UNCERTAINTY RANGE:',
                         style: TextStyle(
-                          fontFamily: 'monospace',
                           fontSize: 10.0,
-                          color: AppColors.textMuted,
+                          fontWeight: FontWeight.bold,
+                          color: textMuted,
                         ),
                       ),
                       Text(
                         'Min: ${forecast.uncertaintyRange['min']?.toInt() ?? 0}  •  Max: ${forecast.uncertaintyRange['max']?.toInt() ?? 0}',
-                        style: const TextStyle(
-                          fontFamily: 'monospace',
-                          fontSize: 11.0,
-                          color: AppColors.textSecondary,
-                          fontWeight: FontWeight.bold,
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          color: textSecondary,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
@@ -191,15 +213,22 @@ class _ForecastViewState extends State<ForecastView> {
               ],
             ),
           ),
-          const SizedBox(height: 12.0),
+          const SizedBox(height: AppSpacing.md),
 
           // Explanation Card
           Container(
-            padding: const EdgeInsets.all(14.0),
+            padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
-              color: AppColors.bgSurface,
-              borderRadius: BorderRadius.circular(12.0),
-              border: Border.all(color: AppColors.border),
+              color: cardBg,
+              borderRadius: AppRadius.card,
+              border: Border.all(color: borderColor),
+              boxShadow: [
+                BoxShadow(
+                  color: isDark ? Colors.black.withOpacity(0.2) : Colors.black.withOpacity(0.03),
+                  blurRadius: 8.0,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,44 +239,42 @@ class _ForecastViewState extends State<ForecastView> {
                     const Text(
                       'EXPLAINABLE PROJECTION',
                       style: TextStyle(
-                        fontFamily: 'monospace',
-                        fontSize: 11.0,
+                        fontSize: 11.5,
                         fontWeight: FontWeight.bold,
-                        letterSpacing: 1.0,
-                        color: AppColors.cyan,
+                        letterSpacing: 0.8,
+                        color: AppColors.tessTeal,
                       ),
                     ),
                     Text(
                       'CONFIDENCE: ${forecast.confidence}',
-                      style: const TextStyle(
-                        fontFamily: 'monospace',
-                        fontSize: 10.0,
-                        color: AppColors.textMuted,
+                      style: TextStyle(
+                        fontSize: 10.5,
+                        color: textMuted,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8.0),
+                const SizedBox(height: AppSpacing.sm),
                 Text(
                   forecast.explanation.isNotEmpty
                       ? forecast.explanation
                       : 'Projections are derived from recent task velocity and historical patterns.',
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 13.0,
+                  style: TextStyle(
+                    color: textPrimary,
+                    fontSize: 13.5,
                     height: 1.4,
                   ),
                 ),
                 if (forecast.assumptions.isNotEmpty) ...[
-                  const SizedBox(height: 12.0),
-                  const Text(
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
                     'CORE ASSUMPTIONS:',
                     style: TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 10.0,
-                      color: AppColors.textMuted,
-                      letterSpacing: 1.0,
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.bold,
+                      color: textMuted,
+                      letterSpacing: 0.5,
                     ),
                   ),
                   const SizedBox(height: 4.0),
@@ -256,9 +283,9 @@ class _ForecastViewState extends State<ForecastView> {
                       padding: const EdgeInsets.only(bottom: 2.0),
                       child: Text(
                         '• $a',
-                        style: const TextStyle(
-                          color: AppColors.textMuted,
-                          fontSize: 11.5,
+                        style: TextStyle(
+                          color: textSecondary,
+                          fontSize: 12.0,
                         ),
                       ),
                     ),
@@ -272,7 +299,7 @@ class _ForecastViewState extends State<ForecastView> {
     );
   }
 
-  Widget _buildMetricTile(String label, String value, Color color) {
+  Widget _buildMetricTile(String label, String value, Color color, Color mutedColor) {
     return Column(
       children: [
         Text(
@@ -281,52 +308,53 @@ class _ForecastViewState extends State<ForecastView> {
             color: color,
             fontSize: 16.0,
             fontWeight: FontWeight.bold,
-            fontFamily: 'monospace',
           ),
         ),
         const SizedBox(height: 4.0),
         Text(
           label,
-          style: const TextStyle(
-            color: AppColors.textMuted,
+          style: TextStyle(
+            color: mutedColor,
             fontSize: 9.0,
-            fontFamily: 'monospace',
-            letterSpacing: 0.8,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildErrorCard() {
+  Widget _buildErrorCard(bool isDark) {
     return Container(
-      margin: const EdgeInsets.all(16.0),
-      padding: const EdgeInsets.all(14.0),
+      margin: const EdgeInsets.all(AppSpacing.md),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.danger.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(10.0),
-        border: Border.all(color: AppColors.danger.withOpacity(0.4)),
+        color: AppColors.accentDanger.withOpacity(0.1),
+        borderRadius: AppRadius.card,
+        border: Border.all(color: AppColors.accentDanger.withOpacity(0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'Forecast Generation Anomaly',
-            style: TextStyle(color: AppColors.danger, fontWeight: FontWeight.bold),
+            style: TextStyle(color: AppColors.accentDanger, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4.0),
           Text(
             _errorMessage ?? 'Unable to compute forecast model',
-            style: const TextStyle(color: AppColors.textSecondary, fontSize: 12.0),
+            style: TextStyle(
+              color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+              fontSize: 12.5,
+            ),
           ),
           const SizedBox(height: 8.0),
           TextButton(
             onPressed: _loadForecast,
-            child: const Text('Retry Computation', style: TextStyle(color: AppColors.cyan)),
+            child: const Text('Retry Computation', style: TextStyle(color: AppColors.tessTeal)),
           ),
         ],
       ),
     );
   }
 }
-

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../models/memory_model.dart';
 import '../services/memory_service.dart';
 import '../widgets/create_memory_sheet.dart';
@@ -73,7 +75,7 @@ class _MemoryScreenState extends State<MemoryScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Memory entity purged from neural context.'),
-            backgroundColor: AppColors.violet,
+            backgroundColor: AppColors.tessTeal,
           ),
         );
       }
@@ -82,7 +84,7 @@ class _MemoryScreenState extends State<MemoryScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to delete memory: $e'),
-            backgroundColor: AppColors.danger,
+            backgroundColor: AppColors.accentDanger,
           ),
         );
       }
@@ -111,8 +113,8 @@ class _MemoryScreenState extends State<MemoryScreen> {
             });
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Personal memory successfully committed.'),
-                backgroundColor: AppColors.cyan,
+                content: Text('Personal memory successfully saved.'),
+                backgroundColor: AppColors.tessTeal,
               ),
             );
           }
@@ -134,73 +136,74 @@ class _MemoryScreenState extends State<MemoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final filtered = _filteredMemories;
 
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Column(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'PERSONAL MEMORY BANK',
+              'Memory Bank',
               style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 14.0,
+                fontSize: 16.0,
                 fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-                color: AppColors.cyan,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
               ),
             ),
             Text(
-              'Continuous Context Continuity // Active Retention',
+              'Continuous Context & Personal Preferences',
               style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 10.0,
-                color: AppColors.textMuted,
+                fontSize: 11.0,
+                color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
               ),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: AppColors.textSecondary),
+            icon: Icon(
+              Icons.refresh_rounded,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+            ),
             tooltip: 'Synchronize Memories',
             onPressed: _loadMemories,
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: AppColors.cyan,
-        foregroundColor: Colors.black,
+        backgroundColor: AppColors.tessTeal,
+        foregroundColor: Colors.white,
         icon: const Icon(Icons.add_rounded),
         label: const Text(
-          'Encode Memory',
+          'Remember This',
           style: TextStyle(
-            fontFamily: 'monospace',
             fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
           ),
         ),
         onPressed: _openCreateSheet,
       ),
       body: RefreshIndicator(
         onRefresh: _loadMemories,
-        color: AppColors.cyan,
-        backgroundColor: AppColors.bgSecondary,
+        color: AppColors.tessTeal,
         child: Column(
           children: [
             // Search Bar & Categories
-            _buildSearchAndFilters(),
+            _buildSearchAndFilters(isDark),
             // Error banner if any
             if (_errorMessage != null) _buildErrorBanner(),
             // Content List or Empty State
             Expanded(
               child: _isLoading
                   ? const Center(
-                      child: CircularProgressIndicator(color: AppColors.cyan),
+                      child: CircularProgressIndicator(color: AppColors.tessTeal),
                     )
                   : filtered.isEmpty
-                      ? _buildEmptyState()
+                      ? _buildEmptyState(isDark)
                       : ListView.builder(
                           physics: const AlwaysScrollableScrollPhysics(),
                           padding: const EdgeInsets.only(top: 8.0, bottom: 80.0),
@@ -220,35 +223,41 @@ class _MemoryScreenState extends State<MemoryScreen> {
     );
   }
 
-  Widget _buildSearchAndFilters() {
+  Widget _buildSearchAndFilters(bool isDark) {
+    final barBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final inputBg = isDark ? AppColors.darkSurfaceElevated : AppColors.lightSecondary;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textMuted = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+
     return Container(
-      color: AppColors.bgSecondary,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+      color: barBg,
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 10.0),
       child: Column(
         children: [
           // Search input
           TextField(
             onChanged: (val) => setState(() => _searchQuery = val.trim()),
-            style: const TextStyle(color: AppColors.textPrimary, fontSize: 13.5),
+            style: TextStyle(color: textPrimary, fontSize: 13.5),
             decoration: InputDecoration(
-              hintText: 'Filter neural memory entities...',
-              hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 13.0),
-              prefixIcon: const Icon(Icons.search_rounded, size: 18.0, color: AppColors.textMuted),
+              hintText: 'Search personal memories...',
+              hintStyle: TextStyle(color: textMuted, fontSize: 13.0),
+              prefixIcon: Icon(Icons.search_rounded, size: 18.0, color: textMuted),
               filled: true,
-              fillColor: AppColors.bgSurface,
+              fillColor: inputBg,
               isDense: true,
               contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: const BorderSide(color: AppColors.border),
+                borderRadius: AppRadius.pill,
+                borderSide: BorderSide(color: borderColor),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: const BorderSide(color: AppColors.border),
+                borderRadius: AppRadius.pill,
+                borderSide: BorderSide(color: borderColor),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: const BorderSide(color: AppColors.cyan),
+              focusedBorder: const OutlineInputBorder(
+                borderRadius: AppRadius.pill,
+                borderSide: BorderSide(color: AppColors.tessTeal),
               ),
             ),
           ),
@@ -265,20 +274,21 @@ class _MemoryScreenState extends State<MemoryScreen> {
                     label: Text(cat),
                     selected: isSelected,
                     onSelected: (selected) {
-                      setState(() => _selectedCategory = cat);
+                      if (selected) setState(() => _selectedCategory = cat);
                     },
                     labelStyle: TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.bold,
-                      color: isSelected ? Colors.white : AppColors.textSecondary,
+                      fontSize: 11.0,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                      color: isSelected
+                          ? Colors.white
+                          : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
                     ),
-                    selectedColor: AppColors.violet,
-                    backgroundColor: AppColors.bgSurface,
+                    selectedColor: AppColors.tessTeal,
+                    backgroundColor: inputBg,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                      borderRadius: AppRadius.pill,
                       side: BorderSide(
-                        color: isSelected ? AppColors.violet : AppColors.border,
+                        color: isSelected ? AppColors.tessTeal : borderColor,
                       ),
                     ),
                   ),
@@ -291,88 +301,89 @@ class _MemoryScreenState extends State<MemoryScreen> {
     );
   }
 
-  Widget _buildErrorBanner() {
-    return Container(
-      margin: const EdgeInsets.all(16.0),
-      padding: const EdgeInsets.all(12.0),
-      decoration: BoxDecoration(
-        color: AppColors.danger.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(10.0),
-        border: Border.all(color: AppColors.danger.withOpacity(0.5)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.error_outline_rounded, color: AppColors.danger, size: 20.0),
-          const SizedBox(width: 10.0),
-          Expanded(
-            child: Text(
-              _errorMessage ?? 'Memory synchronization failure',
-              style: const TextStyle(color: AppColors.danger, fontSize: 12.0),
+  Widget _buildEmptyState(bool isDark) {
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          children: [
+            Container(
+              width: 56.0,
+              height: 56.0,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.tessTeal.withOpacity(0.12),
+                border: Border.all(color: AppColors.tessTeal.withOpacity(0.3)),
+              ),
+              child: const Icon(
+                Icons.psychology_outlined,
+                size: 28.0,
+                color: AppColors.tessTeal,
+              ),
             ),
-          ),
-          TextButton(
-            onPressed: _loadMemories,
-            child: const Text('Retry', style: TextStyle(color: AppColors.danger)),
-          ),
-        ],
+            const SizedBox(height: 16.0),
+            Text(
+              _searchQuery.isNotEmpty ? 'No Memories Found' : 'No Personal Memories Stored',
+              style: TextStyle(
+                fontSize: 15.0,
+                fontWeight: FontWeight.bold,
+                color: textPrimary,
+              ),
+            ),
+            const SizedBox(height: 6.0),
+            Text(
+              _searchQuery.isNotEmpty
+                  ? 'No memories matched "$_searchQuery" in category $_selectedCategory.'
+                  : 'Tap "+ Remember This" to teach TESS your work habits, preferences, and personal notes.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: textSecondary, fontSize: 13.0, height: 1.4),
+            ),
+            if (_searchQuery.isEmpty) ...[
+              const SizedBox(height: 18.0),
+              OutlinedButton.icon(
+                onPressed: _openCreateSheet,
+                icon: const Icon(Icons.add, size: 16.0),
+                label: const Text('Encode First Memory'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.tessTeal,
+                  side: const BorderSide(color: AppColors.tessTeal),
+                  shape: const RoundedRectangleBorder(borderRadius: AppRadius.pill),
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildEmptyState() {
-    return Center(
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 64.0,
-              height: 64.0,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.cyan.withOpacity(0.1),
-                border: Border.all(color: AppColors.cyan.withOpacity(0.3)),
-              ),
-              child: const Icon(
-                Icons.psychology_outlined,
-                size: 32.0,
-                color: AppColors.cyan,
-              ),
+  Widget _buildErrorBanner() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 8.0),
+      padding: const EdgeInsets.all(12.0),
+      decoration: BoxDecoration(
+        color: AppColors.accentDanger.withOpacity(0.1),
+        borderRadius: AppRadius.card,
+        border: Border.all(color: AppColors.accentDanger.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.warning_amber_rounded, color: AppColors.accentDanger, size: 18.0),
+          const SizedBox(width: 8.0),
+          Expanded(
+            child: Text(
+              _errorMessage ?? 'Memory synchronization failed',
+              style: const TextStyle(color: AppColors.accentDanger, fontSize: 12.0),
             ),
-            const SizedBox(height: 16.0),
-            const Text(
-              'No Personal Memories Stored',
-              style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 14.0,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 8.0),
-            const Text(
-              'Directives and preferences communicated to TESS will appear here to provide continuous personalized intelligence.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 13.0,
-                height: 1.4,
-              ),
-            ),
-            const SizedBox(height: 20.0),
-            OutlinedButton.icon(
-              onPressed: _openCreateSheet,
-              icon: const Icon(Icons.add, size: 16.0),
-              label: const Text('Encode First Memory'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.cyan,
-                side: const BorderSide(color: AppColors.cyan),
-              ),
-            ),
-          ],
-        ),
+          ),
+          TextButton(
+            onPressed: _loadMemories,
+            child: const Text('Retry', style: TextStyle(color: AppColors.accentDanger)),
+          ),
+        ],
       ),
     );
   }

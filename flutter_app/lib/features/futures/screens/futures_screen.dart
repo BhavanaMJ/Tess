@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../home/widgets/mascot_widget.dart';
 import '../../interventions/screens/interventions_screen.dart';
 import '../models/future_prediction_model.dart';
@@ -96,37 +98,36 @@ class _FuturesScreenState extends State<FuturesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final mascotState = _resolvedMascotState;
 
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Column(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'FUTURE SIMULATION ENGINE',
               style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 14.0,
+                fontSize: 16.0,
                 fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-                color: AppColors.cyan,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
               ),
             ),
             Text(
-              'Predictive Intelligence // Probabilistic Simulator',
+              'Predictive intelligence & scenarios',
               style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 10.0,
-                color: AppColors.textMuted,
+                fontSize: 11.0,
+                color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
               ),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.bolt_rounded, color: AppColors.amber),
+            icon: const Icon(Icons.bolt_rounded, color: AppColors.accentWarning),
             tooltip: 'Proactive Interventions',
             onPressed: () {
               Navigator.of(context).push(
@@ -135,7 +136,7 @@ class _FuturesScreenState extends State<FuturesScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: AppColors.cyan),
+            icon: const Icon(Icons.refresh_rounded, color: AppColors.tessTeal),
             tooltip: 'Recalculate Projections',
             onPressed: _loadPredictions,
           ),
@@ -143,19 +144,18 @@ class _FuturesScreenState extends State<FuturesScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: _loadPredictions,
-        color: AppColors.cyan,
-        backgroundColor: AppColors.bgSecondary,
+        color: AppColors.tessTeal,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.only(bottom: 40.0),
           children: [
-            // Mascot Emotional Telemetry Card
-            _buildMascotHeader(mascotState),
-            const SizedBox(height: 12.0),
+            // Mascot Telemetry Card
+            _buildMascotHeader(mascotState, isDark),
+            const SizedBox(height: AppSpacing.sm),
 
             // Tab Bar
-            _buildTabBar(),
-            const SizedBox(height: 14.0),
+            _buildTabBar(isDark),
+            const SizedBox(height: AppSpacing.md),
 
             // Error banner if any
             if (_errorMessage != null) _buildErrorBanner(),
@@ -168,23 +168,27 @@ class _FuturesScreenState extends State<FuturesScreen> {
     );
   }
 
-  Widget _buildMascotHeader(MascotState state) {
-    Color color = AppColors.cyan;
-    if (state == MascotState.attention || state == MascotState.error) color = AppColors.danger;
-    if (state == MascotState.happy) color = AppColors.success;
-    if (state == MascotState.thinking) color = AppColors.violetLight;
+  Widget _buildMascotHeader(MascotState state, bool isDark) {
+    Color accent = AppColors.tessTeal;
+    if (state == MascotState.attention || state == MascotState.error) accent = AppColors.accentDanger;
+    if (state == MascotState.happy) accent = AppColors.accentSuccess;
+    if (state == MascotState.thinking) accent = AppColors.vibrantMint;
+
+    final cardBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      padding: const EdgeInsets.all(14.0),
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 8.0),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.bgSurface,
-        borderRadius: BorderRadius.circular(14.0),
-        border: Border.all(color: color.withOpacity(0.35), width: 1.0),
+        color: cardBg,
+        borderRadius: AppRadius.card,
+        border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.05),
-            blurRadius: 10.0,
+            color: isDark ? Colors.black.withOpacity(0.2) : Colors.black.withOpacity(0.03),
+            blurRadius: 8.0,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -192,32 +196,29 @@ class _FuturesScreenState extends State<FuturesScreen> {
         children: [
           MascotWidget(
             state: state,
-            size: 44.0,
+            size: 42.0,
           ),
-          const SizedBox(width: 14.0),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'SIMULATION ENGINE STATUS',
+                Text(
+                  'COMPANION FORECAST STATUS',
                   style: TextStyle(
-                    fontFamily: 'monospace',
                     fontSize: 10.0,
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
-                    color: AppColors.textMuted,
+                    letterSpacing: 0.8,
+                    color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
                   ),
                 ),
                 const SizedBox(height: 3.0),
                 Text(
                   _mascotStatusText,
                   style: TextStyle(
-                    color: color,
-                    fontFamily: 'monospace',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 11.5,
-                    letterSpacing: 0.8,
+                    color: accent,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13.0,
                   ),
                 ),
               ],
@@ -228,10 +229,13 @@ class _FuturesScreenState extends State<FuturesScreen> {
     );
   }
 
-  Widget _buildTabBar() {
+  Widget _buildTabBar(bool isDark) {
+    final chipBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: Row(
         children: _tabs.asMap().entries.map((entry) {
           final idx = entry.key;
@@ -247,17 +251,18 @@ class _FuturesScreenState extends State<FuturesScreen> {
                 if (selected) setState(() => _selectedTab = idx);
               },
               labelStyle: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 10.5,
-                fontWeight: FontWeight.bold,
-                color: isSelected ? Colors.white : AppColors.textSecondary,
+                fontSize: 12.0,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: isSelected
+                    ? Colors.white
+                    : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
               ),
-              selectedColor: AppColors.violet,
-              backgroundColor: AppColors.bgSurface,
+              selectedColor: AppColors.tessTeal,
+              backgroundColor: chipBg,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: AppRadius.pill,
                 side: BorderSide(
-                  color: isSelected ? AppColors.violet : AppColors.border,
+                  color: isSelected ? AppColors.tessTeal : borderColor,
                 ),
               ),
             ),
@@ -287,33 +292,36 @@ class _FuturesScreenState extends State<FuturesScreen> {
       return const Padding(
         padding: EdgeInsets.all(48.0),
         child: Center(
-          child: CircularProgressIndicator(color: AppColors.cyan),
+          child: CircularProgressIndicator(color: AppColors.tessTeal),
         ),
       );
     }
 
     if (_predictions.isEmpty) {
-      return const Center(
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(32.0),
+          padding: const EdgeInsets.all(32.0),
           child: Column(
             children: [
-              Icon(Icons.shield_outlined, color: AppColors.cyan, size: 40.0),
-              SizedBox(height: 12.0),
+              const Icon(Icons.shield_outlined, color: AppColors.tessTeal, size: 40.0),
+              const SizedBox(height: 12.0),
               Text(
                 'Trajectories Nominal',
                 style: TextStyle(
-                  fontFamily: 'monospace',
-                  fontSize: 14.0,
+                  fontSize: 15.0,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
                 ),
               ),
-              SizedBox(height: 6.0),
+              const SizedBox(height: 6.0),
               Text(
                 'No critical future risks or anomalies currently projected across your work packages.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 12.5),
+                style: TextStyle(
+                  color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                  fontSize: 13.0,
+                ),
               ),
             ],
           ),
@@ -328,26 +336,26 @@ class _FuturesScreenState extends State<FuturesScreen> {
 
   Widget _buildErrorBanner() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 8.0),
       padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
-        color: AppColors.danger.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(color: AppColors.danger.withOpacity(0.4)),
+        color: AppColors.accentDanger.withOpacity(0.1),
+        borderRadius: AppRadius.sm,
+        border: Border.all(color: AppColors.accentDanger.withOpacity(0.3)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.warning_amber_rounded, color: AppColors.danger, size: 18.0),
+          const Icon(Icons.warning_amber_rounded, color: AppColors.accentDanger, size: 18.0),
           const SizedBox(width: 8.0),
           Expanded(
             child: Text(
               _errorMessage ?? 'Prediction calculation error',
-              style: const TextStyle(color: AppColors.danger, fontSize: 11.5),
+              style: const TextStyle(color: AppColors.accentDanger, fontSize: 12.0),
             ),
           ),
           TextButton(
             onPressed: _loadPredictions,
-            child: const Text('Retry', style: TextStyle(color: AppColors.danger)),
+            child: const Text('Retry', style: TextStyle(color: AppColors.accentDanger)),
           ),
         ],
       ),

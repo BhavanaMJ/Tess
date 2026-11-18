@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_shadows.dart';
 
-/// Reusable futuristic spatial card container
+/// Centralized TESS Card Container.
+/// Supports Light and Dark theme adaptation, subtle border elevation, and optional tap feedback.
 class TessCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
@@ -9,6 +11,8 @@ class TessCard extends StatelessWidget {
   final Color? backgroundColor;
   final Gradient? gradient;
   final VoidCallback? onTap;
+  final double borderRadius;
+  final bool elevated;
 
   const TessCard({
     super.key,
@@ -18,30 +22,38 @@ class TessCard extends StatelessWidget {
     this.backgroundColor,
     this.gradient,
     this.onTap,
+    this.borderRadius = 16.0,
+    this.elevated = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final border = Border.all(
-      color: borderColor ?? AppColors.border,
-      width: 1.0,
-    );
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final defaultBorder = isDark ? AppColors.darkBorder : AppColors.lightBorder;
 
     final boxDecoration = BoxDecoration(
-      color: gradient == null ? (backgroundColor ?? AppColors.bgSurface) : null,
+      color: gradient == null ? (backgroundColor ?? defaultBg) : null,
       gradient: gradient,
-      borderRadius: BorderRadius.circular(14.0),
-      border: border,
+      borderRadius: BorderRadius.circular(borderRadius),
+      border: Border.all(
+        color: borderColor ?? defaultBorder,
+        width: 1.0,
+      ),
+      boxShadow: elevated ? AppShadows.elevated(context) : AppShadows.card(context),
     );
 
     if (onTap != null) {
-      return InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14.0),
-        child: Container(
-          padding: padding,
-          decoration: boxDecoration,
-          child: child,
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: Container(
+            padding: padding,
+            decoration: boxDecoration,
+            child: child,
+          ),
         ),
       );
     }
@@ -53,4 +65,3 @@ class TessCard extends StatelessWidget {
     );
   }
 }
-

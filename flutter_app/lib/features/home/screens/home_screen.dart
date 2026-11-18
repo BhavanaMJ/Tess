@@ -88,6 +88,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -95,26 +97,24 @@ class _HomeScreenState extends State<HomeScreen> {
             const Text(
               'TESS',
               style: TextStyle(
-                fontFamily: 'monospace',
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2.0,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
               ),
             ),
             const SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: AppColors.cyan.withValues(alpha: 0.12),
+                color: AppColors.vibrantMint.withValues(alpha: isDark ? 0.20 : 0.12),
                 borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: AppColors.cyan.withValues(alpha: 0.3)),
               ),
               child: const Text(
                 'FLUTTER OS',
                 style: TextStyle(
                   fontSize: 9,
-                  fontFamily: 'monospace',
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.cyan,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.6,
+                  color: AppColors.tessTeal,
                 ),
               ),
             ),
@@ -122,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.psychology_rounded, color: AppColors.cyan, size: 22),
+            icon: const Icon(Icons.psychology_rounded, color: AppColors.tessTeal, size: 22),
             tooltip: 'Agent Action Core',
             onPressed: () {
               Navigator.push(
@@ -132,15 +132,19 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.refresh, color: AppColors.cyan, size: 20),
-            tooltip: 'Refresh Telemetry',
+            icon: Icon(
+              Icons.refresh_rounded,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+              size: 20,
+            ),
+            tooltip: 'Refresh Intelligence',
             onPressed: _loadDashboardData,
           ),
         ],
       ),
       body: RefreshIndicator(
-        color: AppColors.violet,
-        backgroundColor: AppColors.bgSurface,
+        color: AppColors.vibrantMint,
+        backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
         onRefresh: _loadDashboardData,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),

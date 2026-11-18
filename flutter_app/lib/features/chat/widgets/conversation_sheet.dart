@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../models/conversation_model.dart';
 
-/// Modal Bottom Sheet allowing the commander to view, switch, or spawn new conversation threads.
+/// Modal Bottom Sheet allowing the user to view, switch, or start new conversation threads.
 class ConversationSheet extends StatelessWidget {
   final List<ConversationModel> conversations;
   final String? activeConversationId;
@@ -21,15 +23,34 @@ class ConversationSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final sheetBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final handleColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.bgSecondary,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+      decoration: BoxDecoration(
+        color: sheetBg,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
         border: Border(
-          top: BorderSide(color: AppColors.violet, width: 1.5),
+          top: BorderSide(
+            color: AppColors.tessTeal.withOpacity(0.3),
+            width: 1.5,
+          ),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark ? Colors.black.withOpacity(0.5) : Colors.black.withOpacity(0.08),
+            blurRadius: 16.0,
+            offset: const Offset(0, -4),
+          ),
+        ],
       ),
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
       child: SafeArea(
         top: false,
         child: Column(
@@ -42,62 +63,77 @@ class ConversationSheet extends StatelessWidget {
                 width: 36.0,
                 height: 4.0,
                 decoration: BoxDecoration(
-                  color: AppColors.border,
-                  borderRadius: BorderRadius.circular(2.0),
+                  color: handleColor,
+                  borderRadius: AppRadius.pill,
                 ),
               ),
             ),
-            const SizedBox(height: 16.0),
+            const SizedBox(height: AppSpacing.md),
             // Header
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'TRANSMISSION THREADS',
-                    style: TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.5,
-                      color: AppColors.cyan,
-                    ),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: AppColors.tessTeal.withOpacity(0.12),
+                          borderRadius: AppRadius.sm,
+                        ),
+                        child: const Icon(
+                          Icons.forum_outlined,
+                          size: 16,
+                          color: AppColors.tessTeal,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Text(
+                        'Conversations',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                          color: textPrimary,
+                        ),
+                      ),
+                    ],
                   ),
                   TextButton.icon(
                     onPressed: () {
                       Navigator.pop(context);
                       onNewConversation();
                     },
-                    icon: const Icon(Icons.add, size: 16.0, color: AppColors.violetLight),
+                    icon: const Icon(Icons.add_rounded, size: 18.0, color: AppColors.tessTeal),
                     label: const Text(
                       'New Thread',
                       style: TextStyle(
-                        color: AppColors.violetLight,
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.bold,
+                        color: AppColors.tessTeal,
+                        fontSize: 13.0,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            const Divider(color: AppColors.border),
+            Divider(color: borderColor, height: 24),
             if (isLoading)
               const Padding(
                 padding: EdgeInsets.all(32.0),
                 child: Center(
-                  child: CircularProgressIndicator(color: AppColors.cyan),
+                  child: CircularProgressIndicator(color: AppColors.tessTeal),
                 ),
               )
             else if (conversations.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(32.0),
+              Padding(
+                padding: const EdgeInsets.all(32.0),
                 child: Center(
                   child: Text(
-                    'No active transmission threads found.\nStart a new conversation to communicate with TESS.',
+                    'No conversations yet.\nStart one to chat with TESS.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: AppColors.textMuted, fontSize: 13.0),
+                    style: TextStyle(color: textSecondary, fontSize: 13.5),
                   ),
                 ),
               )
@@ -106,8 +142,8 @@ class ConversationSheet extends StatelessWidget {
                 child: ListView.separated(
                   shrinkWrap: true,
                   itemCount: conversations.length,
-                  separatorBuilder: (_, __) => const Divider(
-                    color: AppColors.border,
+                  separatorBuilder: (_, __) => Divider(
+                    color: borderColor,
                     height: 1.0,
                     indent: 20.0,
                     endIndent: 20.0,
@@ -118,57 +154,62 @@ class ConversationSheet extends StatelessWidget {
 
                     return ListTile(
                       contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20.0,
+                        horizontal: AppSpacing.lg,
                         vertical: 4.0,
                       ),
-                      leading: Icon(
-                        isActive
-                            ? Icons.chat_bubble_rounded
-                            : Icons.chat_bubble_outline_rounded,
-                        color: isActive ? AppColors.cyan : AppColors.textMuted,
-                        size: 20.0,
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isActive
+                              ? AppColors.tessTeal.withOpacity(0.15)
+                              : Colors.transparent,
+                        ),
+                        child: Icon(
+                          isActive
+                              ? Icons.chat_bubble_rounded
+                              : Icons.chat_bubble_outline_rounded,
+                          color: isActive ? AppColors.tessTeal : textSecondary,
+                          size: 18.0,
+                        ),
                       ),
                       title: Text(
                         conv.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: isActive
-                              ? AppColors.textPrimary
-                              : AppColors.textSecondary,
-                          fontWeight:
-                              isActive ? FontWeight.bold : FontWeight.normal,
-                          fontSize: 14.0,
+                          color: isActive ? textPrimary : textSecondary,
+                          fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                          fontSize: 14.5,
                         ),
                       ),
                       subtitle: Text(
                         conv.formattedDate,
-                        style: const TextStyle(
-                          color: AppColors.textMuted,
-                          fontSize: 11.0,
-                          fontFamily: 'monospace',
+                        style: TextStyle(
+                          color: textSecondary.withOpacity(0.8),
+                          fontSize: 11.5,
                         ),
                       ),
                       trailing: isActive
                           ? Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 8.0,
-                                vertical: 2.0,
+                                vertical: 3.0,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.cyan.withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(8.0),
+                                color: AppColors.tessTeal.withOpacity(0.15),
+                                borderRadius: AppRadius.pill,
                                 border: Border.all(
-                                  color: AppColors.cyan.withOpacity(0.5),
+                                  color: AppColors.tessTeal.withOpacity(0.4),
                                 ),
                               ),
                               child: const Text(
                                 'ACTIVE',
                                 style: TextStyle(
-                                  color: AppColors.cyan,
+                                  color: AppColors.tessTeal,
                                   fontSize: 10.0,
                                   fontWeight: FontWeight.bold,
-                                  fontFamily: 'monospace',
+                                  letterSpacing: 0.5,
                                 ),
                               ),
                             )
@@ -187,4 +228,3 @@ class ConversationSheet extends StatelessWidget {
     );
   }
 }
-

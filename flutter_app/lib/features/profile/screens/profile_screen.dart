@@ -3,10 +3,16 @@ import '../../../core/auth/auth_service.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/theme_controller.dart';
+import '../../../shared/mascot/tess_mascot.dart';
+import '../../../shared/mascot/tess_mascot_state.dart';
 import '../../../shared/widgets/tess_button.dart';
 import '../../../shared/widgets/tess_card.dart';
 import '../../memory/screens/memory_screen.dart';
 
+/// Profile & Settings Screen.
+/// Provides account details, persistent Theme Selector (Light, Dark, System),
+/// Companion telemetry, and system actions.
 class ProfileScreen extends StatefulWidget {
   final AuthService? authService;
   final ApiClient? apiClient;
@@ -47,32 +53,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _confirmSignOut() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.bgSurface,
-        title: const Text(
-          'TERMINATE NEURAL SESSION',
+        backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+        title: Text(
+          'Sign Out of TESS',
           style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.2,
-            fontFamily: 'monospace',
-            color: AppColors.textPrimary,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
           ),
         ),
-        content: const Text(
-          'Are you certain you wish to sign out? Unsynchronized local cache will remain secure on this device.',
-          style: TextStyle(fontSize: 12, color: AppColors.textSecondary, height: 1.4),
+        content: Text(
+          'Are you sure you wish to end your session? Your synchronized memories and tasks will remain safely stored.',
+          style: TextStyle(
+            fontSize: 13,
+            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+            height: 1.45,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('CANCEL', style: TextStyle(color: AppColors.textMuted)),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
-          TextButton(
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.danger,
+              foregroundColor: Colors.white,
+              elevation: 0,
+            ),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('DISCONNECT', style: TextStyle(color: AppColors.danger, fontWeight: FontWeight.bold)),
+            child: const Text('Sign Out', style: TextStyle(fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -85,6 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final user = _authService.currentUser;
     final userEmail = user?.email ?? 'commander@tess.ai';
     final metadata = user?.userMetadata ?? {};
@@ -93,36 +115,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'TESS IDENTITY & SYSTEM',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.5,
-          ),
-        ),
+        title: const Text('Settings & Profile'),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // User Persona Card
+            // 1. User Identity & Companion Presence Card
             TessCard(
-              borderColor: AppColors.violet.withValues(alpha: 0.3),
               child: Row(
                 children: [
                   Container(
-                    width: 56,
-                    height: 56,
+                    width: 52,
+                    height: 52,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: const LinearGradient(
-                        colors: [AppColors.violet, AppColors.cyan],
+                        colors: [AppColors.vibrantMint, AppColors.tessTeal],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.violet.withValues(alpha: 0.4),
+                          color: AppColors.vibrantMint.withValues(alpha: 0.35),
                           blurRadius: 10,
+                          offset: const Offset(0, 3),
                         ),
                       ],
                     ),
@@ -130,25 +148,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Text(
                         userEmail.isNotEmpty ? userEmail[0].toUpperCase() : 'C',
                         style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
                           color: Colors.white,
-                          fontFamily: 'monospace',
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           callsign,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w700,
+                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -156,80 +173,102 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           userEmail,
                           style: const TextStyle(
                             fontSize: 12,
-                            color: AppColors.cyan,
-                            fontFamily: 'monospace',
+                            color: AppColors.tessTeal,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'UID: ${userId.length > 18 ? "${userId.substring(0, 18)}..." : userId}',
-                          style: const TextStyle(
+                          'ID: ${userId.length > 16 ? "${userId.substring(0, 16)}..." : userId}',
+                          style: TextStyle(
                             fontSize: 10,
-                            color: AppColors.textMuted,
+                            color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
                             fontFamily: 'monospace',
                           ),
                         ),
                       ],
                     ),
                   ),
+                  const TessMascot(
+                    state: TessMascotState.idle,
+                    size: 38.0,
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
 
-            // System Telemetry Card
-            TessCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // 2. Theme Mode Selector Card (Light, Dark, System)
+            AnimatedBuilder(
+              animation: ThemeController.instance,
+              builder: (context, _) {
+                final currentMode = ThemeController.instance.themeMode;
+
+                return TessCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'RUNTIME ENVIRONMENT',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                          color: AppColors.textPrimary,
-                          fontFamily: 'monospace',
-                        ),
-                      ),
-                      InkWell(
-                        onTap: _checkBackendConnection,
-                        child: Text(
-                          _isCheckingBackend ? 'CHECKING...' : 'PING BACKEND',
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: AppColors.cyan,
-                            fontFamily: 'monospace',
-                            fontWeight: FontWeight.bold,
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.palette_outlined,
+                            size: 18,
+                            color: AppColors.tessTeal,
                           ),
-                        ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'APPEARANCE & THEME',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.8,
+                              color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildThemeOption(
+                              context: context,
+                              label: 'Light',
+                              icon: Icons.wb_sunny_rounded,
+                              isSelected: currentMode == ThemeMode.light,
+                              onTap: () => ThemeController.instance.setThemeMode(ThemeMode.light),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _buildThemeOption(
+                              context: context,
+                              label: 'Dark',
+                              icon: Icons.nightlight_round,
+                              isSelected: currentMode == ThemeMode.dark,
+                              onTap: () => ThemeController.instance.setThemeMode(ThemeMode.dark),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _buildThemeOption(
+                              context: context,
+                              label: 'System',
+                              icon: Icons.settings_suggest_rounded,
+                              isSelected: currentMode == ThemeMode.system,
+                              onTap: () => ThemeController.instance.setThemeMode(ThemeMode.system),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  _buildSettingRow(Icons.phone_android, 'Client Platform', 'Flutter 3 (Dart 3)'),
-                  const Divider(color: AppColors.border, height: 16),
-                  _buildSettingRow(
-                    Icons.dns,
-                    'FastAPI Node',
-                    _backendOnline == null
-                        ? 'Checking...'
-                        : (_backendOnline! ? 'Online (HTTP 200)' : 'Offline / Unreachable'),
-                    statusColor: _backendOnline == true ? AppColors.success : AppColors.danger,
-                  ),
-                  const Divider(color: AppColors.border, height: 16),
-                  _buildSettingRow(Icons.lock_outline, 'Auth Provider', 'Supabase GoTrue (JWT)'),
-                  const Divider(color: AppColors.border, height: 16),
-                  _buildSettingRow(Icons.vpn_key_outlined, 'Session State', 'Active & Persisted'),
-                ],
-              ),
+                );
+              },
             ),
             const SizedBox(height: 16),
 
-            // Personal Memory Bank Tile
+            // 3. Personal Memory Bank Shortcut
             TessCard(
               onTap: () {
                 Navigator.of(context).push(
@@ -239,62 +278,200 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Row(
                 children: [
                   Container(
-                    width: 36,
-                    height: 36,
+                    width: 40,
+                    height: 40,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppColors.cyan.withOpacity(0.15),
-                      border: Border.all(color: AppColors.cyan.withOpacity(0.5)),
+                      color: AppColors.vibrantMint.withValues(alpha: isDark ? 0.20 : 0.12),
+                      border: Border.all(
+                        color: AppColors.vibrantMint.withValues(alpha: isDark ? 0.40 : 0.30),
+                      ),
                     ),
-                    child: const Icon(Icons.psychology_outlined, color: AppColors.cyan, size: 20),
+                    child: const Icon(Icons.psychology_outlined, color: AppColors.tessTeal, size: 22),
                   ),
-                  const SizedBox(width: 12),
-                  const Expanded(
+                  const SizedBox(width: 14),
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'PERSONAL MEMORY BANK',
+                          'Personal Memory Bank',
                           style: TextStyle(
-                            fontFamily: 'monospace',
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.2,
-                            color: AppColors.textPrimary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
                           ),
                         ),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         Text(
-                          'View & manage persistent context continuity',
-                          style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+                          'Browse semantic preferences & episodic continuity',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // 4. Runtime & Health Telemetry Card
+            TessCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.hub_outlined, size: 16, color: AppColors.tessTeal),
+                          const SizedBox(width: 8),
+                          Text(
+                            'SYSTEM TELEMETRY',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.8,
+                              color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                      InkWell(
+                        onTap: _checkBackendConnection,
+                        borderRadius: BorderRadius.circular(8),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          child: Text(
+                            _isCheckingBackend ? 'CHECKING...' : 'TEST NODE',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: AppColors.tessTeal,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  _buildSettingRow(
+                    context: context,
+                    icon: Icons.computer_rounded,
+                    label: 'Client Architecture',
+                    value: 'Flutter 3.50 (Dart 3)',
+                  ),
+                  const Divider(height: 16),
+                  _buildSettingRow(
+                    context: context,
+                    icon: Icons.dns_outlined,
+                    label: 'FastAPI Backend',
+                    value: _backendOnline == null
+                        ? 'Connecting...'
+                        : (_backendOnline! ? 'Healthy (HTTP 200)' : 'Unreachable'),
+                    statusColor: _backendOnline == true ? AppColors.success : AppColors.danger,
+                  ),
+                  const Divider(height: 16),
+                  _buildSettingRow(
+                    context: context,
+                    icon: Icons.shield_outlined,
+                    label: 'Identity Vault',
+                    value: 'Supabase GoTrue JWT',
+                  ),
+                  const Divider(height: 16),
+                  _buildSettingRow(
+                    context: context,
+                    icon: Icons.lock_clock_outlined,
+                    label: 'Session Persistence',
+                    value: 'Hardware Encrypted',
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
 
-            // Logout Action
+            // 5. Sign Out Button
             TessButton(
-              label: 'Terminate Session',
+              label: 'Sign Out Session',
               icon: Icons.logout_rounded,
-              variant: TessButtonVariant.cyan,
+              variant: TessButtonVariant.destructive,
               onPressed: _confirmSignOut,
             ),
             const SizedBox(height: 16),
 
-            // Build Info
-            const Center(
+            // 6. Build Info Footer
+            Center(
               child: Text(
-                '${AppConstants.appName} v${AppConstants.appVersion} • Supabase Auth Active',
+                '${AppConstants.appName} v${AppConstants.appVersion} • Expressive Companion Edition',
                 style: TextStyle(
                   fontSize: 11,
-                  color: AppColors.textMuted,
-                  fontFamily: 'monospace',
+                  color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
                 ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildThemeOption({
+    required BuildContext context,
+    required String label,
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final selectedBg = isDark
+        ? AppColors.vibrantMint.withValues(alpha: 0.18)
+        : AppColors.vibrantMint.withValues(alpha: 0.14);
+    const selectedBorder = AppColors.vibrantMint;
+    final unselectedBg = isDark ? AppColors.darkSurfaceSubtle : AppColors.lightSurfaceSubtle;
+    final unselectedBorder = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? selectedBg : unselectedBg,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? selectedBorder : unselectedBorder,
+            width: isSelected ? 1.8 : 1.0,
+          ),
+        ),
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              size: 20,
+              color: isSelected
+                  ? AppColors.tessTeal
+                  : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: isSelected
+                    ? (isDark ? AppColors.vibrantMint : AppColors.tessTeal)
+                    : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
               ),
             ),
           ],
@@ -303,31 +480,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildSettingRow(
-    IconData icon,
-    String label,
-    String value, {
+  Widget _buildSettingRow({
+    required BuildContext context,
+    required IconData icon,
+    required String label,
+    required String value,
     Color? statusColor,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       children: [
-        Icon(icon, size: 16, color: statusColor ?? AppColors.cyan),
+        Icon(icon, size: 16, color: statusColor ?? AppColors.tessTeal),
         const SizedBox(width: 10),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
+          style: TextStyle(
+            fontSize: 13,
+            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
           ),
         ),
         const Spacer(),
         Text(
           value,
           style: TextStyle(
-            fontSize: 11,
-            color: statusColor ?? AppColors.textMuted,
-            fontFamily: 'monospace',
-            fontWeight: statusColor != null ? FontWeight.bold : FontWeight.normal,
+            fontSize: 12,
+            color: statusColor ?? (isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+            fontWeight: statusColor != null ? FontWeight.w700 : FontWeight.w500,
           ),
         ),
       ],

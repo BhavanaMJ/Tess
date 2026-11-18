@@ -13,6 +13,8 @@ class DailyIntelligence extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return TessCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -20,57 +22,59 @@ class DailyIntelligence extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'SYSTEM TELEMETRY STATUS',
                 style: TextStyle(
-                  fontSize: 10,
-                  fontFamily: 'monospace',
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.0,
-                  color: AppColors.textPrimary,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                  color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: (isBackendOnline ? AppColors.success : AppColors.danger)
-                      .withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(4),
+                      .withValues(alpha: isDark ? 0.20 : 0.12),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  isBackendOnline ? 'LIVE SYNC' : 'OFFLINE',
+                  isBackendOnline ? 'ONLINE' : 'OFFLINE',
                   style: TextStyle(
-                    fontSize: 9,
-                    fontFamily: 'monospace',
-                    fontWeight: FontWeight.bold,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
                     color: isBackendOnline ? AppColors.success : AppColors.danger,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           Row(
             children: [
               _buildTelemetryBadge(
-                Icons.memory,
+                context,
+                Icons.memory_rounded,
                 'Neural Core',
                 isBackendOnline ? 'Online' : 'Degraded',
                 isBackendOnline ? AppColors.success : AppColors.danger,
               ),
               const SizedBox(width: 8),
               _buildTelemetryBadge(
-                Icons.sync,
+                context,
+                Icons.sync_rounded,
                 'Cross-Device',
                 'Synced',
-                AppColors.cyan,
+                AppColors.tessTeal,
               ),
               const SizedBox(width: 8),
               _buildTelemetryBadge(
-                Icons.security,
+                context,
+                Icons.shield_outlined,
                 'Auth Token',
-                'Valid',
-                AppColors.violetLight,
+                'Active',
+                AppColors.vibrantMint,
               ),
             ],
           ),
@@ -79,36 +83,50 @@ class DailyIntelligence extends StatelessWidget {
     );
   }
 
-  Widget _buildTelemetryBadge(IconData icon, String label, String status, Color color) {
+  Widget _buildTelemetryBadge(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String status,
+    Color color,
+  ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 6.0),
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
         decoration: BoxDecoration(
-          color: AppColors.bgVoid.withValues(alpha: 0.4),
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(color: AppColors.border),
+          color: isDark ? AppColors.darkSurfaceSubtle : AppColors.lightSurfaceSubtle,
+          borderRadius: BorderRadius.circular(10.0),
+          border: Border.all(
+            color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+            width: 1.0,
+          ),
         ),
         child: Column(
           children: [
-            Icon(icon, size: 14, color: color),
-            const SizedBox(height: 4),
+            Icon(icon, size: 16, color: color),
+            const SizedBox(height: 5),
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 9,
-                color: AppColors.textMuted,
-                fontFamily: 'monospace',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+                color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 2),
             Text(
               status,
               style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
                 color: color,
-                fontFamily: 'monospace',
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -116,4 +134,3 @@ class DailyIntelligence extends StatelessWidget {
     );
   }
 }
-

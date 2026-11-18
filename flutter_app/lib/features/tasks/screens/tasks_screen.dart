@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../core/models/task_model.dart';
 import '../../../core/services/simulation_service.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../widgets/task_tile.dart';
 import 'create_task_screen.dart';
 
@@ -83,9 +85,9 @@ class _TasksScreenState extends State<TasksScreen> {
         SnackBar(
           content: Text(
             'Objective "${newTask.title}" added to active timeline.',
-            style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+            style: const TextStyle(fontSize: 12.5),
           ),
-          backgroundColor: AppColors.bgSurface,
+          backgroundColor: AppColors.tessTeal,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -109,39 +111,54 @@ class _TasksScreenState extends State<TasksScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final cardBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textMuted = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+
     final completedCount = _tasks.where((t) => t.isCompleted).length;
     final progress = SimulationService.calculateCompletionRate(_tasks);
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'AGENT TASK MATRIX',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            letterSpacing: 1.5,
+            color: textPrimary,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_task_rounded, color: AppColors.cyan),
-            tooltip: 'Dispatch Objective',
+            icon: const Icon(Icons.add_task_rounded, color: AppColors.tessTeal),
+            tooltip: 'Add Objective',
             onPressed: _navigateToCreateTask,
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Progress Header Card
             Container(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: AppColors.bgSurface,
-                borderRadius: BorderRadius.circular(14.0),
-                border: Border.all(color: AppColors.violet.withValues(alpha: 0.3)),
+                color: cardBg,
+                borderRadius: AppRadius.card,
+                border: Border.all(color: borderColor),
+                boxShadow: [
+                  BoxShadow(
+                    color: isDark ? Colors.black.withOpacity(0.2) : Colors.black.withOpacity(0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,20 +166,19 @@ class _TasksScreenState extends State<TasksScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Sprint Progress',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                          color: textPrimary,
                         ),
                       ),
                       Text(
                         '$completedCount of ${_tasks.length} Completed',
                         style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.cyan,
-                          fontFamily: 'monospace',
+                          fontSize: 12.5,
+                          color: AppColors.tessTeal,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -170,88 +186,89 @@ class _TasksScreenState extends State<TasksScreen> {
                   ),
                   const SizedBox(height: 10),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(6.0),
+                    borderRadius: AppRadius.pill,
                     child: LinearProgressIndicator(
                       value: progress,
-                      backgroundColor: AppColors.bgVoid,
-                      valueColor: const AlwaysStoppedAnimation<Color>(AppColors.violet),
+                      backgroundColor: isDark ? AppColors.darkSurfaceElevated : AppColors.lightSecondary,
+                      valueColor: const AlwaysStoppedAnimation<Color>(AppColors.vibrantMint),
                       minHeight: 6,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
 
             // Collection Filter Chips Bar
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildFilterChip('All (${_tasks.length})', TaskFilter.all),
+                  _buildFilterChip('All (${_tasks.length})', TaskFilter.all, isDark),
                   const SizedBox(width: 8),
                   _buildFilterChip(
                     'Pending (${_tasks.where((t) => !t.isCompleted).length})',
                     TaskFilter.pending,
+                    isDark,
                   ),
                   const SizedBox(width: 8),
                   _buildFilterChip(
                     'Completed ($completedCount)',
                     TaskFilter.completed,
+                    isDark,
                   ),
                   const SizedBox(width: 8),
                   _buildFilterChip(
                     'High Priority (${_tasks.where((t) => t.priority == TaskPriority.high).length})',
                     TaskFilter.highPriority,
+                    isDark,
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
 
             // Section Header
             Row(
               children: [
-                const Icon(Icons.check_circle_outline, color: AppColors.violetLight, size: 18),
+                const Icon(Icons.check_circle_outline, color: AppColors.tessTeal, size: 18),
                 const SizedBox(width: 6),
-                const Text(
+                Text(
                   'ACTIVE OBJECTIVES',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 11.5,
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
-                    color: AppColors.textPrimary,
-                    fontFamily: 'monospace',
+                    letterSpacing: 0.8,
+                    color: textPrimary,
                   ),
                 ),
                 const Spacer(),
                 Text(
                   'Showing ${_filteredTasks.length} items',
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: AppColors.textMuted,
-                    fontFamily: 'monospace',
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    color: textMuted,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm),
 
             // Render Task List with Keys
             if (_filteredTasks.isEmpty)
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 32.0),
-                child: const Center(
+                child: Center(
                   child: Text(
                     'No objectives match this filter.',
-                    style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+                    style: TextStyle(color: textMuted, fontSize: 12.5),
                   ),
                 ),
               )
             else
               ..._filteredTasks.map((task) {
                 return TaskTile(
-                  key: ValueKey(task.id), // Key helps Flutter track identity across list updates
+                  key: ValueKey(task.id),
                   title: task.title,
                   category: task.category,
                   priority: task.priority,
@@ -263,43 +280,39 @@ class _TasksScreenState extends State<TasksScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.violet,
-        foregroundColor: Colors.white,
-        tooltip: 'New Objective',
         onPressed: _navigateToCreateTask,
-        child: const Icon(Icons.add),
+        backgroundColor: AppColors.tessTeal,
+        foregroundColor: Colors.white,
+        tooltip: 'Dispatch Objective',
+        child: const Icon(Icons.add_rounded),
       ),
     );
   }
 
-  Widget _buildFilterChip(String label, TaskFilter filter) {
+  Widget _buildFilterChip(String label, TaskFilter filter, bool isDark) {
     final isSelected = _activeFilter == filter;
-    return InkWell(
-      onTap: () {
-        setState(() {
-          _activeFilter = filter;
-        });
+    final chipBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (selected) {
+        if (selected) setState(() => _activeFilter = filter);
       },
-      borderRadius: BorderRadius.circular(16.0),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.violet.withValues(alpha: 0.25)
-              : AppColors.bgSurface,
-          borderRadius: BorderRadius.circular(16.0),
-          border: Border.all(
-            color: isSelected ? AppColors.violet : AppColors.border,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 11,
-            fontFamily: 'monospace',
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            color: isSelected ? AppColors.textPrimary : AppColors.textMuted,
-          ),
+      labelStyle: TextStyle(
+        fontSize: 11.5,
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+        color: isSelected
+            ? Colors.white
+            : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
+      ),
+      selectedColor: AppColors.tessTeal,
+      backgroundColor: chipBg,
+      shape: RoundedRectangleBorder(
+        borderRadius: AppRadius.pill,
+        side: BorderSide(
+          color: isSelected ? AppColors.tessTeal : borderColor,
         ),
       ),
     );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../../shared/widgets/tess_card.dart';
 import '../models/agent_step_model.dart';
 
@@ -12,38 +14,46 @@ class StepReviewCard extends StatelessWidget {
   Color _getRiskColor() {
     switch (step.riskLevel) {
       case 'HIGH':
-        return AppColors.danger;
+        return AppColors.accentDanger;
       case 'MEDIUM':
-        return AppColors.warning;
+        return AppColors.accentWarning;
       case 'LOW':
       default:
-        return AppColors.success;
+        return AppColors.accentSuccess;
     }
   }
 
   Color _getStatusColor() {
     switch (step.status) {
       case 'SUCCESS':
-        return AppColors.success;
+        return AppColors.accentSuccess;
       case 'RUNNING':
-        return AppColors.cyan;
+        return AppColors.tessTeal;
       case 'FAILED':
-        return AppColors.danger;
+        return AppColors.accentDanger;
       case 'PENDING':
       default:
-        return AppColors.violet;
+        return AppColors.tessTeal;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textMuted = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+    final chipBg = isDark ? AppColors.darkSurfaceElevated : AppColors.lightSecondary;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+
     final riskColor = _getRiskColor();
     final statusColor = _getStatusColor();
     final safeParams = step.safeParameters;
 
     return TessCard(
-      padding: const EdgeInsets.all(12),
-      borderColor: riskColor.withValues(alpha: 0.3),
+      padding: const EdgeInsets.all(AppSpacing.md),
+      borderColor: riskColor.withOpacity(0.3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -52,33 +62,31 @@ class StepReviewCard extends StatelessWidget {
             children: [
               // Step Order Badge
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: AppColors.violet.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: AppColors.violet.withValues(alpha: 0.4)),
+                  color: AppColors.tessTeal.withOpacity(0.12),
+                  borderRadius: AppRadius.xs,
+                  border: Border.all(color: AppColors.tessTeal.withOpacity(0.35)),
                 ),
                 child: Text(
                   '#${step.stepOrder}',
                   style: const TextStyle(
-                    fontSize: 10,
-                    fontFamily: 'monospace',
+                    fontSize: 10.5,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.violet,
+                    color: AppColors.tessTeal,
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.sm),
 
               // Action Display Name
               Expanded(
                 child: Text(
                   step.actionDisplayName,
-                  style: const TextStyle(
-                    fontSize: 13,
+                  style: TextStyle(
+                    fontSize: 13.5,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                    fontFamily: 'monospace',
+                    color: textPrimary,
                   ),
                 ),
               ),
@@ -87,15 +95,14 @@ class StepReviewCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: riskColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: riskColor.withValues(alpha: 0.4)),
+                  color: riskColor.withOpacity(0.12),
+                  borderRadius: AppRadius.xs,
+                  border: Border.all(color: riskColor.withOpacity(0.35)),
                 ),
                 child: Text(
                   '${step.riskLevel} RISK',
                   style: TextStyle(
-                    fontSize: 9,
-                    fontFamily: 'monospace',
+                    fontSize: 9.5,
                     fontWeight: FontWeight.bold,
                     color: riskColor,
                   ),
@@ -104,20 +111,19 @@ class StepReviewCard extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
 
           // Target Resource & Tool name
           Row(
             children: [
-              const Icon(Icons.hub_outlined, size: 14, color: AppColors.cyan),
+              const Icon(Icons.hub_outlined, size: 14, color: AppColors.tessTeal),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   'Target: ${step.targetResource}',
                   style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.cyan,
-                    fontFamily: 'monospace',
+                    fontSize: 11.5,
+                    color: AppColors.tessTeal,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -126,14 +132,13 @@ class StepReviewCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                 decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(4),
+                  color: statusColor.withOpacity(0.12),
+                  borderRadius: AppRadius.xs,
                 ),
                 child: Text(
                   step.status,
                   style: TextStyle(
-                    fontSize: 9,
-                    fontFamily: 'monospace',
+                    fontSize: 9.5,
                     fontWeight: FontWeight.bold,
                     color: statusColor,
                   ),
@@ -147,21 +152,21 @@ class StepReviewCard extends StatelessWidget {
           // Safe Parameter Inspection Box
           if (safeParams.isNotEmpty) ...[
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(AppSpacing.sm),
               decoration: BoxDecoration(
-                color: AppColors.bgSecondary.withValues(alpha: 0.6),
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: AppColors.border),
+                color: chipBg,
+                borderRadius: AppRadius.sm,
+                border: Border.all(color: borderColor),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'PARAMETERS (AUDITED)',
                     style: TextStyle(
-                      fontSize: 9,
-                      fontFamily: 'monospace',
-                      color: AppColors.textMuted,
+                      fontSize: 9.5,
+                      fontWeight: FontWeight.bold,
+                      color: textMuted,
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -174,19 +179,17 @@ class StepReviewCard extends StatelessWidget {
                         children: [
                           Text(
                             '• ${entry.key}: ',
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontFamily: 'monospace',
-                              color: AppColors.textSecondary,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: textSecondary,
                             ),
                           ),
                           Expanded(
                             child: Text(
                               entry.value.toString(),
-                              style: const TextStyle(
-                                fontSize: 10,
-                                fontFamily: 'monospace',
-                                color: AppColors.textPrimary,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: textPrimary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -206,10 +209,10 @@ class StepReviewCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: (step.isConfirmed ? AppColors.success : AppColors.warning).withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(6),
+                color: (step.isConfirmed ? AppColors.accentSuccess : AppColors.accentWarning).withOpacity(0.08),
+                borderRadius: AppRadius.sm,
                 border: Border.all(
-                  color: (step.isConfirmed ? AppColors.success : AppColors.warning).withValues(alpha: 0.3),
+                  color: (step.isConfirmed ? AppColors.accentSuccess : AppColors.accentWarning).withOpacity(0.3),
                 ),
               ),
               child: Row(
@@ -217,7 +220,7 @@ class StepReviewCard extends StatelessWidget {
                   Icon(
                     step.isConfirmed ? Icons.verified_user_rounded : Icons.gavel_rounded,
                     size: 16,
-                    color: step.isConfirmed ? AppColors.success : AppColors.warning,
+                    color: step.isConfirmed ? AppColors.accentSuccess : AppColors.accentWarning,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -231,28 +234,26 @@ class StepReviewCard extends StatelessWidget {
                                   ? 'CONFIRMATION EXPIRED'
                                   : 'AUTHORIZATION REQUIRED'),
                           style: TextStyle(
-                            fontSize: 10,
-                            fontFamily: 'monospace',
+                            fontSize: 10.5,
                             fontWeight: FontWeight.bold,
                             color: step.isConfirmed
-                                ? AppColors.success
-                                : (step.confirmation?.isExpired == true ? AppColors.danger : AppColors.warning),
+                                ? AppColors.accentSuccess
+                                : (step.confirmation?.isExpired == true ? AppColors.accentDanger : AppColors.accentWarning),
                           ),
                         ),
                         if (step.confirmation != null) ...[
                           const SizedBox(height: 2),
                           Text(
                             step.confirmation!.displaySummary,
-                            style: const TextStyle(fontSize: 10, color: AppColors.textMuted),
+                            style: TextStyle(fontSize: 10.5, color: textMuted),
                           ),
                           if (step.confirmation!.fingerprint != null) ...[
                             const SizedBox(height: 2),
                             Text(
                               'Fingerprint: [fp:${step.confirmation!.fingerprint}]',
                               style: const TextStyle(
-                                fontSize: 9,
-                                fontFamily: 'monospace',
-                                color: AppColors.cyan,
+                                fontSize: 9.5,
+                                color: AppColors.tessTeal,
                               ),
                             ),
                           ],
@@ -266,11 +267,11 @@ class StepReviewCard extends StatelessWidget {
           ] else ...[
             const Row(
               children: [
-                Icon(Icons.shield_outlined, size: 14, color: AppColors.success),
+                Icon(Icons.shield_outlined, size: 14, color: AppColors.accentSuccess),
                 SizedBox(width: 6),
                 Text(
                   'Low risk operation: Pre-authorized by policy',
-                  style: TextStyle(fontSize: 10, color: AppColors.success),
+                  style: TextStyle(fontSize: 11, color: AppColors.accentSuccess),
                 ),
               ],
             ),
@@ -282,10 +283,10 @@ class StepReviewCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: (step.status == 'SUCCESS' ? AppColors.success : AppColors.danger).withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(6),
+                color: (step.status == 'SUCCESS' ? AppColors.accentSuccess : AppColors.accentDanger).withOpacity(0.08),
+                borderRadius: AppRadius.sm,
                 border: Border.all(
-                  color: (step.status == 'SUCCESS' ? AppColors.success : AppColors.danger).withValues(alpha: 0.3),
+                  color: (step.status == 'SUCCESS' ? AppColors.accentSuccess : AppColors.accentDanger).withOpacity(0.3),
                 ),
               ),
               child: Row(
@@ -293,16 +294,15 @@ class StepReviewCard extends StatelessWidget {
                   Icon(
                     step.status == 'SUCCESS' ? Icons.check_circle_outline : Icons.error_outline,
                     size: 14,
-                    color: step.status == 'SUCCESS' ? AppColors.success : AppColors.danger,
+                    color: step.status == 'SUCCESS' ? AppColors.accentSuccess : AppColors.accentDanger,
                   ),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       'Result: ${step.result.toString()}',
                       style: TextStyle(
-                        fontSize: 10,
-                        fontFamily: 'monospace',
-                        color: step.status == 'SUCCESS' ? AppColors.success : AppColors.danger,
+                        fontSize: 10.5,
+                        color: step.status == 'SUCCESS' ? AppColors.accentSuccess : AppColors.accentDanger,
                       ),
                     ),
                   ),
@@ -315,4 +315,3 @@ class StepReviewCard extends StatelessWidget {
     );
   }
 }
-

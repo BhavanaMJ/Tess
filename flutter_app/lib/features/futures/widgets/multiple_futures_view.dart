@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../models/multiple_futures_model.dart';
 import '../models/simulation_model.dart';
 import '../services/future_service.dart';
@@ -52,41 +54,49 @@ class _MultipleFuturesViewState extends State<MultipleFuturesView> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final cardBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textMuted = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+
     if (_isLoading) {
       return const Padding(
         padding: EdgeInsets.all(48.0),
         child: Center(
-          child: CircularProgressIndicator(color: AppColors.cyan),
+          child: CircularProgressIndicator(color: AppColors.tessTeal),
         ),
       );
     }
 
     if (_errorMessage != null) {
       return Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Container(
-          padding: const EdgeInsets.all(14.0),
+          padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
-            color: AppColors.danger.withOpacity(0.12),
-            borderRadius: BorderRadius.circular(10.0),
-            border: Border.all(color: AppColors.danger.withOpacity(0.4)),
+            color: AppColors.accentDanger.withOpacity(0.1),
+            borderRadius: AppRadius.card,
+            border: Border.all(color: AppColors.accentDanger.withOpacity(0.3)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
                 'Multiple Futures Anomaly',
-                style: TextStyle(color: AppColors.danger, fontWeight: FontWeight.bold),
+                style: TextStyle(color: AppColors.accentDanger, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4.0),
               Text(
                 _errorMessage!,
-                style: const TextStyle(color: AppColors.textSecondary, fontSize: 12.0),
+                style: TextStyle(color: textSecondary, fontSize: 12.0),
               ),
               const SizedBox(height: 8.0),
               TextButton(
                 onPressed: _loadScenarios,
-                child: const Text('Retry Scenarios', style: TextStyle(color: AppColors.cyan)),
+                child: const Text('Retry Scenarios', style: TextStyle(color: AppColors.tessTeal)),
               ),
             ],
           ),
@@ -103,19 +113,19 @@ class _MultipleFuturesViewState extends State<MultipleFuturesView> {
     switch (_selectedTab) {
       case 1:
         activeScenario = scenarios.improvedTrajectory;
-        activeColor = AppColors.success;
+        activeColor = AppColors.accentSuccess;
         break;
       case 2:
         activeScenario = scenarios.alternativeTrajectory;
-        activeColor = AppColors.cyan;
+        activeColor = AppColors.tessTeal;
         break;
       default:
         activeScenario = scenarios.currentTrajectory;
-        activeColor = AppColors.warning;
+        activeColor = AppColors.accentWarning;
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -123,34 +133,35 @@ class _MultipleFuturesViewState extends State<MultipleFuturesView> {
           Container(
             padding: const EdgeInsets.all(4.0),
             decoration: BoxDecoration(
-              color: AppColors.bgSurface,
-              borderRadius: BorderRadius.circular(12.0),
-              border: Border.all(color: AppColors.border),
+              color: cardBg,
+              borderRadius: AppRadius.pill,
+              border: Border.all(color: borderColor),
             ),
             child: Row(
               children: [
-                _buildSegmentButton('CURRENT', 0, AppColors.warning),
-                _buildSegmentButton('IMPROVED', 1, AppColors.success),
-                _buildSegmentButton('ALTERNATIVE', 2, AppColors.cyan),
+                _buildSegmentButton('CURRENT', 0, AppColors.accentWarning, isDark),
+                _buildSegmentButton('IMPROVED', 1, AppColors.accentSuccess, isDark),
+                _buildSegmentButton('ALTERNATIVE', 2, AppColors.tessTeal, isDark),
               ],
             ),
           ),
-          const SizedBox(height: 12.0),
+          const SizedBox(height: AppSpacing.md),
 
           // Active Scenario Card
           Container(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
-              color: AppColors.bgSurface,
-              borderRadius: BorderRadius.circular(12.0),
+              color: cardBg,
+              borderRadius: AppRadius.card,
               border: Border.all(
                 color: activeColor.withOpacity(0.4),
                 width: 1.0,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: activeColor.withOpacity(0.05),
-                  blurRadius: 12.0,
+                  color: isDark ? Colors.black.withOpacity(0.2) : Colors.black.withOpacity(0.03),
+                  blurRadius: 10.0,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -163,18 +174,17 @@ class _MultipleFuturesViewState extends State<MultipleFuturesView> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
                       decoration: BoxDecoration(
-                        color: activeColor.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(6.0),
-                        border: Border.all(color: activeColor.withOpacity(0.5)),
+                        color: activeColor.withOpacity(0.12),
+                        borderRadius: AppRadius.xs,
+                        border: Border.all(color: activeColor.withOpacity(0.35)),
                       ),
                       child: Text(
                         activeScenario.trajectoryType,
                         style: TextStyle(
                           color: activeColor,
-                          fontSize: 10.0,
+                          fontSize: 10.5,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'monospace',
-                          letterSpacing: 1.0,
+                          letterSpacing: 0.8,
                         ),
                       ),
                     ),
@@ -182,43 +192,42 @@ class _MultipleFuturesViewState extends State<MultipleFuturesView> {
                       '${activeScenario.probabilityPercentage.toInt()}% Probability',
                       style: TextStyle(
                         color: activeColor,
-                        fontFamily: 'monospace',
                         fontWeight: FontWeight.bold,
-                        fontSize: 12.0,
+                        fontSize: 12.5,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10.0),
+                const SizedBox(height: AppSpacing.sm),
                 Text(
                   activeScenario.title,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 15.0,
+                  style: TextStyle(
+                    color: textPrimary,
+                    fontSize: 16.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 6.0),
                 Text(
                   activeScenario.summary,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 13.0,
+                  style: TextStyle(
+                    color: textSecondary,
+                    fontSize: 13.5,
                     height: 1.4,
                   ),
                 ),
                 if (activeScenario.events.isNotEmpty) ...[
-                  const SizedBox(height: 16.0),
-                  const Text(
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
                     'PROJECTED MILESTONE TIMELINE:',
                     style: TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 10.0,
-                      color: AppColors.textMuted,
-                      letterSpacing: 1.0,
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.bold,
+                      color: textMuted,
+                      letterSpacing: 0.5,
                     ),
                   ),
-                  const SizedBox(height: 8.0),
+                  const SizedBox(height: AppSpacing.sm),
                   ...activeScenario.events.map(
                     (ev) => Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
@@ -231,39 +240,38 @@ class _MultipleFuturesViewState extends State<MultipleFuturesView> {
                               vertical: 2.0,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.bgSecondary,
-                              borderRadius: BorderRadius.circular(4.0),
-                              border: Border.all(color: AppColors.border),
+                              color: isDark ? AppColors.darkSurfaceElevated : AppColors.lightSecondary,
+                              borderRadius: AppRadius.xs,
+                              border: Border.all(color: borderColor),
                             ),
                             child: Text(
                               ev.relativeTime,
                               style: TextStyle(
                                 color: activeColor,
-                                fontSize: 9.5,
-                                fontFamily: 'monospace',
+                                fontSize: 10.0,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8.0),
+                          const SizedBox(width: AppSpacing.sm),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   ev.title,
-                                  style: const TextStyle(
-                                    color: AppColors.textPrimary,
-                                    fontSize: 12.0,
-                                    fontWeight: FontWeight.bold,
+                                  style: TextStyle(
+                                    color: textPrimary,
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 if (ev.description.isNotEmpty)
                                   Text(
                                     ev.description,
-                                    style: const TextStyle(
-                                      color: AppColors.textMuted,
-                                      fontSize: 11.0,
+                                    style: TextStyle(
+                                      color: textMuted,
+                                      fontSize: 11.5,
                                     ),
                                   ),
                               ],
@@ -282,29 +290,30 @@ class _MultipleFuturesViewState extends State<MultipleFuturesView> {
     );
   }
 
-  Widget _buildSegmentButton(String label, int index, Color color) {
+  Widget _buildSegmentButton(String label, int index, Color color, bool isDark) {
     final isSelected = _selectedTab == index;
 
     return Expanded(
       child: InkWell(
         onTap: () => setState(() => _selectedTab = index),
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: AppRadius.pill,
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           decoration: BoxDecoration(
             color: isSelected ? color.withOpacity(0.15) : Colors.transparent,
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: AppRadius.pill,
             border: isSelected ? Border.all(color: color.withOpacity(0.5)) : null,
           ),
           alignment: Alignment.center,
           child: Text(
             label,
             style: TextStyle(
-              fontFamily: 'monospace',
               fontSize: 11.0,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              color: isSelected ? color : AppColors.textSecondary,
-              letterSpacing: 0.8,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+              color: isSelected
+                  ? color
+                  : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
+              letterSpacing: 0.5,
             ),
           ),
         ),
@@ -312,4 +321,3 @@ class _MultipleFuturesViewState extends State<MultipleFuturesView> {
     );
   }
 }
-

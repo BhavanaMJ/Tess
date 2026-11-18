@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/task_model.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
 
 class TaskTile extends StatelessWidget {
   final String title;
@@ -21,11 +22,11 @@ class TaskTile extends StatelessWidget {
   Color get priorityColor {
     switch (priority) {
       case TaskPriority.high:
-        return AppColors.danger;
+        return AppColors.accentDanger;
       case TaskPriority.medium:
-        return AppColors.warning;
+        return AppColors.accentWarning;
       case TaskPriority.low:
-        return AppColors.cyan;
+        return AppColors.tessTeal;
     }
   }
 
@@ -33,29 +34,37 @@ class TaskTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final cardBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textMuted = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8.0),
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
       decoration: BoxDecoration(
-        color: AppColors.bgSurface,
-        borderRadius: BorderRadius.circular(12.0),
+        color: cardBg,
+        borderRadius: AppRadius.card,
         border: Border.all(
           color: isCompleted
-              ? AppColors.border
+              ? borderColor
               : priorityColor.withOpacity(0.25),
         ),
       ),
       child: Row(
         children: [
           Transform.scale(
-            scale: 0.9,
+            scale: 0.95,
             child: Checkbox(
               value: isCompleted,
-              activeColor: AppColors.violet,
+              activeColor: AppColors.tessTeal,
               checkColor: Colors.white,
-              side: const BorderSide(color: AppColors.textMuted),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
+              side: BorderSide(color: textMuted),
+              shape: const RoundedRectangleBorder(
+                borderRadius: AppRadius.xs,
               ),
               onChanged: onToggle,
             ),
@@ -68,11 +77,11 @@ class TaskTile extends StatelessWidget {
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 13.5,
                     fontWeight: FontWeight.w600,
                     color: isCompleted
-                        ? AppColors.textMuted
-                        : AppColors.textPrimary,
+                        ? textMuted
+                        : textPrimary,
                     decoration: isCompleted
                         ? TextDecoration.lineThrough
                         : TextDecoration.none,
@@ -81,20 +90,19 @@ class TaskTile extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   category,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
-                    color: AppColors.textMuted,
-                    fontFamily: 'monospace',
+                    color: textMuted,
                   ),
                 ),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
               color: priorityColor.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: AppRadius.pill,
               border: Border.all(color: priorityColor.withOpacity(0.3)),
             ),
             child: Text(
@@ -103,7 +111,6 @@ class TaskTile extends StatelessWidget {
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
                 color: priorityColor,
-                fontFamily: 'monospace',
               ),
             ),
           ),
@@ -112,4 +119,3 @@ class TaskTile extends StatelessWidget {
     );
   }
 }
-

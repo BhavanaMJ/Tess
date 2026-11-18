@@ -3,7 +3,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/responsive_metric_card.dart';
 import '../models/dashboard_model.dart';
 
-/// ProductivityOverview renders real task intelligence returned from FastAPI backend:
+/// ProductivityOverview renders real OpenProject task telemetry returned from:
 /// GET /api/v1/productivity/summary
 class ProductivityOverview extends StatelessWidget {
   final ProductivitySummaryModel summary;
@@ -15,21 +15,22 @@ class ProductivityOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
+        Row(
           children: [
-            Icon(Icons.bolt, color: AppColors.cyan, size: 16),
-            SizedBox(width: 6),
+            const Icon(Icons.bolt_rounded, color: AppColors.tessTeal, size: 18),
+            const SizedBox(width: 6),
             Text(
-              'REAL-TIME PRODUCTIVITY TELEMETRY',
+              'TODAY\'S PRODUCTIVITY SUMMARY',
               style: TextStyle(
                 fontSize: 11,
-                fontFamily: 'monospace',
-                fontWeight: FontWeight.bold,
-                color: AppColors.textMuted,
-                letterSpacing: 1.2,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+                color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
               ),
             ),
           ],
@@ -41,17 +42,17 @@ class ProductivityOverview extends StatelessWidget {
           children: [
             Expanded(
               child: ResponsiveMetricCard(
-                title: 'ACTIVE TASKS',
+                title: 'Active Tasks',
                 value: '${summary.totalActive}',
                 subtitle: 'Active backlog',
-                icon: Icons.task_alt,
-                accentColor: AppColors.violet,
+                icon: Icons.task_alt_rounded,
+                accentColor: AppColors.tessTeal,
               ),
             ),
             const SizedBox(width: 8.0),
             Expanded(
               child: ResponsiveMetricCard(
-                title: 'OVERDUE',
+                title: 'Overdue',
                 value: '${summary.overdue}',
                 subtitle: summary.hasOverdue ? 'Requires focus' : 'Nominal zero',
                 icon: Icons.warning_amber_rounded,
@@ -62,25 +63,25 @@ class ProductivityOverview extends StatelessWidget {
         ),
         const SizedBox(height: 8.0),
 
-        // Row 2: Due Today & Recently Completed
+        // Row 2: Due Today & Completed Recently
         Row(
           children: [
             Expanded(
               child: ResponsiveMetricCard(
-                title: 'DUE TODAY',
+                title: 'Due Today',
                 value: '${summary.dueToday}',
                 subtitle: 'Immediate horizon',
-                icon: Icons.schedule,
-                accentColor: AppColors.cyan,
+                icon: Icons.calendar_today_rounded,
+                accentColor: AppColors.vibrantMint,
               ),
             ),
             const SizedBox(width: 8.0),
             Expanded(
               child: ResponsiveMetricCard(
-                title: 'COMPLETED',
+                title: 'Completed',
                 value: '${summary.completedRecently}',
                 subtitle: 'Recent velocity',
-                icon: Icons.check_circle_outline,
+                icon: Icons.check_circle_outline_rounded,
                 accentColor: AppColors.success,
               ),
             ),

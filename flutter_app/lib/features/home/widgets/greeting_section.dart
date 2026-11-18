@@ -5,7 +5,8 @@ import '../../../shared/widgets/tess_card.dart';
 import 'mascot_section.dart';
 import 'mascot_widget.dart';
 
-/// GreetingSection displays commander persona, real email, and quick-action navigation.
+/// Redesigned GreetingSection with Expressive TESS Companion,
+/// personal greeting, and intuitive quick-action pills.
 class GreetingSection extends StatelessWidget {
   final String callsign;
   final String email;
@@ -24,57 +25,73 @@ class GreetingSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryText = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+
     return TessCard(
-      borderColor: AppColors.violet.withValues(alpha: 0.35),
+      elevated: true,
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 22.0),
       child: Column(
         children: [
+          // 1. Approved Expressive TESS Companion
           MascotSection(
             state: mascotState,
             statusText: statusText,
           ),
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 14.0),
+
+          // 2. Personal Greeting
           Text(
             'Commander $callsign',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.4,
+              color: primaryText,
             ),
           ),
           const SizedBox(height: 4.0),
+          const Text(
+            'See Where Today Takes You.',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: AppColors.tessTeal,
+              letterSpacing: 0.1,
+            ),
+          ),
+          const SizedBox(height: 6.0),
           Text(
             email,
-            style: const TextStyle(
-              fontSize: 11,
-              color: AppColors.cyan,
-              fontFamily: 'monospace',
-            ),
-          ),
-          const SizedBox(height: 8.0),
-          const Text(
-            'Personal Future Simulator & AI Operating System actively observing telemetry.',
-            textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 12,
-              color: AppColors.textMuted,
-              height: 1.4,
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
             ),
           ),
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 18.0),
+
+          // 3. Quick Action Buttons
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TessButton(
-                label: 'Talk to TESS',
-                icon: Icons.chat_bubble_outline,
-                onPressed: () => onNavigateTab(1), // Switch to Chat tab
+              Expanded(
+                child: TessButton(
+                  label: 'Talk to TESS',
+                  icon: Icons.chat_bubble_outline_rounded,
+                  variant: TessButtonVariant.primary,
+                  height: 42,
+                  onPressed: () => onNavigateTab(1),
+                ),
               ),
               const SizedBox(width: 10),
-              TessButton(
-                label: 'Futures Engine',
-                icon: Icons.explore_outlined,
-                variant: TessButtonVariant.cyan,
-                onPressed: () => onNavigateTab(2), // Switch to Futures tab
+              Expanded(
+                child: TessButton(
+                  label: 'Simulate Futures',
+                  icon: Icons.explore_outlined,
+                  variant: TessButtonVariant.secondary,
+                  height: 42,
+                  onPressed: () => onNavigateTab(2),
+                ),
               ),
             ],
           ),
@@ -83,4 +100,3 @@ class GreetingSection extends StatelessWidget {
     );
   }
 }
-

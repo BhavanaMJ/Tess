@@ -281,35 +281,48 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final activeTitle = _activeConversation?.title ?? 'TESS Neural Interface';
 
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Column(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'TESS COGNITIVE CHAT',
-              style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 14.0,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-                color: AppColors.cyan,
-              ),
+            Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: AppColors.vibrantMint,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'TESS COGNITIVE CHAT',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                  ),
+                ),
+              ],
             ),
             Text(
-              'Autonomous Intelligence // Neural Link Online',
+              'Online • Ready to assist',
               style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 10.0,
-                color: AppColors.textMuted,
+                fontSize: 11.0,
+                color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
               ),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.mic_rounded, color: AppColors.cyan),
+            icon: const Icon(Icons.mic_rounded, color: AppColors.tessTeal),
             tooltip: 'Voice Interaction Core',
             onPressed: () {
               Navigator.push(
@@ -319,12 +332,15 @@ class _ChatScreenState extends State<ChatScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.psychology_outlined, color: AppColors.cyan),
+            icon: const Icon(Icons.psychology_outlined, color: AppColors.tessTeal),
             tooltip: 'Personal Memory Bank',
             onPressed: _navigateToMemoryBank,
           ),
           IconButton(
-            icon: const Icon(Icons.format_list_bulleted_rounded, color: AppColors.violetLight),
+            icon: Icon(
+              Icons.format_list_bulleted_rounded,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+            ),
             tooltip: 'Conversation Threads',
             onPressed: _openConversationSelector,
           ),
@@ -347,7 +363,7 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: _isLoadingMessages
                 ? const Center(
-                    child: CircularProgressIndicator(color: AppColors.cyan),
+                    child: CircularProgressIndicator(color: AppColors.tessTeal),
                   )
                 : _messages.isEmpty
                     ? _buildEmptyState()
@@ -375,6 +391,12 @@ class _ChatScreenState extends State<ChatScreen> {
             controller: _textController,
             isSending: _isSending,
             onSend: () => _handleSendMessage(),
+            onVoicePressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const VoiceScreen()),
+              );
+            },
           ),
         ],
       ),
@@ -412,6 +434,11 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildEmptyState() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(32.0),
@@ -423,32 +450,31 @@ class _ChatScreenState extends State<ChatScreen> {
               height: 56.0,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.violet.withOpacity(0.1),
-                border: Border.all(color: AppColors.violet.withOpacity(0.3)),
+                color: AppColors.tessTeal.withOpacity(0.12),
+                border: Border.all(color: AppColors.tessTeal.withOpacity(0.25)),
               ),
               child: const Icon(
                 Icons.chat_bubble_outline_rounded,
                 size: 28.0,
-                color: AppColors.violetLight,
+                color: AppColors.tessTeal,
               ),
             ),
             const SizedBox(height: 16.0),
-            const Text(
-              'No Transmissions in this Thread',
+            Text(
+              'Start a Conversation',
               style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 13.5,
+                fontSize: 16.0,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: textPrimary,
               ),
             ),
             const SizedBox(height: 8.0),
-            const Text(
-              'Consult TESS on your active work packages, productivity metrics, future trajectories, or ask questions.',
+            Text(
+              'Ask TESS about your tasks, schedule, predictions, or give an objective to execute.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 12.5,
+                color: textSecondary,
+                fontSize: 13.0,
                 height: 1.4,
               ),
             ),

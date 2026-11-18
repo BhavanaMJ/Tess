@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../shared/mascot/tess_mascot.dart';
 import '../../home/widgets/mascot_widget.dart';
 
 /// Interactive Chat Mascot Bar displaying real-time cognitive status
@@ -35,34 +36,41 @@ class ChatMascotHeader extends StatelessWidget {
   Color get _statusColor {
     switch (state) {
       case MascotState.thinking:
-        return AppColors.violetLight;
+        return AppColors.tessTeal;
       case MascotState.happy:
         return AppColors.success;
       case MascotState.attention:
-        return AppColors.danger;
+        return AppColors.warning;
       case MascotState.error:
         return AppColors.danger;
       default:
-        return AppColors.cyan;
+        return AppColors.vibrantMint;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryText = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final mutedText = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+    final surfaceColor = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       decoration: BoxDecoration(
-        color: AppColors.bgSecondary.withOpacity(0.9),
-        border: const Border(
-          bottom: BorderSide(color: AppColors.border, width: 1.0),
+        color: surfaceColor,
+        border: Border(
+          bottom: BorderSide(color: borderColor, width: 1.0),
         ),
       ),
       child: Row(
         children: [
-          // Small living mascot orb
-          MascotWidget(
-            state: state,
+          // Approved Compact TESS Mascot
+          TessMascot(
+            state: state.toTessMascotState(),
             size: 38.0,
+            showStatusBadge: false,
           ),
           const SizedBox(width: 12.0),
           // Conversation title and cognitive telemetry
@@ -83,18 +91,18 @@ class ChatMascotHeader extends StatelessWidget {
                             activeTitle,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.bold,
+                            style: TextStyle(
+                              color: primaryText,
+                              fontWeight: FontWeight.w700,
                               fontSize: 14.0,
                             ),
                           ),
                         ),
                         const SizedBox(width: 4.0),
-                        const Icon(
+                        Icon(
                           Icons.expand_more_rounded,
                           size: 16.0,
-                          color: AppColors.textMuted,
+                          color: mutedText,
                         ),
                       ],
                     ),
@@ -114,10 +122,8 @@ class ChatMascotHeader extends StatelessWidget {
                           _statusLabel,
                           style: TextStyle(
                             color: _statusColor,
-                            fontSize: 10.0,
-                            fontFamily: 'monospace',
+                            fontSize: 11.0,
                             fontWeight: FontWeight.w600,
-                            letterSpacing: 0.8,
                           ),
                         ),
                       ],
@@ -129,13 +135,21 @@ class ChatMascotHeader extends StatelessWidget {
           ),
           // Thread switcher action
           IconButton(
-            icon: const Icon(Icons.forum_outlined, color: AppColors.violetLight),
+            icon: Icon(
+              Icons.forum_outlined,
+              color: isDark ? AppColors.vibrantMint : AppColors.tessTeal,
+              size: 20,
+            ),
             tooltip: 'Switch Threads',
             onPressed: onOpenThreads,
           ),
           // Personal Memory Bank action
           IconButton(
-            icon: const Icon(Icons.psychology_outlined, color: AppColors.cyan),
+            icon: const Icon(
+              Icons.psychology_outlined,
+              color: AppColors.tessTeal,
+              size: 20,
+            ),
             tooltip: 'Personal Memory Bank',
             onPressed: onOpenMemories,
           ),
@@ -144,4 +158,3 @@ class ChatMascotHeader extends StatelessWidget {
     );
   }
 }
-

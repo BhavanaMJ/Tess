@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../shared/mascot/tess_mascot.dart';
+import '../../../shared/mascot/tess_mascot_state.dart';
 
+/// Legacy MascotState enum preserved for 100% backwards compatibility
+/// across existing feature controllers and tests.
 enum MascotState {
   idle,
   thinking,
@@ -13,8 +16,31 @@ enum MascotState {
   error,
 }
 
-/// Animated Living Holographic Mascot Orb
-class MascotWidget extends StatefulWidget {
+extension MascotStateX on MascotState {
+  TessMascotState toTessMascotState() {
+    switch (this) {
+      case MascotState.happy:
+        return TessMascotState.happy;
+      case MascotState.thinking:
+      case MascotState.speaking:
+        return TessMascotState.thinking;
+      case MascotState.planning:
+        return TessMascotState.planning;
+      case MascotState.attention:
+      case MascotState.intervening:
+        return TessMascotState.attention;
+      case MascotState.error:
+        return TessMascotState.error;
+      case MascotState.idle:
+      case MascotState.listening:
+        return TessMascotState.idle;
+    }
+  }
+}
+
+/// MascotWidget renders the approved TESS Expressive Companion mascot
+/// using the fluid organic silhouette and brand color identity.
+class MascotWidget extends StatelessWidget {
   final MascotState state;
   final double size;
 
@@ -25,144 +51,11 @@ class MascotWidget extends StatefulWidget {
   });
 
   @override
-  State<MascotWidget> createState() => _MascotWidgetState();
-}
-
-class _MascotWidgetState extends State<MascotWidget>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat(reverse: true);
-
-    _scaleAnimation = Tween<double>(begin: 0.96, end: 1.05).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  String get _faceText {
-    switch (widget.state) {
-      case MascotState.happy:
-        return '^_^';
-      case MascotState.thinking:
-        return 'O_O';
-      case MascotState.listening:
-        return 'O_o';
-      case MascotState.speaking:
-        return '^o^';
-      case MascotState.intervening:
-      case MascotState.attention:
-        return 'O_O!';
-      case MascotState.planning:
-        return '[o_o]';
-      case MascotState.error:
-        return 'x_x';
-      case MascotState.idle:
-        return '•_•';
-    }
-  }
-
-  Color get _stateColor {
-    switch (widget.state) {
-      case MascotState.happy:
-        return AppColors.success;
-      case MascotState.thinking:
-        return AppColors.violetLight;
-      case MascotState.listening:
-      case MascotState.planning:
-        return AppColors.cyan;
-      case MascotState.speaking:
-        return AppColors.success;
-      case MascotState.intervening:
-      case MascotState.attention:
-      case MascotState.error:
-        return AppColors.danger;
-      case MascotState.idle:
-        return AppColors.violet;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        AnimatedBuilder(
-          animation: _scaleAnimation,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: _scaleAnimation.value,
-              child: Container(
-                width: widget.size,
-                height: widget.size,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _stateColor.withOpacity(0.12),
-                  border: Border.all(
-                    color: _stateColor,
-                    width: 2.0,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: _stateColor.withOpacity(0.35),
-                      blurRadius: 16.0,
-                      spreadRadius: 2.0,
-                    ),
-                  ],
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  _faceText,
-                  style: TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: widget.size * 0.28,
-                    fontWeight: FontWeight.bold,
-                    color: _stateColor,
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-        const SizedBox(height: 8.0),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 6.0,
-              height: 6.0,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _stateColor,
-              ),
-            ),
-            const SizedBox(width: 6.0),
-            Text(
-              widget.state.name.toUpperCase(),
-              style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 10.0,
-                fontWeight: FontWeight.bold,
-                color: _stateColor,
-                letterSpacing: 1.2,
-              ),
-            ),
-          ],
-        ),
-      ],
+    return TessMascot(
+      state: state.toTessMascotState(),
+      size: size,
+      showStatusBadge: false,
     );
   }
 }
-

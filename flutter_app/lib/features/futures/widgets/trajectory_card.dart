@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../models/future_prediction_model.dart';
 
-/// Holographic Prediction Card displaying trajectory, confidence, and evidence
+/// Prediction Card displaying trajectory, confidence, and evidence
 class TrajectoryCard extends StatefulWidget {
   final FuturePredictionModel prediction;
 
@@ -16,21 +18,30 @@ class _TrajectoryCardState extends State<TrajectoryCard> {
   bool _isExpanded = false;
 
   Color get _statusColor {
-    if (widget.prediction.isRisk) return AppColors.danger;
-    if (widget.prediction.isPositive) return AppColors.success;
-    return AppColors.cyan;
+    if (widget.prediction.isRisk) return AppColors.accentDanger;
+    if (widget.prediction.isPositive) return AppColors.accentSuccess;
+    return AppColors.tessTeal;
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final color = _statusColor;
 
+    final cardBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textMuted = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+    final badgeBg = isDark ? AppColors.darkSurfaceElevated : AppColors.lightSecondary;
+
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-      padding: const EdgeInsets.all(14.0),
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 6.0),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.bgSurface,
-        borderRadius: BorderRadius.circular(12.0),
+        color: cardBg,
+        borderRadius: AppRadius.card,
         border: Border.all(
           color: color.withOpacity(0.35),
           width: 1.0,
@@ -38,8 +49,8 @@ class _TrajectoryCardState extends State<TrajectoryCard> {
         boxShadow: [
           BoxShadow(
             color: color.withOpacity(0.04),
-            blurRadius: 10.0,
-            spreadRadius: 1.0,
+            blurRadius: 8.0,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -53,37 +64,34 @@ class _TrajectoryCardState extends State<TrajectoryCard> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
                 decoration: BoxDecoration(
-                  color: AppColors.bgSecondary,
-                  borderRadius: BorderRadius.circular(6.0),
-                  border: Border.all(color: AppColors.border),
+                  color: badgeBg,
+                  borderRadius: AppRadius.xs,
+                  border: Border.all(color: borderColor),
                 ),
                 child: Text(
                   widget.prediction.timeHorizon.toUpperCase(),
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
+                  style: TextStyle(
+                    color: textPrimary,
                     fontSize: 10.0,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'monospace',
                   ),
                 ),
               ),
-              const SizedBox(width: 8.0),
+              const SizedBox(width: AppSpacing.xs),
               // Type pill
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
                 decoration: BoxDecoration(
                   color: color.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(6.0),
-                  border: Border.all(color: color.withOpacity(0.4)),
+                  borderRadius: AppRadius.xs,
+                  border: Border.all(color: color.withOpacity(0.3)),
                 ),
                 child: Text(
                   widget.prediction.predictionType,
                   style: TextStyle(
                     color: color,
-                    fontSize: 10.0,
+                    fontSize: 10.5,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'monospace',
-                    letterSpacing: 1.0,
                   ),
                 ),
               ),
@@ -93,39 +101,37 @@ class _TrajectoryCardState extends State<TrajectoryCard> {
                 widget.prediction.formattedProbability,
                 style: TextStyle(
                   color: color,
-                  fontSize: 11.0,
+                  fontSize: 12.0,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'monospace',
                 ),
               ),
-              const SizedBox(width: 6.0),
+              const SizedBox(width: AppSpacing.xs),
               // Confidence Badge
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
                 decoration: BoxDecoration(
-                  color: AppColors.bgSecondary,
-                  borderRadius: BorderRadius.circular(4.0),
-                  border: Border.all(color: AppColors.border),
+                  color: badgeBg,
+                  borderRadius: AppRadius.xs,
+                  border: Border.all(color: borderColor),
                 ),
                 child: Text(
                   'CONF: ${widget.prediction.confidence}',
-                  style: const TextStyle(
-                    color: AppColors.textMuted,
-                    fontSize: 9.0,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'monospace',
+                  style: TextStyle(
+                    color: textMuted,
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10.0),
+          const SizedBox(height: AppSpacing.sm),
           // Title
           Text(
             widget.prediction.title,
-            style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 14.0,
+            style: TextStyle(
+              color: textPrimary,
+              fontSize: 15.0,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -133,14 +139,14 @@ class _TrajectoryCardState extends State<TrajectoryCard> {
             const SizedBox(height: 4.0),
             Text(
               widget.prediction.description,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 12.5,
+              style: TextStyle(
+                color: textSecondary,
+                fontSize: 13.0,
                 height: 1.35,
               ),
             ),
           ],
-          const SizedBox(height: 10.0),
+          const SizedBox(height: AppSpacing.sm),
           // Expand / Collapse Details (Evidence & Reasoning)
           InkWell(
             onTap: () => setState(() => _isExpanded = !_isExpanded),
@@ -148,76 +154,73 @@ class _TrajectoryCardState extends State<TrajectoryCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  _isExpanded ? 'HIDE EVIDENCE & REASONING' : 'VIEW EVIDENCE & REASONING',
+                  _isExpanded ? 'Hide evidence & reasoning' : 'View evidence & reasoning',
                   style: const TextStyle(
-                    color: AppColors.cyan,
-                    fontSize: 10.0,
-                    fontFamily: 'monospace',
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
+                    color: AppColors.tessTeal,
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 Icon(
-                  _isExpanded ? Icons.expand_less : Icons.expand_more,
-                  size: 16.0,
-                  color: AppColors.cyan,
+                  _isExpanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                  size: 18.0,
+                  color: AppColors.tessTeal,
                 ),
               ],
             ),
           ),
           if (_isExpanded) ...[
-            const SizedBox(height: 10.0),
-            const Divider(color: AppColors.border, height: 1.0),
-            const SizedBox(height: 10.0),
+            const SizedBox(height: AppSpacing.xs),
+            Divider(color: borderColor, height: 16.0),
             if (widget.prediction.reasoning.isNotEmpty) ...[
-              const Text(
-                'NEURAL REASONING:',
+              Text(
+                'COMPANION REASONING',
                 style: TextStyle(
-                  fontFamily: 'monospace',
                   fontSize: 10.0,
-                  color: AppColors.textMuted,
-                  letterSpacing: 1.0,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                  color: textMuted,
                 ),
               ),
               const SizedBox(height: 4.0),
               Text(
                 widget.prediction.reasoning,
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 12.0,
+                style: TextStyle(
+                  color: textSecondary,
+                  fontSize: 12.5,
                   fontStyle: FontStyle.italic,
                   height: 1.35,
                 ),
               ),
-              const SizedBox(height: 8.0),
+              const SizedBox(height: AppSpacing.xs),
             ],
             if (widget.prediction.evidence.isNotEmpty) ...[
-              const Text(
-                'SUPPORTING EVIDENCE:',
+              Text(
+                'SUPPORTING EVIDENCE',
                 style: TextStyle(
-                  fontFamily: 'monospace',
                   fontSize: 10.0,
-                  color: AppColors.textMuted,
-                  letterSpacing: 1.0,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                  color: textMuted,
                 ),
               ),
               const SizedBox(height: 4.0),
               ...widget.prediction.evidence.map(
                 (ev) => Padding(
-                  padding: const EdgeInsets.only(bottom: 2.0),
+                  padding: const EdgeInsets.only(bottom: 3.0),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
                         '• ',
-                        style: TextStyle(color: AppColors.cyan, fontSize: 12.0),
+                        style: TextStyle(color: AppColors.tessTeal, fontSize: 13.0),
                       ),
                       Expanded(
                         child: Text(
                           ev,
-                          style: const TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 11.5,
+                          style: TextStyle(
+                            color: textSecondary,
+                            fontSize: 12.0,
                           ),
                         ),
                       ),
@@ -232,4 +235,3 @@ class _TrajectoryCardState extends State<TrajectoryCard> {
     );
   }
 }
-

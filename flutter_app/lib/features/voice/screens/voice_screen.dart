@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../home/widgets/mascot_widget.dart';
 import '../controllers/voice_conversation_controller.dart';
 import '../models/device_registration_model.dart';
@@ -107,7 +109,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Device registered: ${reg.deviceId}'),
-          backgroundColor: AppColors.success,
+          backgroundColor: AppColors.accentSuccess,
         ),
       );
     } catch (e) {
@@ -188,33 +190,39 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final cardBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final textMuted = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Row(
           children: [
-            const Text(
-              'VOICE & DEVICE',
+            Text(
+              'Voice & Device',
               style: TextStyle(
-                fontFamily: 'monospace',
                 fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.xs),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: AppColors.cyan.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: AppColors.cyan.withValues(alpha: 0.4)),
+                color: AppColors.tessTeal.withOpacity(0.12),
+                borderRadius: AppRadius.pill,
+                border: Border.all(color: AppColors.tessTeal.withOpacity(0.35)),
               ),
               child: const Text(
-                'AI MULTIMODAL',
+                'MULTIMODAL',
                 style: TextStyle(
-                  fontSize: 9,
-                  fontFamily: 'monospace',
+                  fontSize: 10,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.cyan,
+                  color: AppColors.tessTeal,
+                  letterSpacing: 0.5,
                 ),
               ),
             ),
@@ -222,7 +230,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -230,17 +238,24 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: AppColors.bgSecondary,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
+                color: cardBg,
+                borderRadius: AppRadius.card,
+                border: Border.all(color: borderColor),
+                boxShadow: [
+                  BoxShadow(
+                    color: isDark ? Colors.black.withOpacity(0.2) : Colors.black.withOpacity(0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
                   MascotWidget(
                     state: _mascotState,
-                    size: 38,
+                    size: 40,
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -248,16 +263,15 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                         Text(
                           _mascotTitle,
                           style: const TextStyle(
-                            fontSize: 11,
-                            fontFamily: 'monospace',
+                            fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.cyan,
+                            color: AppColors.tessTeal,
                           ),
                         ),
                         const SizedBox(height: 2),
-                        const Text(
+                        Text(
                           'Speech-to-text, neural synthesis, and device intelligence.',
-                          style: TextStyle(fontSize: 10, color: AppColors.textMuted),
+                          style: TextStyle(fontSize: 11, color: textMuted),
                         ),
                       ],
                     ),
@@ -266,50 +280,50 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
               ),
             ),
 
-            const SizedBox(height: 14),
+            const SizedBox(height: AppSpacing.md),
 
             // Tab Selector (VOICE DIRECTIVES / DEVICE INTELLIGENCE)
             Container(
               decoration: BoxDecoration(
-                color: AppColors.bgSecondary,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.border),
+                color: cardBg,
+                borderRadius: AppRadius.pill,
+                border: Border.all(color: borderColor),
               ),
               child: Row(
                 children: [
                   Expanded(
-                    child: _buildTabButton(0, 'VOICE DIRECTIVES', Icons.mic_rounded),
+                    child: _buildTabButton(0, 'VOICE DIRECTIVES', Icons.mic_rounded, isDark),
                   ),
                   Expanded(
-                    child: _buildTabButton(1, 'DEVICE & VISION', Icons.devices_other_rounded),
+                    child: _buildTabButton(1, 'DEVICE & VISION', Icons.devices_other_rounded, isDark),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
 
             // Error Notice Banner
             if (_controller.errorMessage != null || _deviceError != null) ...[
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.danger.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.danger.withValues(alpha: 0.4)),
+                  color: AppColors.accentDanger.withOpacity(0.1),
+                  borderRadius: AppRadius.card,
+                  border: Border.all(color: AppColors.accentDanger.withOpacity(0.3)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.warning_amber_rounded, color: AppColors.danger, size: 20),
+                    const Icon(Icons.warning_amber_rounded, color: AppColors.accentDanger, size: 20),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         _controller.errorMessage ?? _deviceError ?? 'Unknown error',
-                        style: const TextStyle(fontSize: 11, color: AppColors.danger),
+                        style: const TextStyle(fontSize: 12, color: AppColors.accentDanger),
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, color: AppColors.danger, size: 16),
+                      icon: const Icon(Icons.close, color: AppColors.accentDanger, size: 16),
                       onPressed: () {
                         setState(() => _deviceError = null);
                         _controller.reset();
@@ -318,14 +332,14 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
             ],
 
             if (_selectedTab == 0) ...[
               // VOICE DIRECTIVES TAB
               Center(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  padding: const EdgeInsets.symmetric(vertical: 20.0),
                   child: VoiceRecorderButton(
                     isRecording: _controller.isRecording,
                     duration: _controller.recordingDuration,
@@ -341,11 +355,11 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                     padding: EdgeInsets.all(16.0),
                     child: Column(
                       children: [
-                        CircularProgressIndicator(strokeWidth: 2, color: AppColors.cyan),
+                        CircularProgressIndicator(strokeWidth: 2, color: AppColors.tessTeal),
                         SizedBox(height: 10),
                         Text(
                           'Transcribing audio with Whisper STT...',
-                          style: TextStyle(fontSize: 11, fontFamily: 'monospace', color: AppColors.cyan),
+                          style: TextStyle(fontSize: 12, color: AppColors.tessTeal),
                         ),
                       ],
                     ),
@@ -362,7 +376,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                   onSubmit: _controller.submitTranscriptToChat,
                   onDiscard: _controller.reset,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
               ],
 
               // Assistant Voice Response Player (TTS)
@@ -382,7 +396,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                 onRegister: _handleRegisterDevice,
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
               ScreenAnalysisCard(
                 analysisResult: _screenResult,
@@ -396,17 +410,17 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildTabButton(int index, String label, IconData icon) {
+  Widget _buildTabButton(int index, String label, IconData icon, bool isDark) {
     final isSelected = _selectedTab == index;
     return InkWell(
       onTap: () => setState(() => _selectedTab = index),
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: AppRadius.pill,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.cyan.withValues(alpha: 0.15) : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
-          border: isSelected ? Border.all(color: AppColors.cyan.withValues(alpha: 0.4)) : null,
+          color: isSelected ? AppColors.tessTeal.withOpacity(0.12) : Colors.transparent,
+          borderRadius: AppRadius.pill,
+          border: isSelected ? Border.all(color: AppColors.tessTeal.withOpacity(0.4)) : null,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -414,16 +428,16 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
             Icon(
               icon,
               size: 14,
-              color: isSelected ? AppColors.cyan : AppColors.textMuted,
+              color: isSelected ? AppColors.tessTeal : (isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
             ),
             const SizedBox(width: 6),
             Text(
               label,
               style: TextStyle(
-                fontSize: 10,
-                fontFamily: 'monospace',
+                fontSize: 10.5,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: isSelected ? AppColors.cyan : AppColors.textMuted,
+                color: isSelected ? AppColors.tessTeal : (isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                letterSpacing: 0.5,
               ),
             ),
           ],
@@ -432,4 +446,3 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
     );
   }
 }
-

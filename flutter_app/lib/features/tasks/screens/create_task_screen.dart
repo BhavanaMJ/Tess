@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/task_model.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../../shared/widgets/tess_button.dart';
 import '../../../shared/widgets/tess_card.dart';
 
-/// CreateTaskScreen demonstrates Module 7: Forms and Navigation in Flutter:
+/// CreateTaskScreen demonstrates:
 /// - Form widget with GlobalKey<FormState>
-/// - Form validation logic (empty checks, length requirements)
+/// - Form validation logic
 /// - TextEditingController for managing text inputs
-/// - FocusNode for managing input focus transitions
 /// - Returning data back to the calling screen via Navigator.pop(context, result)
 class CreateTaskScreen extends StatefulWidget {
   const CreateTaskScreen({super.key});
@@ -18,23 +19,16 @@ class CreateTaskScreen extends StatefulWidget {
 }
 
 class _CreateTaskScreenState extends State<CreateTaskScreen> {
-  // 1. Form Key to access FormState methods (validate(), save(), reset())
   final _formKey = GlobalKey<FormState>();
-
-  // 2. Controllers for capturing text field values
   final _titleController = TextEditingController();
   final _categoryController = TextEditingController();
-
-  // 3. FocusNodes for programmatic focus shifting
   final _titleFocusNode = FocusNode();
   final _categoryFocusNode = FocusNode();
 
-  // Form field state
   TaskPriority _selectedPriority = TaskPriority.medium;
 
   @override
   void dispose() {
-    // Crucial Flutter Engineering Rule: Always dispose controllers & FocusNodes!
     _titleController.dispose();
     _categoryController.dispose();
     _titleFocusNode.dispose();
@@ -43,53 +37,58 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   }
 
   void _submitForm() {
-    // Validate all form fields using the GlobalKey
     if (_formKey.currentState?.validate() ?? false) {
-      // Create new Task instance using the named constructor
       final newTask = Task.create(
         title: _titleController.text.trim(),
         category: _categoryController.text.trim().toUpperCase(),
         priority: _selectedPriority,
       );
-
-      // Return the newly constructed Task to the parent screen and pop the route
       Navigator.pop(context, newTask);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textMuted = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+    final inputBg = isDark ? AppColors.darkSurfaceElevated : AppColors.lightSecondary;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'DISPATCH NEW OBJECTIVE',
           style: TextStyle(
-            fontSize: 15,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
-            letterSpacing: 1.2,
+            color: textPrimary,
           ),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Intro Instruction Card
+              // Instruction Card
               TessCard(
-                borderColor: AppColors.violet.withValues(alpha: 0.3),
-                child: const Row(
+                borderColor: AppColors.tessTeal.withOpacity(0.3),
+                child: Row(
                   children: [
-                    Icon(Icons.info_outline, color: AppColors.cyan, size: 20),
-                    SizedBox(width: 12),
+                    const Icon(Icons.info_outline, color: AppColors.tessTeal, size: 20),
+                    const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
                         'New objectives are integrated into TESS Future Engine to calculate timeline trajectories.',
                         style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
+                          fontSize: 12.5,
+                          color: textSecondary,
                           height: 1.4,
                         ),
                       ),
@@ -97,17 +96,16 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.lg),
 
               // Title Field
-              const Text(
+              Text(
                 'OBJECTIVE TITLE',
                 style: TextStyle(
                   fontSize: 11,
-                  fontFamily: 'monospace',
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textMuted,
-                  letterSpacing: 1.0,
+                  color: textMuted,
+                  letterSpacing: 0.8,
                 ),
               ),
               const SizedBox(height: 8),
@@ -115,19 +113,19 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                 controller: _titleController,
                 focusNode: _titleFocusNode,
                 textInputAction: TextInputAction.next,
-                style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+                style: TextStyle(color: textPrimary, fontSize: 14),
                 decoration: InputDecoration(
                   hintText: 'e.g. Implement Neural Cache Layer',
-                  hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+                  hintStyle: TextStyle(color: textMuted, fontSize: 13),
                   filled: true,
-                  fillColor: AppColors.bgSurface,
+                  fillColor: inputBg,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderRadius: AppRadius.card,
+                    borderSide: BorderSide(color: borderColor),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: const BorderSide(color: AppColors.violet),
+                  focusedBorder: const OutlineInputBorder(
+                    borderRadius: AppRadius.card,
+                    borderSide: BorderSide(color: AppColors.tessTeal),
                   ),
                 ),
                 validator: (value) {
@@ -140,21 +138,19 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                   return null;
                 },
                 onFieldSubmitted: (_) {
-                  // Shift focus to the next field when the user presses Enter/Next
                   FocusScope.of(context).requestFocus(_categoryFocusNode);
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
               // Category Field
-              const Text(
+              Text(
                 'SYSTEM CATEGORY',
                 style: TextStyle(
                   fontSize: 11,
-                  fontFamily: 'monospace',
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textMuted,
-                  letterSpacing: 1.0,
+                  color: textMuted,
+                  letterSpacing: 0.8,
                 ),
               ),
               const SizedBox(height: 8),
@@ -162,19 +158,19 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                 controller: _categoryController,
                 focusNode: _categoryFocusNode,
                 textInputAction: TextInputAction.done,
-                style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+                style: TextStyle(color: textPrimary, fontSize: 14),
                 decoration: InputDecoration(
                   hintText: 'e.g. CORE // ARCHITECTURE',
-                  hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+                  hintStyle: TextStyle(color: textMuted, fontSize: 13),
                   filled: true,
-                  fillColor: AppColors.bgSurface,
+                  fillColor: inputBg,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderRadius: AppRadius.card,
+                    borderSide: BorderSide(color: borderColor),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: const BorderSide(color: AppColors.violet),
+                  focusedBorder: const OutlineInputBorder(
+                    borderRadius: AppRadius.card,
+                    borderSide: BorderSide(color: AppColors.tessTeal),
                   ),
                 ),
                 validator: (value) {
@@ -185,17 +181,16 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                 },
                 onFieldSubmitted: (_) => _submitForm(),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
-              // Priority Selector using Segmented Choice Chips
-              const Text(
+              // Priority Selector
+              Text(
                 'PRIORITY VECTOR',
                 style: TextStyle(
                   fontSize: 11,
-                  fontFamily: 'monospace',
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textMuted,
-                  letterSpacing: 1.0,
+                  color: textMuted,
+                  letterSpacing: 0.8,
                 ),
               ),
               const SizedBox(height: 8),
@@ -211,16 +206,16 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                             _selectedPriority = priority;
                           });
                         },
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: AppRadius.pill,
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 10.0),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? AppColors.violet.withValues(alpha: 0.25)
-                                : AppColors.bgSurface,
-                            borderRadius: BorderRadius.circular(8.0),
+                                ? AppColors.tessTeal.withOpacity(0.15)
+                                : inputBg,
+                            borderRadius: AppRadius.pill,
                             border: Border.all(
-                              color: isSelected ? AppColors.violet : AppColors.border,
+                              color: isSelected ? AppColors.tessTeal : borderColor,
                             ),
                           ),
                           child: Center(
@@ -229,10 +224,9 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'monospace',
                                 color: isSelected
-                                    ? AppColors.textPrimary
-                                    : AppColors.textMuted,
+                                    ? AppColors.tessTeal
+                                    : textMuted,
                               ),
                             ),
                           ),
@@ -257,4 +251,3 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
     );
   }
 }
-

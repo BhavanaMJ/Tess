@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../shared/mascot/tess_mascot.dart';
 import 'mascot_widget.dart';
 
-/// MascotSection integrates the animated breathing orb with real application states.
+/// MascotSection presents the animated TESS companion with dynamic cognitive status
+/// seamlessly integrated into both Light and Dark themes.
 class MascotSection extends StatelessWidget {
   final MascotState state;
   final String statusText;
@@ -13,39 +15,45 @@ class MascotSection extends StatelessWidget {
     required this.statusText,
   });
 
-  Color get _accentColor {
+  Color get _statusColor {
     switch (state) {
       case MascotState.happy:
-      case MascotState.speaking:
         return AppColors.success;
       case MascotState.thinking:
       case MascotState.planning:
-        return AppColors.cyan;
+        return AppColors.tessTeal;
       case MascotState.attention:
-      case MascotState.intervening:
+        return AppColors.warning;
       case MascotState.error:
         return AppColors.danger;
       case MascotState.idle:
-      case MascotState.listening:
-        return AppColors.violet;
+      default:
+        return AppColors.vibrantMint;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        MascotWidget(
-          state: state,
-          size: 76.0,
+        TessMascot(
+          state: state.toTessMascotState(),
+          size: 80.0,
+          showStatusBadge: false,
         ),
-        const SizedBox(height: 12.0),
+        const SizedBox(height: 10.0),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           decoration: BoxDecoration(
-            color: _accentColor.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: _accentColor.withValues(alpha: 0.3)),
+            color: _statusColor.withValues(alpha: isDark ? 0.16 : 0.08),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: _statusColor.withValues(alpha: isDark ? 0.35 : 0.22),
+              width: 1.0,
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -54,25 +62,25 @@ class MascotSection extends StatelessWidget {
                 width: 6,
                 height: 6,
                 decoration: BoxDecoration(
-                  color: _accentColor,
+                  color: _statusColor,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: _accentColor.withValues(alpha: 0.6),
+                      color: _statusColor.withValues(alpha: 0.6),
                       blurRadius: 4,
+                      spreadRadius: 1,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: 8),
               Text(
                 statusText.toUpperCase(),
                 style: TextStyle(
-                  fontSize: 10,
-                  fontFamily: 'monospace',
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.0,
-                  color: _accentColor,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
                 ),
               ),
             ],
@@ -82,4 +90,3 @@ class MascotSection extends StatelessWidget {
     );
   }
 }
-

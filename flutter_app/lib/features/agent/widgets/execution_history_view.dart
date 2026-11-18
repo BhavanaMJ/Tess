@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../../shared/widgets/tess_card.dart';
 import '../models/agent_plan_model.dart';
 
@@ -17,21 +19,27 @@ class ExecutionHistoryView extends StatelessWidget {
   Color _getStatusColor(String status) {
     switch (status) {
       case 'SUCCESS':
-        return AppColors.success;
+        return AppColors.accentSuccess;
       case 'EXECUTING':
-        return AppColors.cyan;
+        return AppColors.tessTeal;
       case 'FAILED':
-        return AppColors.danger;
+        return AppColors.accentDanger;
       case 'CANCELLED':
         return AppColors.textMuted;
       case 'READY':
       default:
-        return AppColors.violet;
+        return AppColors.tessTeal;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textMuted = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+    final chipBg = isDark ? AppColors.darkSurfaceElevated : AppColors.lightSecondary;
+
     if (plans.isEmpty) {
       return Center(
         child: Padding(
@@ -39,23 +47,21 @@ class ExecutionHistoryView extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.history_toggle_off_rounded, size: 48, color: AppColors.textMuted.withValues(alpha: 0.5)),
+              Icon(Icons.history_toggle_off_rounded, size: 48, color: textMuted.withOpacity(0.5)),
               const SizedBox(height: 12),
-              const Text(
-                'NO AGENT HISTORY',
+              Text(
+                'No Agent History',
                 style: TextStyle(
-                  fontSize: 13,
-                  fontFamily: 'monospace',
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                  letterSpacing: 1.0,
+                  color: textPrimary,
                 ),
               ),
               const SizedBox(height: 6),
-              const Text(
+              Text(
                 'Plans generated through the objective composer will be preserved here with complete audit trails.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+                style: TextStyle(fontSize: 12, color: textMuted),
               ),
             ],
           ),
@@ -75,47 +81,44 @@ class ExecutionHistoryView extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 10.0),
           child: InkWell(
             onTap: () => onSelectPlan(plan),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: AppRadius.card,
             child: TessCard(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(AppSpacing.md),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: statusColor.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: statusColor.withValues(alpha: 0.3)),
+                          color: statusColor.withOpacity(0.12),
+                          borderRadius: AppRadius.xs,
+                          border: Border.all(color: statusColor.withOpacity(0.35)),
                         ),
                         child: Text(
                           plan.status,
                           style: TextStyle(
-                            fontSize: 9,
-                            fontFamily: 'monospace',
+                            fontSize: 10,
                             fontWeight: FontWeight.bold,
                             color: statusColor,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.sm),
                       Text(
                         '${plan.totalSteps} Step(s)',
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontFamily: 'monospace',
-                          color: AppColors.textMuted,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: textMuted,
                         ),
                       ),
                       const Spacer(),
                       Text(
                         plan.formattedDate,
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontFamily: 'monospace',
-                          color: AppColors.textMuted,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: textMuted,
                         ),
                       ),
                     ],
@@ -123,29 +126,29 @@ class ExecutionHistoryView extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     plan.objective,
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: TextStyle(
+                      fontSize: 13.5,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
                   Row(
                     children: [
                       ...plan.steps.take(3).map((step) {
                         return Container(
                           margin: const EdgeInsets.only(right: 6),
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: AppColors.bgSecondary,
-                            borderRadius: BorderRadius.circular(4),
+                            color: chipBg,
+                            borderRadius: AppRadius.xs,
                           ),
                           child: Text(
                             step.toolName.split('_').first.toUpperCase(),
                             style: const TextStyle(
-                              fontSize: 8,
-                              fontFamily: 'monospace',
-                              color: AppColors.cyan,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.tessTeal,
                             ),
                           ),
                         );
@@ -153,10 +156,10 @@ class ExecutionHistoryView extends StatelessWidget {
                       if (plan.steps.length > 3)
                         Text(
                           '+${plan.steps.length - 3} more',
-                          style: const TextStyle(fontSize: 9, color: AppColors.textMuted),
+                          style: TextStyle(fontSize: 10, color: textMuted),
                         ),
                       const Spacer(),
-                      const Icon(Icons.chevron_right_rounded, size: 16, color: AppColors.textMuted),
+                      Icon(Icons.chevron_right_rounded, size: 18, color: textMuted),
                     ],
                   ),
                 ],
@@ -168,4 +171,3 @@ class ExecutionHistoryView extends StatelessWidget {
     );
   }
 }
-

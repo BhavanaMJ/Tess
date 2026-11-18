@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 
 /// Bottom sheet dialog allowing manual encoding of personal memory into TESS
 class CreateMemorySheet extends StatefulWidget {
@@ -56,7 +58,7 @@ class _CreateMemorySheetState extends State<CreateMemorySheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to encode memory: $e'),
-            backgroundColor: AppColors.danger,
+            backgroundColor: AppColors.accentDanger,
           ),
         );
       }
@@ -65,18 +67,27 @@ class _CreateMemorySheetState extends State<CreateMemorySheet> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final sheetBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final inputBg = isDark ? AppColors.darkSurfaceElevated : AppColors.lightSecondary;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textMuted = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.bgSecondary,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+      decoration: BoxDecoration(
+        color: sheetBg,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
         border: Border(
-          top: BorderSide(color: AppColors.cyan, width: 1.5),
+          top: BorderSide(color: AppColors.tessTeal.withOpacity(0.3), width: 1.5),
         ),
       ),
       padding: EdgeInsets.only(
-        top: 16.0,
-        left: 20.0,
-        right: 20.0,
+        top: AppSpacing.md,
+        left: AppSpacing.lg,
+        right: AppSpacing.lg,
         bottom: MediaQuery.of(context).viewInsets.bottom + 20.0,
       ),
       child: SafeArea(
@@ -93,36 +104,34 @@ class _CreateMemorySheetState extends State<CreateMemorySheet> {
                     width: 36.0,
                     height: 4.0,
                     decoration: BoxDecoration(
-                      color: AppColors.border,
-                      borderRadius: BorderRadius.circular(2.0),
+                      color: borderColor,
+                      borderRadius: AppRadius.pill,
                     ),
                   ),
                 ),
-                const SizedBox(height: 16.0),
-                const Text(
-                  'ENCODE PERSONAL MEMORY',
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  'Remember a Note or Preference',
                   style: TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: 12.0,
+                    fontSize: 16.0,
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 1.5,
-                    color: AppColors.cyan,
+                    color: textPrimary,
                   ),
                 ),
-                const SizedBox(height: 6.0),
-                const Text(
+                const SizedBox(height: 4.0),
+                Text(
                   'Store a fact, preference, or operating directive into TESS persistent context continuity.',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 12.5),
+                  style: TextStyle(color: textSecondary, fontSize: 13.0),
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: AppSpacing.md),
                 // Category Selector
-                const Text(
+                Text(
                   'CATEGORY',
                   style: TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: 10.0,
-                    color: AppColors.textMuted,
-                    letterSpacing: 1.0,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.bold,
+                    color: textMuted,
+                    letterSpacing: 0.8,
                   ),
                 ),
                 const SizedBox(height: 8.0),
@@ -140,31 +149,32 @@ class _CreateMemorySheetState extends State<CreateMemorySheet> {
                         }
                       },
                       labelStyle: TextStyle(
-                        fontFamily: 'monospace',
                         fontSize: 11.0,
-                        fontWeight: FontWeight.bold,
-                        color: isSelected ? Colors.white : AppColors.textSecondary,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                        color: isSelected
+                            ? Colors.white
+                            : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
                       ),
-                      selectedColor: AppColors.violet,
-                      backgroundColor: AppColors.bgSurface,
+                      selectedColor: AppColors.tessTeal,
+                      backgroundColor: inputBg,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: AppRadius.pill,
                         side: BorderSide(
-                          color: isSelected ? AppColors.violet : AppColors.border,
+                          color: isSelected ? AppColors.tessTeal : borderColor,
                         ),
                       ),
                     );
                   }).toList(),
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: AppSpacing.md),
                 // Content Input
-                const Text(
+                Text(
                   'DIRECTIVE / FACT CONTENT',
                   style: TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: 10.0,
-                    color: AppColors.textMuted,
-                    letterSpacing: 1.0,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.bold,
+                    color: textMuted,
+                    letterSpacing: 0.8,
                   ),
                 ),
                 const SizedBox(height: 8.0),
@@ -172,7 +182,7 @@ class _CreateMemorySheetState extends State<CreateMemorySheet> {
                   controller: _contentController,
                   maxLines: 4,
                   minLines: 2,
-                  style: const TextStyle(color: AppColors.textPrimary, fontSize: 14.0),
+                  style: TextStyle(color: textPrimary, fontSize: 14.0),
                   validator: (val) {
                     if (val == null || val.trim().isEmpty) {
                       return 'Please enter memory content';
@@ -181,39 +191,38 @@ class _CreateMemorySheetState extends State<CreateMemorySheet> {
                   },
                   decoration: InputDecoration(
                     hintText: 'e.g. Commander prioritizes focused deep work before 12:00...',
-                    hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 13.0),
+                    hintStyle: TextStyle(color: textMuted, fontSize: 13.0),
                     filled: true,
-                    fillColor: AppColors.bgSurface,
+                    fillColor: inputBg,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(color: AppColors.border),
+                      borderRadius: AppRadius.card,
+                      borderSide: BorderSide(color: borderColor),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(color: AppColors.cyan),
+                    focusedBorder: const OutlineInputBorder(
+                      borderRadius: AppRadius.card,
+                      borderSide: BorderSide(color: AppColors.tessTeal),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: AppSpacing.md),
                 // Importance Selector
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'IMPORTANCE RATING',
                       style: TextStyle(
-                        fontFamily: 'monospace',
-                        fontSize: 10.0,
-                        color: AppColors.textMuted,
-                        letterSpacing: 1.0,
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.bold,
+                        color: textMuted,
+                        letterSpacing: 0.8,
                       ),
                     ),
                     Text(
                       'Level $_importance / 5',
                       style: const TextStyle(
-                        fontFamily: 'monospace',
-                        fontSize: 11.0,
-                        color: AppColors.amber,
+                        fontSize: 12.0,
+                        color: AppColors.accentWarning,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -224,22 +233,22 @@ class _CreateMemorySheetState extends State<CreateMemorySheet> {
                   min: 1,
                   max: 5,
                   divisions: 4,
-                  activeColor: AppColors.amber,
-                  inactiveColor: AppColors.border,
+                  activeColor: AppColors.accentWarning,
+                  inactiveColor: borderColor,
                   onChanged: (val) {
                     setState(() => _importance = val.round());
                   },
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: AppSpacing.md),
                 // Submit Button
                 ElevatedButton(
                   onPressed: _isSaving ? null : _handleSave,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.cyan,
-                    foregroundColor: Colors.black,
+                    backgroundColor: AppColors.tessTeal,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: AppRadius.pill,
                     ),
                   ),
                   child: _isSaving
@@ -248,15 +257,15 @@ class _CreateMemorySheetState extends State<CreateMemorySheet> {
                           height: 20.0,
                           child: CircularProgressIndicator(
                             strokeWidth: 2.0,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
                       : const Text(
-                          'COMMIT TO MEMORY BANK',
+                          'Save to Memory Bank',
                           style: TextStyle(
-                            fontFamily: 'monospace',
                             fontWeight: FontWeight.bold,
-                            letterSpacing: 1.2,
+                            fontSize: 14.0,
+                            letterSpacing: 0.5,
                           ),
                         ),
                 ),
@@ -268,4 +277,3 @@ class _CreateMemorySheetState extends State<CreateMemorySheet> {
     );
   }
 }
-

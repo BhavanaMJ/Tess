@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/chat_message_model.dart';
 
-/// Holographic Chat Bubble representing a message in the conversation stream.
+/// Refined Chat Bubble for the conversational stream.
+/// Adapts gracefully to Light and Dark themes with comfortable typography and spacing.
 class ChatBubble extends StatelessWidget {
   final ChatMessageModel message;
   final VoidCallback? onRetry;
@@ -15,52 +16,69 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isUser = message.isUser;
+    final primaryText = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final mutedText = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+
+    // Background & text color logic
+    Color bubbleBg;
+    Color textColor;
+    BorderSide borderSide;
+
+    if (isUser) {
+      bubbleBg = isDark
+          ? AppColors.tessTeal.withValues(alpha: 0.35)
+          : AppColors.vibrantMint.withValues(alpha: 0.20);
+      textColor = primaryText;
+      borderSide = BorderSide(
+        color: isDark ? AppColors.vibrantMint.withValues(alpha: 0.4) : AppColors.tessTeal.withValues(alpha: 0.35),
+        width: 1.0,
+      );
+    } else {
+      bubbleBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+      textColor = primaryText;
+      borderSide = BorderSide(
+        color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+        width: 1.0,
+      );
+    }
+
+    if (message.hasFailed) {
+      borderSide = const BorderSide(color: AppColors.danger, width: 1.2);
+    }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Row(
-        mainAxisAlignment:
-            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isUser) ...[
-            _buildAssistantAvatar(),
+            _buildAssistantAvatar(isDark),
             const SizedBox(width: 8.0),
           ],
           Flexible(
             child: Column(
-              crossAxisAlignment:
-                  isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14.0,
-                    vertical: 10.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
                   decoration: BoxDecoration(
-                    color: isUser
-                        ? AppColors.violet.withOpacity(0.25)
-                        : AppColors.bgSurface,
+                    color: bubbleBg,
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(16.0),
                       topRight: const Radius.circular(16.0),
                       bottomLeft: Radius.circular(isUser ? 16.0 : 4.0),
                       bottomRight: Radius.circular(isUser ? 4.0 : 16.0),
                     ),
-                    border: Border.all(
-                      color: message.hasFailed
-                          ? AppColors.danger
-                          : (isUser
-                              ? AppColors.violet.withOpacity(0.5)
-                              : AppColors.border),
-                      width: 1.0,
-                    ),
+                    border: Border.fromBorderSide(borderSide),
                     boxShadow: [
-                      if (!isUser)
+                      if (!isUser && !isDark)
                         BoxShadow(
-                          color: AppColors.cyan.withOpacity(0.05),
-                          blurRadius: 8.0,
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
                         ),
                     ],
                   ),
@@ -69,10 +87,11 @@ class ChatBubble extends StatelessWidget {
                     children: [
                       SelectableText(
                         message.content,
-                        style: const TextStyle(
-                          color: AppColors.textPrimary,
+                        style: TextStyle(
+                          color: textColor,
                           fontSize: 14.0,
                           height: 1.45,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                       const SizedBox(height: 4.0),
@@ -81,10 +100,10 @@ class ChatBubble extends StatelessWidget {
                         children: [
                           Text(
                             message.formattedTime,
-                            style: const TextStyle(
-                              color: AppColors.textMuted,
+                            style: TextStyle(
+                              color: mutedText,
                               fontSize: 10.0,
-                              fontFamily: 'monospace',
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                           if (message.isPending) ...[
@@ -94,9 +113,7 @@ class ChatBubble extends StatelessWidget {
                               height: 10.0,
                               child: CircularProgressIndicator(
                                 strokeWidth: 1.5,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  AppColors.violetLight,
-                                ),
+                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.tessTeal),
                               ),
                             ),
                           ],
@@ -111,25 +128,18 @@ class ChatBubble extends StatelessWidget {
                     onTap: onRetry,
                     borderRadius: BorderRadius.circular(4.0),
                     child: const Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 4.0,
-                        vertical: 2.0,
-                      ),
+                      padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            Icons.refresh_rounded,
-                            size: 12.0,
-                            color: AppColors.danger,
-                          ),
+                          Icon(Icons.refresh_rounded, size: 12.0, color: AppColors.danger),
                           SizedBox(width: 4.0),
                           Text(
                             'Failed to transmit. Tap to retry.',
                             style: TextStyle(
                               color: AppColors.danger,
                               fontSize: 11.0,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
@@ -146,19 +156,21 @@ class ChatBubble extends StatelessWidget {
     );
   }
 
-  Widget _buildAssistantAvatar() {
+  Widget _buildAssistantAvatar(bool isDark) {
     return Container(
-      width: 30.0,
-      height: 30.0,
+      width: 28.0,
+      height: 28.0,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: const LinearGradient(
-          colors: [AppColors.violet, AppColors.cyan],
+          colors: [AppColors.vibrantMint, AppColors.tessTeal],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.violet.withOpacity(0.4),
-            blurRadius: 8.0,
+            color: AppColors.vibrantMint.withValues(alpha: isDark ? 0.35 : 0.20),
+            blurRadius: 6.0,
           ),
         ],
       ),
@@ -167,9 +179,8 @@ class ChatBubble extends StatelessWidget {
           'T',
           style: TextStyle(
             color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 13.0,
-            fontFamily: 'monospace',
+            fontWeight: FontWeight.w800,
+            fontSize: 12.0,
           ),
         ),
       ),

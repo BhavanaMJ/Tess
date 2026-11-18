@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
 
 /// Reusable Form Field for Authentication Screens.
-/// Features TESS spatial neon styling, focus states, and optional visibility toggle.
+/// Features theme adaptation, clean focus states, and password visibility toggle.
 class AuthTextField extends StatelessWidget {
   final TextEditingController controller;
   final String label;
@@ -33,17 +34,23 @@ class AuthTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryText = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final secondaryText = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final mutedText = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+    final surfaceBg = isDark ? AppColors.darkSurfaceSubtle : AppColors.lightSurfaceSubtle;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label.toUpperCase(),
-          style: const TextStyle(
-            fontSize: 11,
-            fontFamily: 'monospace',
-            fontWeight: FontWeight.bold,
-            color: AppColors.textMuted,
-            letterSpacing: 1.0,
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: secondaryText,
+            letterSpacing: 0.2,
           ),
         ),
         const SizedBox(height: 6),
@@ -54,49 +61,50 @@ class AuthTextField extends StatelessWidget {
           textInputAction: textInputAction,
           onFieldSubmitted: onFieldSubmitted,
           validator: validator,
-          style: const TextStyle(
-            color: AppColors.textPrimary,
+          style: TextStyle(
+            color: primaryText,
             fontSize: 14,
+            fontWeight: FontWeight.w500,
           ),
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: const TextStyle(
-              color: AppColors.textMuted,
+            hintStyle: TextStyle(
+              color: mutedText,
               fontSize: 13,
             ),
             filled: true,
-            fillColor: AppColors.bgSurface,
-            prefixIcon: Icon(prefixIcon, color: AppColors.cyan, size: 18),
+            fillColor: surfaceBg,
+            prefixIcon: Icon(prefixIcon, color: AppColors.tessTeal, size: 19),
             suffixIcon: isPassword
                 ? IconButton(
                     icon: Icon(
                       isObscured ? Icons.visibility_off : Icons.visibility,
-                      color: AppColors.textMuted,
-                      size: 18,
+                      color: mutedText,
+                      size: 19,
                     ),
                     onPressed: onToggleObscure,
                   )
                 : null,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: const BorderSide(color: AppColors.border),
+            border: const OutlineInputBorder(
+              borderRadius: AppRadius.radiusMd,
+              borderSide: BorderSide.none,
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: const BorderSide(color: AppColors.border),
+              borderRadius: AppRadius.radiusMd,
+              borderSide: BorderSide(color: borderColor, width: 1.0),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: const BorderSide(color: AppColors.violet),
+            focusedBorder: const OutlineInputBorder(
+              borderRadius: AppRadius.radiusMd,
+              borderSide: BorderSide(color: AppColors.vibrantMint, width: 1.8),
             ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: const BorderSide(color: AppColors.danger),
+            errorBorder: const OutlineInputBorder(
+              borderRadius: AppRadius.radiusMd,
+              borderSide: BorderSide(color: AppColors.danger, width: 1.2),
             ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: const BorderSide(color: AppColors.danger, width: 1.5),
+            focusedErrorBorder: const OutlineInputBorder(
+              borderRadius: AppRadius.radiusMd,
+              borderSide: BorderSide(color: AppColors.danger, width: 1.8),
             ),
           ),
         ),
@@ -104,4 +112,3 @@ class AuthTextField extends StatelessWidget {
     );
   }
 }
-

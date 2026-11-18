@@ -3,10 +3,7 @@ import '../../core/theme/app_colors.dart';
 import 'tess_card.dart';
 
 /// Reusable Responsive Metric Card.
-/// Demonstrates:
-/// - LayoutBuilder for responsive adaptations based on parent container width
-/// - Stack & Positioned for overlaying spatial badges
-/// - Row, Column, Expanded, and Flexible layout mechanics
+/// Adapts dynamically to Light and Dark themes with clean typography and layout metrics.
 class ResponsiveMetricCard extends StatelessWidget {
   final String title;
   final String value;
@@ -20,74 +17,85 @@ class ResponsiveMetricCard extends StatelessWidget {
     required this.value,
     required this.subtitle,
     required this.icon,
-    this.accentColor = AppColors.violet,
+    this.accentColor = AppColors.vibrantMint,
   });
 
   @override
   Widget build(BuildContext context) {
-    // LayoutBuilder provides BoxConstraints of the immediate parent
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Adapt padding and font sizes dynamically according to available width
         final isCompact = constraints.maxWidth < 160;
 
         return TessCard(
           padding: EdgeInsets.all(isCompact ? 10.0 : 14.0),
-          borderColor: accentColor.withValues(alpha: 0.3),
+          borderColor: accentColor.withValues(alpha: isDark ? 0.35 : 0.25),
           child: Stack(
             children: [
-              // Background accent glow indicator using Positioned
               Positioned(
-                right: -10,
-                bottom: -10,
+                right: -8,
+                bottom: -8,
                 child: Icon(
                   icon,
                   size: isCompact ? 36 : 48,
-                  color: accentColor.withValues(alpha: 0.06),
+                  color: accentColor.withValues(alpha: isDark ? 0.08 : 0.06),
                 ),
               ),
-
-              // Foreground Content
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
                     children: [
-                      Icon(icon, size: isCompact ? 14 : 16, color: accentColor),
-                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: accentColor.withValues(alpha: isDark ? 0.16 : 0.10),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          icon,
+                          size: isCompact ? 14 : 16,
+                          color: accentColor,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          title,
-                          overflow: TextOverflow.ellipsis,
+                          title.toUpperCase(),
                           style: TextStyle(
                             fontSize: isCompact ? 9 : 10,
-                            fontFamily: 'monospace',
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textMuted,
-                            letterSpacing: 1.0,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.8,
+                            color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 10),
                   Text(
                     value,
                     style: TextStyle(
                       fontSize: isCompact ? 18 : 22,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.5,
+                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: isCompact ? 10 : 11,
-                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                      color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -98,4 +106,3 @@ class ResponsiveMetricCard extends StatelessWidget {
     );
   }
 }
-

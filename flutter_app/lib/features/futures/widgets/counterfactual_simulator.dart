@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../models/simulation_model.dart';
 import '../services/future_service.dart';
 
@@ -53,8 +55,14 @@ class _CounterfactualSimulatorState extends State<CounterfactualSimulator> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textMuted = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+    final chipBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -62,14 +70,13 @@ class _CounterfactualSimulatorState extends State<CounterfactualSimulator> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'COUNTERFACTUAL HORIZON:',
                 style: TextStyle(
-                  fontFamily: 'monospace',
                   fontSize: 10.5,
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 1.0,
-                  color: AppColors.textMuted,
+                  letterSpacing: 0.8,
+                  color: textMuted,
                 ),
               ),
               Row(
@@ -84,23 +91,24 @@ class _CounterfactualSimulatorState extends State<CounterfactualSimulator> {
                           _runSimulation();
                         }
                       },
-                      borderRadius: BorderRadius.circular(6.0),
+                      borderRadius: AppRadius.pill,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
                         decoration: BoxDecoration(
-                          color: isSelected ? AppColors.violet : AppColors.bgSurface,
-                          borderRadius: BorderRadius.circular(6.0),
+                          color: isSelected ? AppColors.tessTeal : chipBg,
+                          borderRadius: AppRadius.pill,
                           border: Border.all(
-                            color: isSelected ? AppColors.violet : AppColors.border,
+                            color: isSelected ? AppColors.tessTeal : borderColor,
                           ),
                         ),
                         child: Text(
                           h.toUpperCase(),
                           style: TextStyle(
-                            fontFamily: 'monospace',
-                            fontSize: 10.0,
-                            fontWeight: FontWeight.bold,
-                            color: isSelected ? Colors.white : AppColors.textSecondary,
+                            fontSize: 11.0,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                            color: isSelected
+                                ? Colors.white
+                                : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
                           ),
                         ),
                       ),
@@ -110,35 +118,48 @@ class _CounterfactualSimulatorState extends State<CounterfactualSimulator> {
               ),
             ],
           ),
-          const SizedBox(height: 12.0),
+          const SizedBox(height: AppSpacing.md),
 
           if (_isSimulating)
             const Padding(
               padding: EdgeInsets.all(32.0),
               child: Center(
-                child: CircularProgressIndicator(color: AppColors.cyan),
+                child: CircularProgressIndicator(color: AppColors.tessTeal),
               ),
             )
           else if (_errorMessage != null)
-            _buildErrorState()
+            _buildErrorState(isDark)
           else if (_simulation != null)
-            _buildSimulationContent(_simulation!),
+            _buildSimulationContent(_simulation!, isDark),
         ],
       ),
     );
   }
 
-  Widget _buildSimulationContent(SimulationResponseModel sim) {
+  Widget _buildSimulationContent(SimulationResponseModel sim, bool isDark) {
+    final cardBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textMuted = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Scenario Overview
         Container(
-          padding: const EdgeInsets.all(14.0),
+          padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
-            color: AppColors.bgSurface,
-            borderRadius: BorderRadius.circular(12.0),
-            border: Border.all(color: AppColors.border),
+            color: cardBg,
+            borderRadius: AppRadius.card,
+            border: Border.all(color: borderColor),
+            boxShadow: [
+              BoxShadow(
+                color: isDark ? Colors.black.withOpacity(0.2) : Colors.black.withOpacity(0.03),
+                blurRadius: 8.0,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,18 +169,17 @@ class _CounterfactualSimulatorState extends State<CounterfactualSimulator> {
                 children: [
                   Text(
                     sim.scenario.title,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
+                    style: TextStyle(
+                      color: textPrimary,
                       fontWeight: FontWeight.bold,
-                      fontSize: 14.0,
+                      fontSize: 15.0,
                     ),
                   ),
                   Text(
                     'CONF: ${sim.scenario.confidence}',
                     style: const TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 10.0,
-                      color: AppColors.cyan,
+                      fontSize: 10.5,
+                      color: AppColors.tessTeal,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -168,23 +188,23 @@ class _CounterfactualSimulatorState extends State<CounterfactualSimulator> {
               const SizedBox(height: 6.0),
               Text(
                 sim.scenario.summary,
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 12.5,
+                style: TextStyle(
+                  color: textSecondary,
+                  fontSize: 13.0,
                   height: 1.4,
                 ),
               ),
               if (sim.scenario.events.isNotEmpty) ...[
-                const SizedBox(height: 12.0),
-                const Divider(color: AppColors.border, height: 1.0),
-                const SizedBox(height: 10.0),
-                const Text(
+                const SizedBox(height: AppSpacing.md),
+                Divider(color: borderColor, height: 1.0),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
                   'EVENT CHAIN (SIMULATION):',
                   style: TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: 10.0,
-                    color: AppColors.textMuted,
-                    letterSpacing: 1.0,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.bold,
+                    color: textMuted,
+                    letterSpacing: 0.5,
                   ),
                 ),
                 const SizedBox(height: 6.0),
@@ -197,18 +217,17 @@ class _CounterfactualSimulatorState extends State<CounterfactualSimulator> {
                         Text(
                           '[${ev.relativeTime}] ',
                           style: const TextStyle(
-                            color: AppColors.violetLight,
-                            fontFamily: 'monospace',
-                            fontSize: 11.0,
+                            color: AppColors.vibrantMint,
+                            fontSize: 11.5,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Expanded(
                           child: Text(
                             '${ev.title}: ${ev.description}',
-                            style: const TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 11.5,
+                            style: TextStyle(
+                              color: textSecondary,
+                              fontSize: 12.0,
                             ),
                           ),
                         ),
@@ -223,56 +242,55 @@ class _CounterfactualSimulatorState extends State<CounterfactualSimulator> {
 
         // Counterfactual Path (Alternative Action)
         if (sim.alternative != null) ...[
-          const SizedBox(height: 12.0),
+          const SizedBox(height: AppSpacing.md),
           Container(
-            padding: const EdgeInsets.all(14.0),
+            padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
-              color: AppColors.cyan.withOpacity(0.06),
-              borderRadius: BorderRadius.circular(12.0),
-              border: Border.all(color: AppColors.cyan.withOpacity(0.4)),
+              color: AppColors.tessTeal.withOpacity(0.08),
+              borderRadius: AppRadius.card,
+              border: Border.all(color: AppColors.tessTeal.withOpacity(0.3)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Row(
                   children: [
-                    Icon(Icons.alt_route_rounded, color: AppColors.cyan, size: 16.0),
-                    SizedBox(width: 8.0),
+                    Icon(Icons.alt_route_rounded, color: AppColors.tessTeal, size: 18.0),
+                    SizedBox(width: AppSpacing.xs),
                     Text(
                       'COUNTERFACTUAL LEVER (ONE CHANGE)',
                       style: TextStyle(
-                        fontFamily: 'monospace',
-                        fontSize: 10.5,
+                        fontSize: 11.0,
                         fontWeight: FontWeight.bold,
-                        letterSpacing: 1.0,
-                        color: AppColors.cyan,
+                        letterSpacing: 0.8,
+                        color: AppColors.tessTeal,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8.0),
+                const SizedBox(height: AppSpacing.sm),
                 Text(
                   sim.alternative!.action,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 13.0,
+                  style: TextStyle(
+                    color: textPrimary,
+                    fontSize: 13.5,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 4.0),
                 Text(
                   'Assumption: ${sim.alternative!.assumption}',
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 11.5,
+                  style: TextStyle(
+                    color: textSecondary,
+                    fontSize: 12.0,
                   ),
                 ),
                 const SizedBox(height: 4.0),
                 Text(
                   'Expected Effect: ${sim.alternative!.expectedEffect}',
                   style: const TextStyle(
-                    color: AppColors.success,
-                    fontSize: 11.5,
+                    color: AppColors.accentSuccess,
+                    fontSize: 12.0,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -284,23 +302,23 @@ class _CounterfactualSimulatorState extends State<CounterfactualSimulator> {
     );
   }
 
-  Widget _buildErrorState() {
+  Widget _buildErrorState(bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.danger.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(color: AppColors.danger.withOpacity(0.4)),
+        color: AppColors.accentDanger.withOpacity(0.1),
+        borderRadius: AppRadius.card,
+        border: Border.all(color: AppColors.accentDanger.withOpacity(0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Simulation Computation Error', style: TextStyle(color: AppColors.danger, fontSize: 12.0, fontWeight: FontWeight.bold)),
+          const Text('Simulation Computation Error', style: TextStyle(color: AppColors.accentDanger, fontSize: 12.0, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4.0),
-          Text(_errorMessage!, style: const TextStyle(color: AppColors.textSecondary, fontSize: 11.0)),
+          Text(_errorMessage!, style: TextStyle(color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary, fontSize: 11.0)),
           TextButton(
             onPressed: _runSimulation,
-            child: const Text('Retry Simulation', style: TextStyle(color: AppColors.cyan)),
+            child: const Text('Retry Simulation', style: TextStyle(color: AppColors.tessTeal)),
           ),
         ],
       ),

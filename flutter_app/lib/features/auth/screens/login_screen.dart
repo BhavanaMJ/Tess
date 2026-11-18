@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../../core/auth/auth_service.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../shared/mascot/tess_mascot.dart';
+import '../../../shared/mascot/tess_mascot_state.dart';
 import '../../../shared/widgets/tess_button.dart';
 import '../../../shared/widgets/tess_card.dart';
 import '../widgets/auth_text_field.dart';
 import 'signup_screen.dart';
 
+/// Redesigned Login Screen.
+/// Embraces the TESS brand identity: "See Where Today Takes You."
+/// Features expressive companion presence, theme awareness, and clear form feedback.
 class LoginScreen extends StatefulWidget {
   final AuthService? authService;
 
@@ -34,7 +39,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
-    // Clear previous error
     setState(() => _errorMessage = null);
 
     if (!(_formKey.currentState?.validate() ?? false)) return;
@@ -46,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _emailController.text,
         password: _passwordController.text,
       );
-      // Navigation is automatically handled by the AuthGate listener in app.dart
+      // Navigation is automatically handled by AuthGate
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -59,89 +63,78 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryText = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final secondaryText = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
             child: Form(
               key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // TESS Neural Header
+                  // 1. Expressive TESS Companion Presence
                   Center(
-                    child: Container(
-                      width: 64,
-                      height: 64,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: const LinearGradient(
-                          colors: [AppColors.violet, AppColors.cyan],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.violet.withValues(alpha: 0.4),
-                            blurRadius: 16,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'T',
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            fontFamily: 'monospace',
-                          ),
-                        ),
-                      ),
+                    child: TessMascot(
+                      state: _isLoading
+                          ? TessMascotState.thinking
+                          : (_errorMessage != null
+                              ? TessMascotState.error
+                              : TessMascotState.idle),
+                      size: 88.0,
                     ),
                   ),
                   const SizedBox(height: 16),
 
-                  const Center(
+                  // 2. Brand Title & Tagline
+                  Center(
                     child: Text(
                       'TESS OS // ACCESS',
                       style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2.0,
-                        color: AppColors.textPrimary,
-                        fontFamily: 'monospace',
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.5,
+                        color: primaryText,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   const Center(
                     child: Text(
-                      'Authenticate your neural session key',
+                      'See Where Today Takes You.',
                       style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textMuted,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.tessTeal,
+                        letterSpacing: 0.2,
                       ),
                     ),
                   ),
                   const SizedBox(height: 28),
 
-                  // Error Banner
+                  // 3. Error Banner
                   if (_errorMessage != null) ...[
                     TessCard(
-                      borderColor: AppColors.danger.withValues(alpha: 0.5),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      borderColor: AppColors.danger.withValues(alpha: 0.4),
+                      backgroundColor: isDark
+                          ? AppColors.danger.withValues(alpha: 0.12)
+                          : AppColors.dangerLight.withValues(alpha: 0.8),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       child: Row(
                         children: [
-                          const Icon(Icons.error_outline, color: AppColors.danger, size: 18),
+                          const Icon(Icons.error_outline, color: AppColors.danger, size: 20),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
                               _errorMessage!,
                               style: const TextStyle(
-                                fontSize: 12,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
                                 color: AppColors.danger,
                               ),
                             ),
@@ -152,93 +145,89 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 16),
                   ],
 
-                  // Email Field
-                  AuthTextField(
-                    controller: _emailController,
-                    label: 'Commander Email',
-                    hintText: 'commander@tess.ai',
-                    prefixIcon: Icons.alternate_email,
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (val) {
-                      if (val == null || val.trim().isEmpty) {
-                        return 'Email is required';
-                      }
-                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(val.trim())) {
-                        return 'Enter a valid email address';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Password Field
-                  AuthTextField(
-                    controller: _passwordController,
-                    label: 'Cipher Key (Password)',
-                    hintText: 'Enter account password',
-                    prefixIcon: Icons.lock_outline,
-                    isPassword: true,
-                    isObscured: _isObscured,
-                    onToggleObscure: () {
-                      setState(() => _isObscured = !_isObscured);
-                    },
-                    textInputAction: TextInputAction.done,
-                    onFieldSubmitted: (_) => _handleLogin(),
-                    validator: (val) {
-                      if (val == null || val.isEmpty) {
-                        return 'Password is required';
-                      }
-                      return null;
-                    },
+                  // 4. Input Fields Card
+                  TessCard(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        AuthTextField(
+                          controller: _emailController,
+                          label: 'Email Address',
+                          hintText: 'name@example.com',
+                          prefixIcon: Icons.mail_outline_rounded,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Email is required';
+                            }
+                            if (!value.contains('@') || !value.contains('.')) {
+                              return 'Enter a valid email address';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        AuthTextField(
+                          controller: _passwordController,
+                          label: 'Password',
+                          hintText: '••••••••',
+                          prefixIcon: Icons.lock_outline_rounded,
+                          isPassword: true,
+                          isObscured: _isObscured,
+                          onToggleObscure: () => setState(() => _isObscured = !_isObscured),
+                          textInputAction: TextInputAction.done,
+                          onFieldSubmitted: (_) => _handleLogin(),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Password is required';
+                            }
+                            if (value.length < 6) {
+                              return 'Password must be at least 6 characters';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 24),
 
-                  // Submit Button or Loading Spinner
-                  if (_isLoading)
-                    const Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12.0),
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          valueColor: AlwaysStoppedAnimation<Color>(AppColors.violet),
-                        ),
-                      ),
-                    )
-                  else
-                    TessButton(
-                      label: 'Initialize Connection',
-                      icon: Icons.login_rounded,
-                      onPressed: _handleLogin,
-                    ),
-
+                  // 5. Submit Action
+                  TessButton(
+                    label: 'Initialize Connection',
+                    icon: Icons.arrow_forward_rounded,
+                    isLoading: _isLoading,
+                    variant: TessButtonVariant.primary,
+                    height: 48,
+                    onPressed: _handleLogin,
+                  ),
                   const SizedBox(height: 20),
 
-                  // Switch to Signup Link
+                  // 6. Navigation to Sign Up
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        "Don't possess credentials? ",
+                      Text(
+                        "Don't have an account?",
                         style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textMuted,
+                          fontSize: 13,
+                          color: secondaryText,
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (_) => SignupScreen(authService: widget.authService),
+                              builder: (_) => SignupScreen(authService: _authService),
                             ),
                           );
                         },
                         child: const Text(
-                          'Register Persona',
+                          'Create Account',
                           style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.cyan,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.tessTeal,
                           ),
                         ),
                       ),
@@ -253,4 +242,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-

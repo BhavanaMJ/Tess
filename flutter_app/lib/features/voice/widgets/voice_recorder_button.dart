@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
 
 /// Animated microphone recording button with pulsing status and duration timer.
 class VoiceRecorderButton extends StatefulWidget {
@@ -32,7 +33,7 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton>
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     );
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.25).animate(
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.22).animate(
       CurvedAnimation(parent: _animController, curve: Curves.easeInOut),
     );
 
@@ -68,6 +69,9 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -81,17 +85,24 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton>
               return Transform.scale(
                 scale: scale,
                 child: Container(
-                  width: 84,
-                  height: 84,
+                  width: 86,
+                  height: 86,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: widget.isRecording ? AppColors.danger : AppColors.violet,
+                    gradient: widget.isRecording
+                        ? null
+                        : const LinearGradient(
+                            colors: [AppColors.vibrantMint, AppColors.tessTeal],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                    color: widget.isRecording ? AppColors.accentDanger : null,
                     boxShadow: [
                       BoxShadow(
-                        color: (widget.isRecording ? AppColors.danger : AppColors.violet)
-                            .withValues(alpha: 0.4),
-                        blurRadius: widget.isRecording ? 24 : 12,
-                        spreadRadius: widget.isRecording ? 4 : 1,
+                        color: (widget.isRecording ? AppColors.accentDanger : AppColors.vibrantMint)
+                            .withOpacity(0.35),
+                        blurRadius: widget.isRecording ? 24 : 14,
+                        spreadRadius: widget.isRecording ? 4 : 2,
                       ),
                     ],
                   ),
@@ -106,16 +117,16 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton>
           ),
         ),
 
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
 
         // Duration or Status Text
         if (widget.isRecording) ...[
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: AppColors.danger.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.danger.withValues(alpha: 0.4)),
+              color: AppColors.accentDanger.withOpacity(0.12),
+              borderRadius: AppRadius.radiusPill,
+              border: Border.all(color: AppColors.accentDanger.withOpacity(0.35)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -124,7 +135,7 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton>
                   width: 6,
                   height: 6,
                   decoration: const BoxDecoration(
-                    color: AppColors.danger,
+                    color: AppColors.accentDanger,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -132,22 +143,21 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton>
                 Text(
                   _formatDuration(widget.duration),
                   style: const TextStyle(
-                    fontFamily: 'monospace',
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.danger,
+                    color: AppColors.accentDanger,
                   ),
                 ),
               ],
             ),
           ),
         ] else ...[
-          const Text(
+          Text(
             'Tap to Speak Directive',
             style: TextStyle(
-              fontSize: 12,
-              fontFamily: 'monospace',
-              color: AppColors.textSecondary,
+              fontSize: 12.5,
+              fontWeight: FontWeight.w500,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
             ),
           ),
         ],
@@ -155,4 +165,3 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton>
     );
   }
 }
-

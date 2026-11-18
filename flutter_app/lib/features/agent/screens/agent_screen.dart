@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../home/widgets/mascot_widget.dart';
 import '../models/agent_plan_model.dart';
 import '../services/agent_service.dart';
@@ -112,7 +114,7 @@ class _AgentScreenState extends State<AgentScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Action plan formulated: ${newPlan.steps.length} sequential step(s) generated.'),
-          backgroundColor: AppColors.cyan,
+          backgroundColor: AppColors.tessTeal,
         ),
       );
     } catch (e) {
@@ -150,7 +152,7 @@ class _AgentScreenState extends State<AgentScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Operations approved: Execution lock released.'),
-              backgroundColor: AppColors.success,
+              backgroundColor: AppColors.accentSuccess,
             ),
           );
         } catch (e) {
@@ -159,7 +161,7 @@ class _AgentScreenState extends State<AgentScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Confirmation failed: $e'),
-              backgroundColor: AppColors.danger,
+              backgroundColor: AppColors.accentDanger,
             ),
           );
         }
@@ -198,7 +200,7 @@ class _AgentScreenState extends State<AgentScreen> {
           content: Text(result.isSuccess
               ? 'Plan executed successfully. Operations verified.'
               : 'Execution finished with warnings.'),
-          backgroundColor: result.isSuccess ? AppColors.success : AppColors.warning,
+          backgroundColor: result.isSuccess ? AppColors.accentSuccess : AppColors.accentWarning,
         ),
       );
     } catch (e) {
@@ -223,7 +225,7 @@ class _AgentScreenState extends State<AgentScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Execution failed: $e'),
-          backgroundColor: AppColors.danger,
+          backgroundColor: AppColors.accentDanger,
         ),
       );
     }
@@ -259,7 +261,7 @@ class _AgentScreenState extends State<AgentScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to cancel plan: $e'),
-          backgroundColor: AppColors.danger,
+          backgroundColor: AppColors.accentDanger,
         ),
       );
     }
@@ -267,33 +269,39 @@ class _AgentScreenState extends State<AgentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final cardBg = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final textMuted = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Row(
           children: [
-            const Text(
-              'AGENT CORE',
+            Text(
+              'Agent Core',
               style: TextStyle(
-                fontFamily: 'monospace',
                 fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.xs),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: AppColors.violet.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: AppColors.violet.withValues(alpha: 0.4)),
+                color: AppColors.tessTeal.withOpacity(0.12),
+                borderRadius: AppRadius.pill,
+                border: Border.all(color: AppColors.tessTeal.withOpacity(0.35)),
               ),
               child: const Text(
                 'ACTION LAYER',
                 style: TextStyle(
-                  fontSize: 9,
-                  fontFamily: 'monospace',
+                  fontSize: 10,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.violet,
+                  color: AppColors.tessTeal,
+                  letterSpacing: 0.5,
                 ),
               ),
             ),
@@ -301,19 +309,19 @@ class _AgentScreenState extends State<AgentScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: AppColors.cyan, size: 20),
+            icon: const Icon(Icons.refresh, color: AppColors.tessTeal, size: 20),
             tooltip: 'Refresh Plans',
             onPressed: _loadPlans,
           ),
         ],
       ),
       body: RefreshIndicator(
-        color: AppColors.cyan,
-        backgroundColor: AppColors.bgSurface,
+        color: AppColors.tessTeal,
+        backgroundColor: cardBg,
         onRefresh: _loadPlans,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -321,17 +329,24 @@ class _AgentScreenState extends State<AgentScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
-                  color: AppColors.bgSecondary,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border),
+                  color: cardBg,
+                  borderRadius: AppRadius.card,
+                  border: Border.all(color: borderColor),
+                  boxShadow: [
+                    BoxShadow(
+                      color: isDark ? Colors.black.withOpacity(0.2) : Colors.black.withOpacity(0.03),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Row(
                   children: [
                     MascotWidget(
                       state: _mascotState,
-                      size: 38,
+                      size: 40,
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppSpacing.md),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -339,16 +354,15 @@ class _AgentScreenState extends State<AgentScreen> {
                           Text(
                             _mascotStatusTitle,
                             style: const TextStyle(
-                              fontSize: 11,
-                              fontFamily: 'monospace',
+                              fontSize: 12,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.cyan,
+                              color: AppColors.tessTeal,
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             _mascotStatusDetail,
-                            style: const TextStyle(fontSize: 10, color: AppColors.textMuted),
+                            style: TextStyle(fontSize: 11, color: textMuted),
                           ),
                         ],
                       ),
@@ -357,56 +371,56 @@ class _AgentScreenState extends State<AgentScreen> {
                 ),
               ),
 
-              const SizedBox(height: 14),
+              const SizedBox(height: AppSpacing.md),
 
               // Navigation Tabs (PLANNER / HISTORY)
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.bgSecondary,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.border),
+                  color: cardBg,
+                  borderRadius: AppRadius.pill,
+                  border: Border.all(color: borderColor),
                 ),
                 child: Row(
                   children: [
                     Expanded(
-                      child: _buildTabButton(0, 'ACTION PLANNER', Icons.terminal_rounded),
+                      child: _buildTabButton(0, 'ACTION PLANNER', Icons.terminal_rounded, isDark),
                     ),
                     Expanded(
-                      child: _buildTabButton(1, 'AUDIT HISTORY (${_plans.length})', Icons.history_rounded),
+                      child: _buildTabButton(1, 'AUDIT HISTORY (${_plans.length})', Icons.history_rounded, isDark),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
               // Error Banner
               if (_errorMessage != null) ...[
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.danger.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.danger.withValues(alpha: 0.4)),
+                    color: AppColors.accentDanger.withOpacity(0.1),
+                    borderRadius: AppRadius.card,
+                    border: Border.all(color: AppColors.accentDanger.withOpacity(0.3)),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline_rounded, color: AppColors.danger, size: 20),
+                      const Icon(Icons.error_outline_rounded, color: AppColors.accentDanger, size: 20),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           _errorMessage!,
-                          style: const TextStyle(fontSize: 11, color: AppColors.danger),
+                          style: const TextStyle(fontSize: 12, color: AppColors.accentDanger),
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.refresh, color: AppColors.danger, size: 18),
+                        icon: const Icon(Icons.refresh, color: AppColors.accentDanger, size: 18),
                         onPressed: _loadPlans,
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
               ],
 
               // Content based on tab
@@ -418,7 +432,7 @@ class _AgentScreenState extends State<AgentScreen> {
                   onSubmit: _handleCreateObjective,
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
 
                 // Active Plan Card
                 if (_activePlan != null) ...[
@@ -431,30 +445,29 @@ class _AgentScreenState extends State<AgentScreen> {
                   ),
                 ] else if (!_isLoading && !_isGenerating) ...[
                   Container(
-                    padding: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(28),
                     decoration: BoxDecoration(
-                      color: AppColors.bgSecondary.withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.border),
+                      color: cardBg,
+                      borderRadius: AppRadius.card,
+                      border: Border.all(color: borderColor),
                     ),
-                    child: const Column(
+                    child: Column(
                       children: [
-                        Icon(Icons.architecture_rounded, size: 36, color: AppColors.textMuted),
-                        SizedBox(height: 10),
+                        Icon(Icons.architecture_rounded, size: 40, color: textMuted),
+                        const SizedBox(height: 10),
                         Text(
-                          'NO ACTIVE PLAN',
+                          'No Active Plan',
                           style: TextStyle(
-                            fontSize: 12,
-                            fontFamily: 'monospace',
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textSecondary,
+                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
                           'Compose an objective above to let TESS generate a deterministic action plan.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+                          style: TextStyle(fontSize: 12, color: textMuted),
                         ),
                       ],
                     ),
@@ -480,17 +493,17 @@ class _AgentScreenState extends State<AgentScreen> {
     );
   }
 
-  Widget _buildTabButton(int index, String label, IconData icon) {
+  Widget _buildTabButton(int index, String label, IconData icon, bool isDark) {
     final isSelected = _selectedTab == index;
     return InkWell(
       onTap: () => setState(() => _selectedTab = index),
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: AppRadius.pill,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.violet.withValues(alpha: 0.15) : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
-          border: isSelected ? Border.all(color: AppColors.violet.withValues(alpha: 0.4)) : null,
+          color: isSelected ? AppColors.tessTeal.withOpacity(0.12) : Colors.transparent,
+          borderRadius: AppRadius.pill,
+          border: isSelected ? Border.all(color: AppColors.tessTeal.withOpacity(0.4)) : null,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -498,16 +511,16 @@ class _AgentScreenState extends State<AgentScreen> {
             Icon(
               icon,
               size: 14,
-              color: isSelected ? AppColors.violet : AppColors.textMuted,
+              color: isSelected ? AppColors.tessTeal : (isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
             ),
             const SizedBox(width: 6),
             Text(
               label,
               style: TextStyle(
-                fontSize: 10,
-                fontFamily: 'monospace',
+                fontSize: 10.5,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: isSelected ? AppColors.violet : AppColors.textMuted,
+                color: isSelected ? AppColors.tessTeal : (isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                letterSpacing: 0.5,
               ),
             ),
           ],
