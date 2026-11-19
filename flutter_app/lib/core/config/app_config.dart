@@ -31,12 +31,19 @@ class AppConfig {
     // 2. Physical LAN IP takes precedence for local development across phones
     const lanUrl = 'http://192.168.1.175:8000';
 
-    // 3. Platform detection for emulators
+    // 3. Platform detection for emulators and web
     if (!kIsWeb) {
       try {
         if (Platform.isAndroid) {
           // Defaulting to LAN URL for universal real-device & emulator accessibility
           return lanUrl;
+        }
+      } catch (_) {}
+    } else {
+      try {
+        final host = Uri.base.host;
+        if (host.isNotEmpty) {
+          return 'http://$host:8000';
         }
       } catch (_) {}
     }
