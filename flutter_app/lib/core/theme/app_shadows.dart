@@ -76,3 +76,4 @@ class AppShadows {
     return Theme.of(context).brightness == Brightness.dark ? darkElevated : lightElevated;
   }
 }
+

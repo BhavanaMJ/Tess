@@ -148,3 +148,4 @@ All color combinations have been tested against WCAG 2.1 AA specifications:
    - `darkTextPrimary` (`#F4FFFB`) on `darkBg` (`#0B100F`): **18.1 : 1** (Exceeds AAA 7:1)
    - `vibrantMint` (`#35B9A5`) on `darkSurface` (`#131A19`): **6.8 : 1** (Exceeds AA 4.5:1)
    - `darkTextSecondary` (`#A2B7B3`) on `darkBg` (`#0B100F`): **7.4 : 1** (Exceeds AAA 7:1)
+

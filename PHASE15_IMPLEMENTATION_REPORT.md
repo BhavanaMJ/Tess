@@ -76,3 +76,4 @@
 3. **Build Outputs**:
    - `flutter build web`: Clean output in `flutter_app/build/web/`.
    - `flutter build apk --debug`: Clean output in `flutter_app/build/app/outputs/flutter-apk/app-debug.apk`.
+

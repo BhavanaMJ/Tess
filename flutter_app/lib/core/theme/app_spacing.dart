@@ -17,3 +17,4 @@ class AppSpacing {
   static const double cardPadding = 16.0;
   static const double compactCardPadding = 12.0;
 }
+

@@ -142,3 +142,4 @@ AppShadows.glowMint   // Blur 12px, Offset (0, 2), #35B9A5 with 0.25 alpha
 ### 6.4 `ResponsiveMetricCard` (`lib/shared/widgets/responsive_metric_card.dart`)
 - Dual-metric and KPI presentation card with status accent strips.
 - Clean number presentation with accompanying trend iconography.
+
