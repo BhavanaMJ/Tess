@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Sidebar, ScreenTab } from './Sidebar';
 import { Header } from './Header';
 import { CommandPalette } from './CommandPalette';
+import { CompanionPanel } from './companion/CompanionPanel';
 import { HomeScreen } from '../screens/HomeScreen';
 import { ChatScreen } from '../screens/ChatScreen';
 import { TasksScreen } from '../screens/TasksScreen';
@@ -24,7 +25,14 @@ export const Layout: React.FC = () => {
     agentPlans?: number;
   }>({});
 
-  const { setState: setMascotState, setMessage: setMascotMessage, setFloatingVisible } = useMascot();
+  const {
+    setState: setMascotState,
+    setMessage: setMascotMessage,
+    setFloatingVisible,
+    isPanelOpen,
+    closePanel,
+    togglePanel
+  } = useMascot();
 
   const refreshGlobalMetrics = useCallback(async () => {
     setIsSyncing(true);
@@ -101,6 +109,13 @@ export const Layout: React.FC = () => {
       if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
         e.preventDefault();
         setIsCommandPaletteOpen((prev) => !prev);
+        return;
+      }
+
+      // Toggle Companion Panel (⌘M / Ctrl+M)
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'm' || e.key === 'M')) {
+        e.preventDefault();
+        togglePanel();
         return;
       }
 
@@ -192,6 +207,13 @@ export const Layout: React.FC = () => {
         onNavigate={setCurrentTab}
         onRefresh={refreshGlobalMetrics}
         onToggleMascot={() => setFloatingVisible(true)}
+      />
+
+      {/* Interactive Contextual Companion Panel */}
+      <CompanionPanel
+        isOpen={isPanelOpen}
+        onClose={closePanel}
+        onNavigate={setCurrentTab}
       />
     </div>
   );

@@ -76,3 +76,4 @@ All endpoints consumed by the Command Home dashboard were verified with live HTT
 - **Zero Mock / Hardcoded Data**: Dashboard displays only real records returned from the backend.
 - **Partial Failure Resilience**: Verified via `Promise.allSettled`; if an individual service is slow or unresponsive, remaining sections render without error.
 - **Human Confirmation**: Agent plans in `READY` state require explicit user confirmation before execution.
+

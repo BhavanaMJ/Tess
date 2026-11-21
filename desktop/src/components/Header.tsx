@@ -17,7 +17,7 @@ export const Header: React.FC<HeaderProps> = ({
   onRefresh,
   onOpenCommandPalette
 }) => {
-  const { setFloatingVisible, state: mascotState } = useMascot();
+  const { setFloatingVisible, state: mascotState, togglePanel } = useMascot();
 
   return (
     <header
@@ -83,13 +83,18 @@ export const Header: React.FC<HeaderProps> = ({
           </span>
         </div>
 
-        {/* Mascot Presence State Indicator */}
-        <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[rgba(139,92,246,0.08)] border border-[rgba(139,92,246,0.25)]">
-          <Activity style={{ width: '0.85rem', height: '0.85rem', color: '#A78BFA' }} />
-          <span className="font-mono text-[11px] font-semibold text-[#A78BFA] tracking-wider uppercase">
+        {/* Interactive Mascot Presence State Indicator */}
+        <button
+          onClick={togglePanel}
+          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[rgba(53,185,165,0.1)] border border-[rgba(53,185,165,0.3)] hover:bg-[rgba(53,185,165,0.2)] transition-all cursor-pointer"
+          style={{ background: 'none' }}
+          title="Open TESS Companion Panel (⌘M)"
+        >
+          <Activity style={{ width: '0.85rem', height: '0.85rem', color: '#35B9A5' }} />
+          <span className="font-mono text-[11px] font-semibold text-[#35B9A5] tracking-wider uppercase">
             {mascotState}
           </span>
-        </div>
+        </button>
 
         {/* Manual Refresh Telemetry Button */}
         {onRefresh && (

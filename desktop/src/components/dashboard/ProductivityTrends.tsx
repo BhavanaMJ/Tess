@@ -133,3 +133,4 @@ export const ProductivityTrends: React.FC<ProductivityTrendsProps> = ({
     </div>
   );
 };
+

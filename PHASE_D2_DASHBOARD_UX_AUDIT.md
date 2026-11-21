@@ -62,3 +62,4 @@ The dashboard layout was tested across standard desktop display dimensions:
   - `Enter` and `Space` key handlers dispatch navigation seamlessly.
 - **Loading UX**:
   - Skeleton loaders preserve the card geometry to prevent jarring layout shift (CLS = 0).
+

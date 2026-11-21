@@ -7,7 +7,18 @@ import { ExternalLink, X, Move, EyeOff, MessageSquare } from 'lucide-react';
 const POS_STORAGE_KEY = 'tess_mascot_pos';
 
 export const FloatingMascotWindow: React.FC = () => {
-  const { state, message, setMessage, focusMainWindow, setFloatingVisible, themeColor, animationLevel, stage, quietMode } = useMascot();
+  const {
+    state,
+    message,
+    setMessage,
+    focusMainWindow,
+    setFloatingVisible,
+    themeColor,
+    animationLevel,
+    stage,
+    quietMode,
+    openPanel
+  } = useMascot();
   const [showMenu, setShowMenu] = useState(false);
   
   const isDraggingRef = useRef(false);
@@ -102,8 +113,9 @@ export const FloatingMascotWindow: React.FC = () => {
       } catch (_) {}
     } else if (e.button === 0) {
       // Click detected
-      console.log('[TESS Mascot] Mascot clicked, opening main window...');
+      console.log('[TESS Mascot] Mascot clicked, opening main window & companion panel...');
       focusMainWindow();
+      openPanel();
     }
   };
 
@@ -127,14 +139,15 @@ export const FloatingMascotWindow: React.FC = () => {
         onClick={() => {
           if (!isDraggingRef.current) {
             focusMainWindow();
+            openPanel();
           }
         }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onContextMenu={handleContextMenu}
-        className="group relative cursor-pointer bg-[#181824]/95 backdrop-blur-md border border-[#2D2D3F] hover:border-[#8B5CF6] rounded-3xl p-3 shadow-2xl flex flex-col items-center transition-all duration-200 hover:scale-105"
-        title="Left click to open TESS, Drag to move, Right click for options"
+        className="group relative cursor-pointer bg-[#0B0D18]/95 backdrop-blur-md border border-[rgba(22,143,131,0.3)] hover:border-[#35B9A5] rounded-3xl p-3 shadow-2xl flex flex-col items-center transition-all duration-200 hover:scale-105"
+        title="Left click to open TESS Companion, Drag to move, Right click for options"
       >
         {/* Subtle drag handle indicator */}
         <div

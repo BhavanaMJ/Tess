@@ -118,3 +118,4 @@ export const InterventionPreview: React.FC<InterventionPreviewProps> = ({
     </div>
   );
 };
+

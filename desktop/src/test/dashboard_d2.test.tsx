@@ -385,3 +385,4 @@ describe('Phase D2 — Command Home: Live Command Centre Tests', () => {
     expect(screen.getByText('MY DAY & PRIORITY WORKSPACE')).toBeInTheDocument();
   });
 });
+

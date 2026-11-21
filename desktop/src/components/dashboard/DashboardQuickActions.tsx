@@ -151,3 +151,4 @@ export const DashboardQuickActions: React.FC<DashboardQuickActionsProps> = ({
     </div>
   );
 };
+

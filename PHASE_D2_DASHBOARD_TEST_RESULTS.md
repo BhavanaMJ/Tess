@@ -81,3 +81,4 @@
   - `dist/index.html`: 0.68 kB
   - `dist/assets/index-*.css`: 8.25 kB
   - `dist/assets/index-*.js`: 582.46 kB
+

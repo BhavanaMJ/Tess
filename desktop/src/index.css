@@ -117,6 +117,46 @@ body::before {
   z-index: 0;
 }
 
+/* TESS v2.0 Companion Keyframe Animations */
+@keyframes tess-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(1deg);
+  }
+}
+
+@keyframes tess-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+}
+
+.tess-floating-anim {
+  animation: tess-float 4.5s ease-in-out infinite;
+}
+
+.tess-antenna-pulse {
+  animation: tess-pulse 2s ease-in-out infinite;
+}
+
+/* Reduced Motion Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .tess-floating-anim,
+  .tess-antenna-pulse,
+  .animate-pulse,
+  .animate-spin {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 /* Transparent window for native mascot */
 html.mascot-window,
 body.mascot-window,

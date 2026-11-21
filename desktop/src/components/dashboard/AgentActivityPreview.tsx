@@ -127,3 +127,4 @@ export const AgentActivityPreview: React.FC<AgentActivityPreviewProps> = ({
     </div>
   );
 };
+

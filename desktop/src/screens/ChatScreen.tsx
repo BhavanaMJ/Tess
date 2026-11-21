@@ -44,7 +44,7 @@ export const ChatScreen: React.FC = () => {
   const [screenQuery, setScreenQuery] = useState('Explain what is on this screen and any potential errors.');
   const [analyzingScreen, setAnalyzingScreen] = useState(false);
 
-  const { setState: setMascotState } = useMascot();
+  const { setState: setMascotState, triggerEmotion } = useMascot();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -131,10 +131,10 @@ export const ChatScreen: React.FC = () => {
         created_at: new Date().toISOString()
       };
       setMessages((prev) => [...prev, botMsg]);
-      setMascotState('IDLE');
+      triggerEmotion('HAPPY', 3500);
     } catch (e: any) {
       setError(e.message || 'Failed to send message');
-      setMascotState('ERROR');
+      triggerEmotion('ERROR', 5000);
     } finally {
       setSending(false);
     }

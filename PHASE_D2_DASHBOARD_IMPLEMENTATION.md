@@ -107,3 +107,4 @@ desktop/src/
    - State dynamically adjusts: `THINKING` during load, `INTERVENING` when interventions exist, `ATTENTION` on overdue items, `IDLE` when nominal, and `ERROR` on connection failures.
 4. **Theme Support**:
    - Leverages established CSS variables (`--bg-primary`, `--bg-secondary`, `--bg-card`, `--border`, `--text-primary`) supporting both Dark and Light themes.
+
