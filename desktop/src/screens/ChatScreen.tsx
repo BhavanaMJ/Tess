@@ -1,25 +1,22 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { apiService } from '../services/api';
 import { Conversation, Message } from '../types';
 import { useMascot } from '../contexts/MascotContext';
+import { ChatSidebar } from '../components/chat/ChatSidebar';
+import { ChatMessageItem } from '../components/chat/ChatMessageItem';
+import { ChatComposer } from '../components/chat/ChatComposer';
 import {
-  Plus,
-  Send,
-  MessageSquare,
   Bot,
-  User,
   AlertCircle,
-  Mic,
-  MicOff,
-  Monitor,
   X,
-  Copy,
-  Check,
   Sparkles,
-  Compass,
+  RefreshCw,
+  Plus,
+  ArrowRight,
+  Target,
+  TrendingUp,
   Clock,
-  ShieldAlert,
-  ArrowRight
+  CheckCircle2
 } from 'lucide-react';
 
 export const ChatScreen: React.FC = () => {
@@ -30,7 +27,8 @@ export const ChatScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [failedMessageText, setFailedMessageText] = useState<string | null>(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Phase 8: Voice Assistant state
   const [isRecording, setIsRecording] = useState(false);
@@ -44,15 +42,18 @@ export const ChatScreen: React.FC = () => {
   const [screenQuery, setScreenQuery] = useState('Explain what is on this screen and any potential errors.');
   const [analyzingScreen, setAnalyzingScreen] = useState(false);
 
-  const { setState: setMascotState, triggerEmotion } = useMascot();
+  // Mascot Context integration (authoritative single character state)
+  const { state: mascotState, setState: setMascotState, triggerEmotion } = useMascot();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
+    if (messagesEndRef.current && typeof messagesEndRef.current.scrollIntoView === 'function') {
+      messagesEndRef.current.scrollIntoView({ behavior });
+    }
   };
 
-  const loadConversations = async () => {
+  const loadConversations = useCallback(async () => {
     try {
       setLoading(true);
       const convs = await apiService.getConversations();
@@ -67,17 +68,18 @@ export const ChatScreen: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentConvId]);
 
-  const loadMessages = async (convId: string) => {
+  const loadMessages = useCallback(async (convId: string) => {
     try {
       setError(null);
+      setFailedMessageText(null);
       const msgs = await apiService.getMessages(convId);
       setMessages(msgs);
     } catch (e: any) {
       setError(e.message || 'Failed to load messages');
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadConversations();
@@ -87,7 +89,7 @@ export const ChatScreen: React.FC = () => {
     if (currentConvId) {
       loadMessages(currentConvId);
     }
-  }, [currentConvId]);
+  }, [currentConvId, loadMessages]);
 
   useEffect(() => {
     scrollToBottom();
@@ -95,25 +97,43 @@ export const ChatScreen: React.FC = () => {
 
   const handleNewConversation = async () => {
     try {
+      setError(null);
       const newConv = await apiService.createConversation('Companion Dialogue');
       setConversations((prev) => [newConv, ...prev]);
       setCurrentConvId(newConv.id);
       setMessages([]);
+      setFailedMessageText(null);
     } catch (e: any) {
       setError(e.message || 'Failed to create conversation');
     }
   };
 
+  // Debounced typing callback to show listening state
+  const handleTyping = () => {
+    if (mascotState === 'IDLE') {
+      setMascotState('LISTENING');
+    }
+    if (typingTimerRef.current) {
+      clearTimeout(typingTimerRef.current);
+    }
+    typingTimerRef.current = setTimeout(() => {
+      setMascotState('IDLE');
+    }, 1500);
+  };
+
   const handleSendMessage = async (textToSend?: string) => {
-    const text = textToSend || inputText.trim();
+    const text = (textToSend || inputText).trim();
     if (!text || !currentConvId || sending) return;
 
     if (!textToSend) setInputText('');
     setSending(true);
+    setError(null);
+    setFailedMessageText(null);
     setMascotState('THINKING');
 
+    const tempMsgId = 'temp-' + Date.now();
     const tempMsg: Message = {
-      id: 'temp-' + Date.now(),
+      id: tempMsgId,
       conversation_id: currentConvId,
       role: 'user',
       content: text,
@@ -133,17 +153,25 @@ export const ChatScreen: React.FC = () => {
       setMessages((prev) => [...prev, botMsg]);
       triggerEmotion('HAPPY', 3500);
     } catch (e: any) {
-      setError(e.message || 'Failed to send message');
+      setError(e.message || 'Failed to transmit message. You can retry below.');
+      setFailedMessageText(text);
       triggerEmotion('ERROR', 5000);
     } finally {
       setSending(false);
     }
   };
 
-  const copyToClipboard = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
+  const handleRetry = () => {
+    if (failedMessageText) {
+      // Remove last failed temporary user message to avoid duplicate display
+      setMessages((prev) => {
+        if (prev.length > 0 && prev[prev.length - 1].role === 'user') {
+          return prev.slice(0, -1);
+        }
+        return prev;
+      });
+      handleSendMessage(failedMessageText);
+    }
   };
 
   // Phase 8: Voice Assistant Handler
@@ -209,11 +237,11 @@ export const ChatScreen: React.FC = () => {
             };
             await audio.play();
           } else {
-            setMascotState('IDLE');
+            triggerEmotion('HAPPY', 3500);
           }
         } catch (err: any) {
           setError('Voice interaction failed: ' + (err.message || String(err)));
-          setMascotState('ERROR');
+          triggerEmotion('ERROR', 5000);
         } finally {
           setSending(false);
         }
@@ -225,7 +253,7 @@ export const ChatScreen: React.FC = () => {
       setMascotState('LISTENING');
     } catch (err: any) {
       setError('Microphone access denied: ' + err.message);
-      setMascotState('ERROR');
+      triggerEmotion('ERROR', 5000);
     }
   };
 
@@ -281,108 +309,191 @@ export const ChatScreen: React.FC = () => {
         created_at: new Date().toISOString()
       };
       setMessages((prev) => [...prev, userMsg, botMsg]);
-      setMascotState('IDLE');
+      triggerEmotion('HAPPY', 3500);
       setScreenPreviewUrl(null);
       setCapturedImageBlob(null);
     } catch (err: any) {
       setError('Screen analysis failed: ' + (err.message || String(err)));
-      setMascotState('ERROR');
+      triggerEmotion('ERROR', 5000);
     } finally {
       setAnalyzingScreen(false);
     }
   };
 
   const quickActionPrompts = [
-    { label: 'Priority Check', prompt: 'What should I prioritize today?' },
-    { label: 'Future Simulation', prompt: 'Show me where my current trajectory is taking me.' },
-    { label: 'Procrastination Audit', prompt: 'What important work am I postponing?' },
-    { label: 'Task Execution', prompt: 'Help me complete an overdue task on OpenProject.' }
+    {
+      label: 'Priority Check',
+      description: 'Find highest impact focus areas',
+      prompt: 'What should I prioritize today based on my goals?',
+      icon: Target,
+      color: '#34D399'
+    },
+    {
+      label: 'Trajectory Simulation',
+      description: 'Forecast end-of-week outcomes',
+      prompt: 'Show me where my current trajectory is taking me.',
+      icon: TrendingUp,
+      color: '#A78BFA'
+    },
+    {
+      label: 'Procrastination Audit',
+      description: 'Identify postponed critical work',
+      prompt: 'What critical tasks or blockers am I postponing?',
+      icon: Clock,
+      color: '#FBBF24'
+    },
+    {
+      label: 'Task Execution',
+      description: 'Break down an active work package',
+      prompt: 'Help me break down and complete my highest impact task.',
+      icon: CheckCircle2,
+      color: '#22D3EE'
+    }
   ];
 
+  const currentConv = conversations.find((c) => c.id === currentConvId);
+
+  // Companion status badge details
+  const getMascotStatusPill = () => {
+    switch (mascotState) {
+      case 'THINKING':
+        return { label: 'Thinking...', color: '#A78BFA', bg: 'rgba(167, 139, 250, 0.15)' };
+      case 'LISTENING':
+        return { label: 'Listening...', color: '#38BDF8', bg: 'rgba(56, 189, 248, 0.15)' };
+      case 'SPEAKING':
+        return { label: 'Speaking', color: '#34D399', bg: 'rgba(52, 211, 153, 0.15)' };
+      case 'VIEWING':
+        return { label: 'Analyzing Screen', color: '#22D3EE', bg: 'rgba(34, 211, 238, 0.15)' };
+      case 'HAPPY':
+        return { label: 'Delighted', color: '#35B9A5', bg: 'rgba(53, 185, 165, 0.15)' };
+      case 'ERROR':
+        return { label: 'Attention Needed', color: '#FB7185', bg: 'rgba(251, 113, 133, 0.15)' };
+      default:
+        return { label: 'Companion Ready', color: '#35B9A5', bg: 'rgba(53, 185, 165, 0.12)' };
+    }
+  };
+
+  const statusPill = getMascotStatusPill();
+
   return (
-    <div className="flex h-full" style={{ height: 'calc(100vh - 68px)' }}>
-      {/* CONVERSATION THREAD RAIL */}
+    <div className="flex h-full w-full overflow-hidden" data-testid="companion-chat-screen">
+      {/* 1. CONVERSATION THREAD RAIL */}
+      <ChatSidebar
+        conversations={conversations}
+        currentConvId={currentConvId}
+        onSelectConversation={(id) => setCurrentConvId(id)}
+        onNewConversation={handleNewConversation}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
+      />
+
+      {/* 2. MAIN CHAT WORKSPACE */}
       <div
-        className="flex flex-col border-r select-none"
-        style={{
-          width: '260px',
-          backgroundColor: 'var(--bg-secondary)',
-          borderColor: 'var(--border)'
-        }}
+        className="flex-1 flex flex-col h-full relative overflow-hidden"
+        style={{ backgroundColor: 'var(--bg-primary, #080910)' }}
       >
-        <div className="p-3 border-b border-[rgba(255,255,255,0.06)]">
-          <button
-            onClick={handleNewConversation}
-            className="btn-primary w-full text-xs justify-center"
-          >
-            <Plus style={{ width: '0.9rem', height: '0.9rem' }} />
-            <span>New Dialogue</span>
-          </button>
-        </div>
+        {/* Workspace Top Header Bar */}
+        <div
+          className="px-5 py-3 border-b flex items-center justify-between select-none z-10"
+          style={{
+            backgroundColor: 'var(--bg-secondary, #0B0D18)',
+            borderColor: 'var(--border, rgba(255, 255, 255, 0.08))'
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <div>
+              <h2 className="text-sm font-bold text-primary m-0 tracking-wide flex items-center gap-2">
+                <span>{currentConv?.title || 'Continuous Companion Dialogue'}</span>
+              </h2>
+              <p className="text-[11px] text-muted m-0 mt-0.5">
+                Personal AI Operating System • Context Continuity Active
+              </p>
+            </div>
+          </div>
 
-        <div className="flex-1 overflow-y-auto p-2 flex flex-col gap-1">
-          {conversations.map((conv) => {
-            const isSelected = currentConvId === conv.id;
-            return (
-              <button
-                key={conv.id}
-                onClick={() => setCurrentConvId(conv.id)}
-                className="flex items-center gap-2.5 p-2 rounded-lg text-xs w-full text-left truncate cursor-pointer transition-all"
+          <div className="flex items-center gap-2.5">
+            {/* TESS Companion Status Pill (Single character presence sync) */}
+            <div
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono transition-all"
+              style={{
+                backgroundColor: statusPill.bg,
+                color: statusPill.color,
+                border: `1px solid ${statusPill.color}40`
+              }}
+              title="Persistent TESS Companion Status"
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full"
                 style={{
-                  backgroundColor: isSelected ? 'rgba(139, 92, 246, 0.12)' : 'transparent',
-                  color: isSelected ? '#FFFFFF' : 'var(--text-secondary)',
-                  border: isSelected ? '1px solid rgba(139, 92, 246, 0.35)' : '1px solid transparent'
+                  backgroundColor: statusPill.color,
+                  boxShadow: `0 0 8px ${statusPill.color}`
                 }}
-              >
-                <MessageSquare
-                  style={{
-                    width: '0.85rem',
-                    height: '0.85rem',
-                    color: isSelected ? '#A78BFA' : 'var(--text-muted)',
-                    flexShrink: 0
-                  }}
-                />
-                <span className="truncate">{conv.title || 'Untitled Session'}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+              />
+              <span className="font-semibold">{statusPill.label}</span>
+            </div>
 
-      {/* CHAT MESSAGES & COMPOSER CONTAINER */}
-      <div className="flex-1 flex flex-col h-full bg-primary relative overflow-hidden">
+            {/* Refresh Action */}
+            <button
+              type="button"
+              onClick={() => currentConvId && loadMessages(currentConvId)}
+              className="p-1.5 rounded-lg text-muted hover:text-primary hover:bg-[rgba(255,255,255,0.06)] transition-all cursor-pointer bg-transparent border-none"
+              title="Reload dialogue messages"
+            >
+              <RefreshCw style={{ width: '0.9rem', height: '0.9rem' }} />
+            </button>
+
+            {/* New Dialogue Action */}
+            <button
+              type="button"
+              onClick={handleNewConversation}
+              className="p-1.5 rounded-lg text-muted hover:text-primary hover:bg-[rgba(255,255,255,0.06)] transition-all cursor-pointer bg-transparent border-none"
+              title="New Dialogue"
+            >
+              <Plus style={{ width: '1rem', height: '1rem' }} />
+            </button>
+          </div>
+        </div>
+
+        {/* ERROR FEEDBACK BANNER */}
         {error && (
           <div
-            className="p-3 text-xs flex items-center justify-between border-b"
+            className="p-3 text-xs flex items-center justify-between border-b animate-in fade-in z-10"
             style={{
-              backgroundColor: 'rgba(251, 113, 133, 0.1)',
-              borderColor: 'rgba(251, 113, 133, 0.3)',
+              backgroundColor: 'rgba(251, 113, 133, 0.12)',
+              borderColor: 'rgba(251, 113, 133, 0.35)',
               color: '#FB7185'
             }}
           >
-            <div className="flex items-center gap-2">
-              <AlertCircle style={{ width: '1rem', height: '1rem' }} />
+            <div className="flex items-center gap-2.5">
+              <AlertCircle style={{ width: '1.05rem', height: '1.05rem', flexShrink: 0 }} />
               <span>{error}</span>
+              {failedMessageText && (
+                <button
+                  type="button"
+                  onClick={handleRetry}
+                  className="underline font-semibold ml-2 hover:text-[#FDA4AF] cursor-pointer bg-transparent border-none p-0 text-xs"
+                >
+                  Retry now
+                </button>
+              )}
             </div>
             <button
+              type="button"
               onClick={() => setError(null)}
-              className="text-muted hover:text-primary cursor-pointer"
-              style={{ background: 'none', border: 'none' }}
+              className="text-[#FB7185] hover:text-[#FDA4AF] cursor-pointer bg-transparent border-none p-1"
             >
-              <X style={{ width: '0.9rem', height: '0.9rem' }} />
+              <X style={{ width: '0.95rem', height: '0.95rem' }} />
             </button>
           </div>
         )}
 
         {/* SCREEN ANALYSIS PREVIEW BANNER */}
         {screenPreviewUrl && (
-          <div
-            className="p-3 border-b flex items-center gap-4 bg-[rgba(34,211,238,0.06)] border-[rgba(34,211,238,0.25)]"
-          >
+          <div className="p-3 border-b flex items-center gap-4 bg-[rgba(34,211,238,0.08)] border-[rgba(34,211,238,0.3)] z-10">
             <img
               src={screenPreviewUrl}
               alt="Screen Preview"
-              className="w-24 h-16 object-cover rounded-md border border-[rgba(34,211,238,0.3)] shadow-md"
+              className="w-24 h-16 object-cover rounded-lg border border-[rgba(34,211,238,0.3)] shadow-md"
             />
             <div className="flex-1 flex flex-col gap-1.5">
               <span className="text-xs font-mono font-semibold text-[#22D3EE] uppercase tracking-wider">
@@ -390,7 +501,7 @@ export const ChatScreen: React.FC = () => {
               </span>
               <input
                 type="text"
-                className="tess-input text-xs py-1"
+                className="tess-input text-xs py-1.5"
                 placeholder="Question about your screen..."
                 value={screenQuery}
                 onChange={(e) => setScreenQuery(e.target.value)}
@@ -398,19 +509,20 @@ export const ChatScreen: React.FC = () => {
             </div>
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={confirmScreenAnalysis}
                 disabled={analyzingScreen}
-                className="btn-cyan text-xs py-1.5 px-3"
+                className="btn-cyan text-xs py-1.5 px-3.5"
               >
                 {analyzingScreen ? 'Analyzing...' : 'Analyze'}
               </button>
               <button
+                type="button"
                 onClick={() => {
                   setScreenPreviewUrl(null);
                   setCapturedImageBlob(null);
                 }}
-                className="p-1.5 text-muted hover:text-primary rounded cursor-pointer"
-                style={{ background: 'none', border: 'none' }}
+                className="p-1.5 text-muted hover:text-primary rounded cursor-pointer bg-transparent border-none"
               >
                 <X style={{ width: '1rem', height: '1rem' }} />
               </button>
@@ -418,136 +530,108 @@ export const ChatScreen: React.FC = () => {
           </div>
         )}
 
-        {/* MESSAGE STREAM */}
-        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
-          {messages.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center p-8 select-none">
-              <div className="w-14 h-14 rounded-full bg-[rgba(139,92,246,0.12)] border border-[rgba(139,92,246,0.35)] flex items-center justify-center mb-3">
-                <Sparkles style={{ width: '1.75rem', height: '1.75rem', color: '#A78BFA' }} />
+        {/* 3. MESSAGE STREAM CONTAINER */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 flex flex-col gap-4">
+          {loading && messages.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-muted text-xs gap-2 select-none">
+              <RefreshCw className="animate-spin" style={{ width: '1.25rem', height: '1.25rem' }} />
+              <span>Loading conversation history...</span>
+            </div>
+          ) : messages.length === 0 ? (
+            /* CONVERSATION EMPTY STATE WITH INTELLIGENT PROMPT STARTERS */
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-6 select-none max-w-xl mx-auto">
+              <div className="w-14 h-14 rounded-2xl bg-[rgba(53,185,165,0.12)] border border-[rgba(53,185,165,0.35)] flex items-center justify-center mb-4 shadow-lg shadow-[rgba(53,185,165,0.1)]">
+                <Sparkles style={{ width: '1.75rem', height: '1.75rem', color: '#35B9A5' }} />
               </div>
-              <h3 className="text-base font-bold text-primary m-0 tracking-wide">
+
+              <h3 className="text-lg font-bold text-primary m-0 tracking-wide">
                 TESS Continuous Dialogue
               </h3>
-              <p className="text-xs text-muted max-w-sm mt-1.5 leading-relaxed">
-                I remember your context, synchronize with your OpenProject workspace, and predict future trajectories.
+              <p className="text-xs text-muted max-w-md mt-2 leading-relaxed">
+                I remember your goals, synchronize with your OpenProject workspace, and predict your future trajectories. Ask me anything or trigger a prompt below:
               </p>
 
-              {/* Quick Action Suggestions */}
-              <div className="grid grid-cols-2 gap-2 mt-6 max-w-md w-full">
-                {quickActionPrompts.map((item, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleSendMessage(item.prompt)}
-                    className="p-2.5 rounded-lg text-left text-xs bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] hover:border-[rgba(139,92,246,0.4)] hover:bg-[rgba(139,92,246,0.06)] text-secondary hover:text-primary transition-all cursor-pointer flex items-center justify-between group"
-                  >
-                    <span>{item.label}</span>
-                    <ArrowRight style={{ width: '0.75rem', height: '0.75rem', opacity: 0.5 }} />
-                  </button>
-                ))}
+              {/* 4 Interactive Starter Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-6 w-full text-left">
+                {quickActionPrompts.map((item, idx) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleSendMessage(item.prompt)}
+                      className="p-3 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] hover:border-[rgba(53,185,165,0.4)] hover:bg-[rgba(53,185,165,0.06)] transition-all cursor-pointer group flex flex-col justify-between"
+                    >
+                      <div className="flex items-center justify-between w-full mb-1">
+                        <div className="flex items-center gap-2">
+                          <Icon style={{ width: '0.9rem', height: '0.9rem', color: item.color }} />
+                          <span className="text-xs font-semibold text-primary group-hover:text-[#35B9A5] transition-colors">
+                            {item.label}
+                          </span>
+                        </div>
+                        <ArrowRight
+                          style={{
+                            width: '0.8rem',
+                            height: '0.8rem',
+                            opacity: 0.4,
+                            color: item.color
+                          }}
+                          className="group-hover:translate-x-0.5 transition-transform"
+                        />
+                      </div>
+                      <p className="text-[11px] text-muted m-0 line-clamp-1">
+                        {item.description}
+                      </p>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           ) : (
-            messages.map((msg) => {
-              const isUser = msg.role === 'user';
-              return (
-                <div
-                  key={msg.id}
-                  className={`flex items-start gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}
-                >
-                  {!isUser && (
-                    <div
-                      className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{
-                        backgroundColor: 'rgba(139, 92, 246, 0.15)',
-                        border: '1px solid rgba(139, 92, 246, 0.4)',
-                        color: '#A78BFA'
-                      }}
-                    >
-                      <Bot style={{ width: '0.95rem', height: '0.95rem' }} />
-                    </div>
-                  )}
-
-                  <div
-                    className="flex flex-col group relative"
-                    style={{ maxWidth: '78%' }}
-                  >
-                    <div
-                      className="p-3.5 rounded-2xl text-xs leading-relaxed transition-all"
-                      style={{
-                        backgroundColor: isUser
-                          ? 'rgba(139, 92, 246, 0.18)'
-                          : 'rgba(23, 26, 45, 0.85)',
-                        border: isUser
-                          ? '1px solid rgba(139, 92, 246, 0.4)'
-                          : '1px solid rgba(255, 255, 255, 0.08)',
-                        color: '#F8FAFC',
-                        boxShadow: isUser
-                          ? '0 4px 16px rgba(139, 92, 246, 0.15)'
-                          : '0 4px 20px rgba(0, 0, 0, 0.3)',
-                        backdropFilter: 'blur(16px)'
-                      }}
-                    >
-                      <div className="whitespace-pre-wrap">{msg.content}</div>
-                    </div>
-
-                    <div className="flex items-center gap-2 mt-1 px-1">
-                      <span className="font-mono text-[10px] text-muted">
-                        {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                      <button
-                        onClick={() => copyToClipboard(msg.content, msg.id)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity text-muted hover:text-primary cursor-pointer p-0"
-                        style={{ background: 'none', border: 'none' }}
-                        title="Copy message"
-                      >
-                        {copiedId === msg.id ? (
-                          <Check style={{ width: '0.75rem', height: '0.75rem', color: '#34D399' }} />
-                        ) : (
-                          <Copy style={{ width: '0.75rem', height: '0.75rem' }} />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  {isUser && (
-                    <div
-                      className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: 'var(--text-secondary)'
-                      }}
-                    >
-                      <User style={{ width: '0.95rem', height: '0.95rem' }} />
-                    </div>
-                  )}
-                </div>
-              );
-            })
+            /* RENDERED MESSAGE LIST */
+            <div className="max-w-4xl w-full mx-auto flex flex-col gap-3.5">
+              {messages.map((msg, index) => {
+                const isLastMsg = index === messages.length - 1;
+                const isFailed = isLastMsg && !!failedMessageText && msg.role === 'user';
+                return (
+                  <ChatMessageItem
+                    key={msg.id}
+                    message={msg}
+                    isFailed={isFailed}
+                    onRetry={handleRetry}
+                  />
+                );
+              })}
+            </div>
           )}
 
-          {/* Thinking Holographic Wave Indicator */}
+          {/* THINKING & SYNTHESIZING INDICATOR */}
           {sending && (
-            <div className="flex items-center gap-3">
+            <div className="max-w-4xl w-full mx-auto flex items-center gap-3 animate-in fade-in duration-200">
               <div
-                className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 animate-pulse"
+                className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 animate-pulse"
                 style={{
-                  backgroundColor: 'rgba(139, 92, 246, 0.2)',
-                  border: '1px solid #8B5CF6',
-                  color: '#A78BFA'
+                  backgroundColor: 'rgba(53, 185, 165, 0.2)',
+                  border: '1px solid #35B9A5',
+                  color: '#35B9A5'
                 }}
               >
-                <Bot style={{ width: '0.95rem', height: '0.95rem' }} />
+                <Bot style={{ width: '1rem', height: '1rem' }} />
               </div>
               <div
-                className="p-3 rounded-2xl flex items-center gap-1.5"
+                className="p-3.5 rounded-2xl rounded-tl-sm flex items-center gap-2.5"
                 style={{
-                  backgroundColor: 'rgba(23, 26, 45, 0.85)',
-                  border: '1px solid rgba(139, 92, 246, 0.3)'
+                  backgroundColor: 'var(--bg-surface-elevated, #171A2D)',
+                  border: '1px solid rgba(53, 185, 165, 0.35)',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.25)'
                 }}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6] animate-ping" />
-                <span className="text-xs font-mono text-[#A78BFA] tracking-wider uppercase ml-1">
+                <div className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#35B9A5] animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#35B9A5] animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#35B9A5] animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+                <span className="text-xs font-mono text-[#35B9A5] tracking-wider uppercase ml-1">
                   Synthesizing Response...
                 </span>
               </div>
@@ -557,83 +641,17 @@ export const ChatScreen: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* CHAT COMPOSER WITH VOICE & SCREEN AFFORDANCES */}
-        <div
-          className="p-4 border-t border-[rgba(255,255,255,0.06)]"
-          style={{ backgroundColor: 'var(--bg-secondary)' }}
-        >
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSendMessage();
-            }}
-            className="flex items-end gap-2"
-          >
-            {/* Voice Input Button */}
-            <button
-              type="button"
-              onClick={toggleVoiceRecording}
-              className={`p-2.5 rounded-xl transition-all cursor-pointer flex-shrink-0 ${
-                isRecording
-                  ? 'bg-[#FB7185] text-white shadow-[0_0_15px_#FB7185] animate-pulse'
-                  : 'bg-[rgba(255,255,255,0.04)] text-secondary hover:text-primary hover:bg-[rgba(255,255,255,0.08)]'
-              }`}
-              style={{ border: '1px solid var(--border)' }}
-              title={isRecording ? 'Stop Recording' : 'Voice Interaction'}
-            >
-              {isRecording ? (
-                <MicOff style={{ width: '1.05rem', height: '1.05rem' }} />
-              ) : (
-                <Mic style={{ width: '1.05rem', height: '1.05rem' }} />
-              )}
-            </button>
-
-            {/* Screen Capture Button */}
-            <button
-              type="button"
-              onClick={triggerScreenCapture}
-              className="p-2.5 rounded-xl bg-[rgba(255,255,255,0.04)] text-secondary hover:text-primary hover:bg-[rgba(255,255,255,0.08)] transition-all cursor-pointer flex-shrink-0"
-              style={{ border: '1px solid var(--border)' }}
-              title="Capture & Analyze Screen Telemetry"
-            >
-              <Monitor style={{ width: '1.05rem', height: '1.05rem' }} />
-            </button>
-
-            {/* Multiline Composer Input */}
-            <div className="flex-1 relative">
-              <textarea
-                ref={textareaRef}
-                className="tess-input resize-none py-2 px-3 text-xs"
-                placeholder={
-                  isRecording
-                    ? 'Listening to your voice...'
-                    : 'Communicate with TESS (Enter to send, Shift+Enter for newline)...'
-                }
-                rows={1}
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSendMessage();
-                  }
-                }}
-                disabled={sending || isRecording}
-                style={{ minHeight: '40px', maxHeight: '120px' }}
-              />
-            </div>
-
-            {/* Send Button */}
-            <button
-              type="submit"
-              disabled={!inputText.trim() || sending || isRecording}
-              className="btn-primary py-2 px-4 rounded-xl flex-shrink-0"
-              title="Transmit Message"
-            >
-              <Send style={{ width: '0.95rem', height: '0.95rem' }} />
-            </button>
-          </form>
-        </div>
+        {/* 4. MESSAGE COMPOSER */}
+        <ChatComposer
+          inputText={inputText}
+          setInputText={setInputText}
+          onSendMessage={handleSendMessage}
+          sending={sending}
+          isRecording={isRecording}
+          onToggleVoice={toggleVoiceRecording}
+          onCaptureScreen={triggerScreenCapture}
+          onTyping={handleTyping}
+        />
       </div>
     </div>
   );
