@@ -22,6 +22,9 @@ Object.defineProperty(window, 'localStorage', {
   value: localStorageMock
 });
 
+// Mock Element.prototype.scrollIntoView for jsdom
+window.HTMLElement.prototype.scrollIntoView = vi.fn();
+
 // Mock BroadcastChannel with full EventTarget interface for Supabase auth-js
 class MockBroadcastChannel {
   name: string;

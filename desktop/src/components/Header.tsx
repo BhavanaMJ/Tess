@@ -1,5 +1,5 @@
 import React from 'react';
-import { RefreshCw, ExternalLink, Activity, Wifi } from 'lucide-react';
+import { RefreshCw, ExternalLink, Activity, Search } from 'lucide-react';
 import { useMascot } from '../contexts/MascotContext';
 
 interface HeaderProps {
@@ -7,19 +7,21 @@ interface HeaderProps {
   subtitle?: string;
   isSyncing?: boolean;
   onRefresh?: () => void;
+  onOpenCommandPalette?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   title,
   subtitle,
   isSyncing = false,
-  onRefresh
+  onRefresh,
+  onOpenCommandPalette
 }) => {
   const { setFloatingVisible, state: mascotState } = useMascot();
 
   return (
     <header
-      className="flex items-center justify-between px-6 select-none relative z-10"
+      className="flex items-center justify-between px-6 select-none relative z-10 shrink-0"
       style={{
         height: '68px',
         backgroundColor: 'var(--bg-secondary)',
@@ -28,22 +30,41 @@ export const Header: React.FC<HeaderProps> = ({
         WebkitBackdropFilter: 'blur(20px)'
       }}
     >
-      <div>
-        <div className="flex items-center gap-2.5">
-          <h1 className="text-lg font-bold text-primary tracking-wide m-0">
-            {title}
-          </h1>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider bg-[rgba(139,92,246,0.12)] text-[#A78BFA] border border-[rgba(139,92,246,0.25)]">
-            AI CORE
-          </span>
-        </div>
+      {/* Breadcrumb Navigation & Title */}
+      <div className="flex flex-col justify-center">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[11px] font-mono text-muted">
+          <span className="tracking-widest font-semibold text-primary">TESS</span>
+          <span className="text-muted/50">/</span>
+          <span className="text-[#A78BFA] font-medium tracking-wide">{title}</span>
+        </nav>
         {subtitle && (
-          <p className="text-xs text-muted mt-0.5 m-0 font-medium">
+          <p className="text-xs text-muted mt-0.5 m-0 font-medium truncate max-w-[420px]">
             {subtitle}
           </p>
         )}
       </div>
 
+      {/* Global Command Palette Trigger Bar */}
+      {onOpenCommandPalette && (
+        <button
+          onClick={onOpenCommandPalette}
+          className="hidden md:flex items-center gap-2.5 px-3.5 py-1.5 rounded-lg text-xs transition-all duration-200 cursor-pointer hover:border-[rgba(139,92,246,0.35)] hover:bg-[rgba(255,255,255,0.05)]"
+          style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid var(--border)',
+            color: 'var(--text-muted)'
+          }}
+          title="Open Command Palette (Ctrl+K or ⌘K)"
+        >
+          <Search style={{ width: '0.85rem', height: '0.85rem', color: '#A78BFA' }} />
+          <span className="text-xs text-muted">Search commands, tasks, memories...</span>
+          <kbd className="ml-3 px-1.5 py-0.5 text-[10px] font-mono rounded bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] text-secondary">
+            ⌘K
+          </kbd>
+        </button>
+      )}
+
+      {/* Contextual Actions Area */}
       <div className="flex items-center gap-3">
         {/* Real-time System Sync Badge */}
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)]">
@@ -63,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Mascot Presence State Indicator */}
-        <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[rgba(139,92,246,0.08)] border border-[rgba(139,92,246,0.25)]">
+        <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[rgba(139,92,246,0.08)] border border-[rgba(139,92,246,0.25)]">
           <Activity style={{ width: '0.85rem', height: '0.85rem', color: '#A78BFA' }} />
           <span className="font-mono text-[11px] font-semibold text-[#A78BFA] tracking-wider uppercase">
             {mascotState}

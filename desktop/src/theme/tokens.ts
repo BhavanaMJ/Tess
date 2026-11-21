@@ -1,6 +1,18 @@
 /**
- * TESS Phase 13 — Centralized Design System Tokens
+ * TESS Phase 13 & Phase D2 — Centralized Design System Tokens
  */
+
+export const brandPalette = {
+  vibrantMint: '#35B9A5',
+  tessTeal: '#168F83',
+  deepTeal: '#08776E',
+  faceIvory: '#F4FFFB',
+  mintHighlight: '#BDF2E4',
+  deepEvergreen: '#174C48',
+  cloudIvory: '#F8FAF6',
+  deepEvergreenSurface: '#263B38',
+  thoughtfulLavender: '#A99AD9',
+};
 
 export const colors = {
   void: '#05060A',
@@ -10,6 +22,17 @@ export const colors = {
   bgElevated: '#171A2D',
   bgGlass: 'rgba(17, 20, 38, 0.72)',
   bgGlassHeavy: 'rgba(23, 26, 45, 0.88)',
+
+  // Brand Palette aliases
+  brandMint: '#35B9A5',
+  brandTeal: '#168F83',
+  brandDeepTeal: '#08776E',
+  brandFace: '#F4FFFB',
+  brandHighlight: '#BDF2E4',
+  brandEvergreen: '#174C48',
+  brandCloud: '#F8FAF6',
+  brandSurface: '#263B38',
+  brandLavender: '#A99AD9',
 
   // Core dual accents
   violet: '#8B5CF6',
@@ -37,5 +60,6 @@ export const shadows = {
   glowViolet: '0 0 25px rgba(139, 92, 246, 0.25)',
   glowCyan: '0 0 25px rgba(34, 211, 238, 0.25)',
   glowCritical: '0 0 25px rgba(251, 113, 133, 0.3)',
+  glowTeal: '0 0 25px rgba(22, 143, 131, 0.3)',
+  glowLavender: '0 0 25px rgba(169, 154, 217, 0.3)',
 };
-

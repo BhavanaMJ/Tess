@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Home,
   MessageSquare,
@@ -11,7 +11,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  ShieldCheck
+  Search,
+  Command
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { Mascot } from './Mascot';
@@ -30,6 +31,7 @@ export type ScreenTab =
 interface SidebarProps {
   currentTab: ScreenTab;
   onSelectTab: (tab: ScreenTab) => void;
+  onOpenCommandPalette?: () => void;
   badgeCounts?: {
     interventions?: number;
     tasks?: number;
@@ -37,31 +39,92 @@ interface SidebarProps {
   };
 }
 
+interface NavSection {
+  title: string;
+  items: {
+    id: ScreenTab;
+    label: string;
+    icon: React.ComponentType<{ style?: React.CSSProperties; className?: string }>;
+    badge?: number;
+    badgeColor?: string;
+    shortcut: string;
+  }[];
+}
+
+const STORAGE_KEY = 'tess_desktop_sidebar_collapsed';
+
 export const Sidebar: React.FC<SidebarProps> = ({
   currentTab,
   onSelectTab,
+  onOpenCommandPalette,
   badgeCounts = {}
 }) => {
   const { signOut, user } = useAuth();
   const { state: mascotState } = useMascot();
-  const [collapsed, setCollapsed] = useState(false);
 
-  const navItems = [
-    { id: 'home' as ScreenTab, label: 'Command Home', icon: Home },
-    { id: 'chat' as ScreenTab, label: 'Companion Chat', icon: MessageSquare },
-    { id: 'tasks' as ScreenTab, label: 'Active Tasks', icon: CheckSquare, badge: badgeCounts.tasks },
-    { id: 'futures' as ScreenTab, label: 'Future Engine', icon: Compass, badgeColor: '#22D3EE' },
-    { id: 'interventions' as ScreenTab, label: 'Interventions', icon: AlertTriangle, badge: badgeCounts.interventions, badgeColor: '#FB7185' },
-    { id: 'agent' as ScreenTab, label: 'Agent Activity', icon: Bot, badge: badgeCounts.agentPlans, badgeColor: '#A78BFA' },
-    { id: 'memory' as ScreenTab, label: 'Memory Core', icon: Brain },
-    { id: 'settings' as ScreenTab, label: 'System Settings', icon: Settings }
+  const [collapsed, setCollapsed] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(STORAGE_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleCollapsed = () => {
+    setCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem(STORAGE_KEY, String(next));
+      } catch {}
+      return next;
+    });
+  };
+
+  const navSections: NavSection[] = [
+    {
+      title: 'WORKSPACE',
+      items: [
+        { id: 'home', label: 'Command Home', icon: Home, shortcut: '⌘1' },
+        { id: 'chat', label: 'Companion Chat', icon: MessageSquare, shortcut: '⌘2' },
+        { id: 'tasks', label: 'Active Tasks', icon: CheckSquare, badge: badgeCounts.tasks, shortcut: '⌘3' }
+      ]
+    },
+    {
+      title: 'INTELLIGENCE',
+      items: [
+        { id: 'futures', label: 'Future Engine', icon: Compass, badgeColor: '#22D3EE', shortcut: '⌘4' },
+        {
+          id: 'interventions',
+          label: 'Interventions',
+          icon: AlertTriangle,
+          badge: badgeCounts.interventions,
+          badgeColor: '#FB7185',
+          shortcut: '⌘5'
+        },
+        {
+          id: 'agent',
+          label: 'Agent Activity',
+          icon: Bot,
+          badge: badgeCounts.agentPlans,
+          badgeColor: '#A78BFA',
+          shortcut: '⌘6'
+        }
+      ]
+    },
+    {
+      title: 'SYSTEM & CONTEXT',
+      items: [
+        { id: 'memory', label: 'Memory Core', icon: Brain, shortcut: '⌘7' },
+        { id: 'settings', label: 'System Settings', icon: Settings, shortcut: '⌘8' }
+      ]
+    }
   ];
 
   return (
     <aside
-      className="flex flex-col justify-between select-none relative z-20 transition-all duration-300 ease-in-out"
+      className="flex flex-col justify-between select-none relative z-20 transition-all duration-300 ease-in-out shrink-0"
       style={{
-        width: collapsed ? '74px' : '250px',
+        width: collapsed ? '72px' : '260px',
         backgroundColor: 'var(--bg-secondary)',
         borderRight: '1px solid var(--border)',
         height: '100%',
@@ -70,10 +133,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         WebkitBackdropFilter: 'blur(20px)'
       }}
     >
-      <div>
+      <div className="flex flex-col gap-4">
         {/* TESS Brand Core & Mascot Header */}
         <div
-          className={`flex items-center gap-3 px-2 py-2 cursor-pointer rounded-xl transition-all ${
+          className={`flex items-center gap-3 px-2 py-2 cursor-pointer rounded-xl transition-all hover:bg-[rgba(255,255,255,0.03)] ${
             collapsed ? 'justify-center' : ''
           }`}
           onClick={() => onSelectTab('home')}
@@ -97,72 +160,117 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
-        <div style={{ height: '1.5rem' }} />
+        {/* Global Command Palette Quick Trigger */}
+        {onOpenCommandPalette && (
+          <button
+            onClick={onOpenCommandPalette}
+            title={collapsed ? 'Quick Actions (⌘K)' : undefined}
+            className={`flex items-center ${
+              collapsed ? 'justify-center' : 'justify-between'
+            } w-full text-xs font-medium cursor-pointer transition-all duration-200 rounded-lg group`}
+            style={{
+              padding: collapsed ? '0.65rem 0' : '0.55rem 0.75rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid var(--border)',
+              color: 'var(--text-muted)'
+            }}
+          >
+            <div className="flex items-center gap-2.5">
+              <Search style={{ width: '0.95rem', height: '0.95rem', color: '#A78BFA' }} />
+              {!collapsed && (
+                <span className="group-hover:text-primary transition-colors">
+                  Quick Search
+                </span>
+              )}
+            </div>
+            {!collapsed && (
+              <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] text-secondary">
+                ⌘K
+              </kbd>
+            )}
+          </button>
+        )}
 
-        {/* Futuristic Rail Navigation */}
-        <nav className="flex flex-col gap-1.5">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = currentTab === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => onSelectTab(item.id)}
-                title={collapsed ? item.label : undefined}
-                className={`flex items-center ${
-                  collapsed ? 'justify-center' : 'justify-between'
-                } w-full text-xs font-medium cursor-pointer transition-all duration-200 relative group`}
-                style={{
-                  padding: collapsed ? '0.75rem 0' : '0.65rem 0.85rem',
-                  borderRadius: '0.65rem',
-                  border: isActive
-                    ? '1px solid rgba(139, 92, 246, 0.4)'
-                    : '1px solid transparent',
-                  backgroundColor: isActive
-                    ? 'rgba(139, 92, 246, 0.12)'
-                    : 'transparent',
-                  color: isActive ? '#F8FAFC' : 'var(--text-secondary)'
-                }}
-              >
-                {/* Active Neon Accent Left Bar */}
-                {isActive && (
-                  <div
-                    className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full"
-                    style={{
-                      backgroundColor: '#8B5CF6',
-                      boxShadow: '0 0 10px #8B5CF6'
-                    }}
-                  />
-                )}
-
-                <div className="flex items-center gap-3">
-                  <Icon
-                    style={{
-                      width: '1.15rem',
-                      height: '1.15rem',
-                      color: isActive ? '#A78BFA' : 'var(--text-muted)'
-                    }}
-                  />
-                  {!collapsed && (
-                    <span className="tracking-wide">{item.label}</span>
-                  )}
+        {/* Categorized Navigation Sections */}
+        <nav className="flex flex-col gap-4 overflow-y-auto no-scrollbar">
+          {navSections.map((section) => (
+            <div key={section.title} className="flex flex-col gap-1">
+              {!collapsed && (
+                <div className="px-2 pb-1 text-[10px] font-mono font-semibold tracking-wider text-muted uppercase">
+                  {section.title}
                 </div>
-
-                {!collapsed && item.badge !== undefined && item.badge > 0 && (
-                  <span
-                    className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+              )}
+              {section.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = currentTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => onSelectTab(item.id)}
+                    title={collapsed ? `${item.label} (${item.shortcut})` : undefined}
+                    className={`flex items-center ${
+                      collapsed ? 'justify-center' : 'justify-between'
+                    } w-full text-xs font-medium cursor-pointer transition-all duration-200 relative group`}
                     style={{
-                      backgroundColor: `${item.badgeColor || '#8B5CF6'}25`,
-                      color: item.badgeColor || '#A78BFA',
-                      border: `1px solid ${item.badgeColor || '#8B5CF6'}50`
+                      padding: collapsed ? '0.7rem 0' : '0.6rem 0.85rem',
+                      borderRadius: '0.65rem',
+                      border: isActive
+                        ? '1px solid rgba(139, 92, 246, 0.4)'
+                        : '1px solid transparent',
+                      backgroundColor: isActive
+                        ? 'rgba(139, 92, 246, 0.14)'
+                        : 'transparent',
+                      color: isActive ? '#F8FAFC' : 'var(--text-secondary)'
                     }}
                   >
-                    {item.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+                    {/* Active Accent Left Bar */}
+                    {isActive && (
+                      <div
+                        className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full"
+                        style={{
+                          backgroundColor: '#8B5CF6',
+                          boxShadow: '0 0 10px #8B5CF6'
+                        }}
+                      />
+                    )}
+
+                    <div className="flex items-center gap-3">
+                      <Icon
+                        style={{
+                          width: '1.15rem',
+                          height: '1.15rem',
+                          color: isActive ? '#A78BFA' : 'var(--text-muted)'
+                        }}
+                      />
+                      {!collapsed && (
+                        <span className="tracking-wide">{item.label}</span>
+                      )}
+                    </div>
+
+                    {!collapsed && (
+                      <div className="flex items-center gap-1.5">
+                        {item.badge !== undefined && item.badge > 0 && (
+                          <span
+                            className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                            style={{
+                              backgroundColor: `${item.badgeColor || '#8B5CF6'}25`,
+                              color: item.badgeColor || '#A78BFA',
+                              border: `1px solid ${item.badgeColor || '#8B5CF6'}50`
+                            }}
+                          >
+                            {item.badge}
+                          </span>
+                        )}
+                        <span className="text-[10px] font-mono text-muted/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {item.shortcut}
+                        </span>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
         </nav>
       </div>
 
@@ -172,7 +280,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {!collapsed && user && (
           <div className="px-2 py-1.5 flex items-center justify-between rounded-lg bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.04)]">
             <div className="overflow-hidden">
-              <div className="text-[11px] font-semibold text-primary truncate">
+              <div className="text-[11px] font-semibold text-primary truncate max-w-[130px]">
                 {user.email?.split('@')[0]}
               </div>
               <div className="text-[10px] font-mono text-[#34D399] flex items-center gap-1">
@@ -183,7 +291,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               onClick={() => signOut()}
               title="Sign Out"
-              className="p-1 rounded hover:bg-[rgba(251,113,133,0.15)] text-muted hover:text-[#FB7185] transition-colors"
+              className="p-1 rounded hover:bg-[rgba(251,113,133,0.15)] text-muted hover:text-[#FB7185] transition-colors cursor-pointer"
               style={{ background: 'none', border: 'none' }}
             >
               <LogOut style={{ width: '0.95rem', height: '0.95rem' }} />
@@ -193,7 +301,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Expand / Collapse Rail Toggle */}
         <button
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={toggleCollapsed}
           className="flex items-center justify-center w-full py-1.5 text-muted hover:text-primary rounded-lg transition-colors hover:bg-[rgba(255,255,255,0.04)]"
           style={{ background: 'none', border: 'none', cursor: 'pointer' }}
           title={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}

@@ -27,6 +27,17 @@
   --accent-cyan: #22D3EE;
   --accent-ice: #60A5FA;
 
+  /* Approved TESS Brand Palette */
+  --brand-mint: #35B9A5;
+  --brand-teal: #168F83;
+  --brand-deep-teal: #08776E;
+  --brand-face: #F4FFFB;
+  --brand-highlight: #BDF2E4;
+  --brand-evergreen: #174C48;
+  --brand-cloud: #F8FAF6;
+  --brand-surface: #263B38;
+  --brand-lavender: #A99AD9;
+
   /* Telemetry Status Colors */
   --success: #34D399;
   --warning: #FBBF24;
@@ -37,6 +48,41 @@
   --glow-violet: 0 0 25px rgba(139, 92, 246, 0.25);
   --glow-cyan: 0 0 25px rgba(34, 211, 238, 0.25);
   --glow-critical: 0 0 25px rgba(251, 113, 133, 0.3);
+  --glow-teal: 0 0 25px rgba(22, 143, 131, 0.3);
+  --glow-lavender: 0 0 25px rgba(169, 154, 217, 0.3);
+}
+
+/* Light Theme Support */
+[data-theme="light"],
+.theme-light {
+  --bg-void: #F4FFFB;
+  --bg-primary: #F8FAF6;
+  --bg-secondary: #FFFFFF;
+  --bg-surface: #F0F5F3;
+  --bg-surface-elevated: #E5EFEA;
+  --bg-card: rgba(255, 255, 255, 0.92);
+  --bg-card-hover: rgba(240, 248, 245, 0.95);
+  
+  --border: rgba(22, 143, 131, 0.16);
+  --border-subtle: rgba(22, 143, 131, 0.08);
+  --border-violet: rgba(169, 154, 217, 0.45);
+  --border-cyan: rgba(53, 185, 165, 0.45);
+
+  --text-primary: #174C48;
+  --text-secondary: #263B38;
+  --text-muted: #5C7571;
+  --text-dim: #7E9793;
+
+  --accent: #168F83;
+  --accent-light: #35B9A5;
+  --accent-hover: #08776E;
+  --accent-cyan: #35B9A5;
+  --accent-ice: #168F83;
+
+  --success: #168F83;
+  --warning: #D97706;
+  --danger: #E11D48;
+  --info: #0284C7;
 }
 
 * {

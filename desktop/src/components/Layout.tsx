@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Sidebar, ScreenTab } from './Sidebar';
 import { Header } from './Header';
+import { CommandPalette } from './CommandPalette';
 import { HomeScreen } from '../screens/HomeScreen';
 import { ChatScreen } from '../screens/ChatScreen';
 import { TasksScreen } from '../screens/TasksScreen';
@@ -16,15 +17,16 @@ import { useMascot } from '../contexts/MascotContext';
 export const Layout: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<ScreenTab>('home');
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [badgeCounts, setBadgeCounts] = useState<{
     interventions?: number;
     tasks?: number;
     agentPlans?: number;
   }>({});
 
-  const { setState: setMascotState, setMessage: setMascotMessage } = useMascot();
+  const { setState: setMascotState, setMessage: setMascotMessage, setFloatingVisible } = useMascot();
 
-  const refreshGlobalMetrics = async () => {
+  const refreshGlobalMetrics = useCallback(async () => {
     setIsSyncing(true);
     try {
       const [sumRes, invRes, planRes, routineRes] = await Promise.allSettled([
@@ -83,13 +85,46 @@ export const Layout: React.FC = () => {
     finally {
       setIsSyncing(false);
     }
-  };
+  }, [setMascotState, setMascotMessage]);
 
   useEffect(() => {
     refreshGlobalMetrics();
     // 60-second background polling for cross-device sync
     const interval = setInterval(refreshGlobalMetrics, 60000);
     return () => clearInterval(interval);
+  }, [refreshGlobalMetrics]);
+
+  // Global Keyboard Shortcuts (Ctrl+K / Cmd+K and ⌘1-⌘8 Module switching)
+  useEffect(() => {
+    const handleGlobalShortcuts = (e: KeyboardEvent) => {
+      // Toggle Command Palette
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        setIsCommandPaletteOpen((prev) => !prev);
+        return;
+      }
+
+      // Quick Module Switching: ⌘1 .. ⌘8
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey) {
+        const keyMap: Record<string, ScreenTab> = {
+          '1': 'home',
+          '2': 'chat',
+          '3': 'tasks',
+          '4': 'futures',
+          '5': 'interventions',
+          '6': 'agent',
+          '7': 'memory',
+          '8': 'settings'
+        };
+        if (keyMap[e.key]) {
+          e.preventDefault();
+          setCurrentTab(keyMap[e.key]);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalShortcuts);
+    return () => window.removeEventListener('keydown', handleGlobalShortcuts);
   }, []);
 
   const getScreenTitle = (tab: ScreenTab) => {
@@ -120,6 +155,7 @@ export const Layout: React.FC = () => {
       <Sidebar
         currentTab={currentTab}
         onSelectTab={setCurrentTab}
+        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
         badgeCounts={badgeCounts}
       />
 
@@ -129,10 +165,16 @@ export const Layout: React.FC = () => {
           subtitle={subtitle}
           isSyncing={isSyncing}
           onRefresh={refreshGlobalMetrics}
+          onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
         />
 
-        <main className="flex-1 overflow-hidden">
-          {currentTab === 'home' && <HomeScreen onNavigate={setCurrentTab} />}
+        <main className="flex-1 overflow-hidden relative">
+          {currentTab === 'home' && (
+            <HomeScreen
+              onNavigate={setCurrentTab}
+              onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+            />
+          )}
           {currentTab === 'chat' && <ChatScreen />}
           {currentTab === 'tasks' && <TasksScreen />}
           {currentTab === 'futures' && <FuturesScreen />}
@@ -142,7 +184,15 @@ export const Layout: React.FC = () => {
           {currentTab === 'settings' && <SettingsScreen />}
         </main>
       </div>
+
+      {/* Global Command Palette and Search Modal */}
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        onNavigate={setCurrentTab}
+        onRefresh={refreshGlobalMetrics}
+        onToggleMascot={() => setFloatingVisible(true)}
+      />
     </div>
   );
 };
-
