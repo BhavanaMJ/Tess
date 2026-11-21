@@ -192,7 +192,7 @@ export const Layout: React.FC = () => {
           )}
           {currentTab === 'chat' && <ChatScreen />}
           {currentTab === 'tasks' && <TasksScreen onNavigateToChat={() => setCurrentTab('chat')} />}
-          {currentTab === 'futures' && <FuturesScreen />}
+          {currentTab === 'futures' && <FuturesScreen onNavigate={setCurrentTab} />}
           {currentTab === 'interventions' && <InterventionsScreen onNavigate={setCurrentTab} />}
           {currentTab === 'agent' && <AgentActivityScreen />}
           {currentTab === 'memory' && <MemoryScreen />}

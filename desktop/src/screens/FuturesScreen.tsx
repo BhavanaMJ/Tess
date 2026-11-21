@@ -288,6 +288,17 @@ export const FuturesScreen: React.FC<FuturesScreenProps> = ({ onNavigate }) => {
           </div>
         </div>
 
+        {/* Transparency & Probabilistic Guidance Banner */}
+        <div className="p-3.5 rounded-xl bg-[rgba(169,154,217,0.08)] border border-[rgba(169,154,217,0.22)] flex items-start gap-3 text-xs text-secondary select-none">
+          <Brain style={{ width: '1.15rem', height: '1.15rem', color: '#A78BFA', flexShrink: 0, marginTop: '2px' }} />
+          <div className="leading-relaxed">
+            <span className="font-semibold text-primary">Probabilistic Trajectory Engine: </span>
+            <span>
+              Simulations represent mathematical projections of your current velocity and task commitments, not certainties. Each scenario estimates likelihood and isolates key counterfactual levers to help you steer your trajectory.
+            </span>
+          </div>
+        </div>
+
         {error && (
           <div
             className="p-3 rounded-lg text-xs flex items-center justify-between"
@@ -404,6 +415,20 @@ export const FuturesScreen: React.FC<FuturesScreenProps> = ({ onNavigate }) => {
                   <p className="text-xs text-secondary m-0">
                     Expected outcome: {simulation.alternative.expected_effect}
                   </p>
+                  <div className="mt-3 pt-3 border-t border-[rgba(255,255,255,0.06)] flex items-center justify-between">
+                    <span className="text-[11px] font-mono text-muted">Counterfactual Delta: High-leverage behavioral adjustment</span>
+                    {onNavigate && (
+                      <button
+                        type="button"
+                        onClick={() => onNavigate('chat')}
+                        className="btn-primary text-xs py-1.5 px-3 flex items-center gap-1.5"
+                        title="Discuss trajectory in Companion Chat"
+                      >
+                        <Bot style={{ width: '0.85rem', height: '0.85rem' }} />
+                        <span>Discuss with TESS</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
