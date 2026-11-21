@@ -101,3 +101,4 @@ Tested against live FastAPI daemon (`http://localhost:8000`) and Ollama (`llama3
 - **Phase D4.1 Only**: Companion Chat is fully implemented, verified, and documented.
 - **D4.2 (Active Tasks)**, **D4.3 (Future Engine)**, and **D4.4 (Interventions)** have not been modified and await user approval.
 - **Single Mascot Rule**: Verified that no duplicate mascot character is mounted.
+
