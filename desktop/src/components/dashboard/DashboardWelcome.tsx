@@ -1,8 +1,8 @@
 import React from 'react';
 import { Sparkles, ArrowRight, Compass, Search } from 'lucide-react';
-import { Mascot } from '../Mascot';
 import { MascotState, User } from '../../types';
 import { ScreenTab } from '../Sidebar';
+import { getMascotDetails } from '../Mascot';
 
 interface DashboardWelcomeProps {
   user: User | null;
@@ -53,6 +53,7 @@ export const DashboardWelcome: React.FC<DashboardWelcomeProps> = ({
   };
 
   const userName = user?.email ? user.email.split('@')[0] : 'Operator';
+  const mascotDetails = getMascotDetails(mascotState);
 
   return (
     <div
@@ -72,7 +73,7 @@ export const DashboardWelcome: React.FC<DashboardWelcomeProps> = ({
         }}
       />
 
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
         <div className="flex-1 min-w-0">
           {/* Header Metadata Pill */}
           <div className="flex flex-wrap items-center gap-2 mb-2.5">
@@ -140,20 +141,48 @@ export const DashboardWelcome: React.FC<DashboardWelcomeProps> = ({
           </div>
         </div>
 
-        {/* TESS Expressive Companion Orb */}
-        <div className="flex flex-col items-center justify-center p-2 shrink-0">
+        {/* Companion Status Telemetry Card (Text-based, zero extra mascot graphic) */}
+        <div className="flex flex-col items-start sm:items-end justify-center p-2 shrink-0 hidden sm:flex">
           <div
-            className="p-3 rounded-2xl transition-all duration-300"
+            className="px-4 py-3 rounded-2xl border flex flex-col items-start sm:items-end gap-1.5 transition-all duration-200"
             style={{
-              background: 'radial-gradient(circle, rgba(22, 143, 131, 0.12) 0%, rgba(17, 20, 38, 0.5) 80%)',
-              border: '1px solid rgba(53, 185, 165, 0.25)'
+              backgroundColor: 'rgba(255, 255, 255, 0.02)',
+              borderColor: 'rgba(53, 185, 165, 0.25)',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)'
             }}
           >
-            <Mascot state={mascotState} size="lg" showLabel={true} />
+            <div className="flex items-center gap-2">
+              <span
+                className="w-2.5 h-2.5 rounded-full animate-pulse"
+                style={{
+                  backgroundColor: mascotDetails.color,
+                  boxShadow: `0 0 10px ${mascotDetails.color}`
+                }}
+              />
+              <span className="text-xs font-mono font-bold tracking-wider uppercase text-primary">
+                TESS COMPANION
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-mono text-muted">Status:</span>
+              <span
+                className="text-[11px] font-mono font-semibold uppercase px-2 py-0.5 rounded"
+                style={{
+                  backgroundColor: `${mascotDetails.color}15`,
+                  color: mascotDetails.color,
+                  border: `1px solid ${mascotDetails.color}35`
+                }}
+              >
+                {mascotDetails.label}
+              </span>
+            </div>
+            <div className="text-[10px] text-muted font-mono tracking-tight flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#34D399]" />
+              <span>Floating Companion Active</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
 };
-

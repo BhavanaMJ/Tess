@@ -15,7 +15,6 @@ import {
   Command
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { Mascot } from './Mascot';
 import { useMascot } from '../contexts/MascotContext';
 
 export type ScreenTab =
@@ -134,7 +133,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       }}
     >
       <div className="flex flex-col gap-4">
-        {/* TESS Brand Core & Mascot Header */}
+        {/* TESS Brand Core & Header */}
         <div
           className={`flex items-center gap-3 px-2 py-2 cursor-pointer rounded-xl transition-all hover:bg-[rgba(255,255,255,0.03)] ${
             collapsed ? 'justify-center' : ''
@@ -142,7 +141,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           onClick={() => onSelectTab('home')}
           title="TESS AI Operating System"
         >
-          <Mascot state={mascotState} size="sm" />
+          <div
+            className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #35B9A5 0%, #168F83 100%)',
+              boxShadow: '0 0 12px rgba(53, 185, 165, 0.35)'
+            }}
+          >
+            <span className="font-mono font-bold text-xs text-[#F4FFFB]">T</span>
+          </div>
           {!collapsed && (
             <div className="overflow-hidden">
               <div className="flex items-center gap-1.5">

@@ -45,3 +45,4 @@
 ## 3. Stale Event Overriding Prevention
 - The state manager increments an internal transaction sequence ID `transitionSeqRef.current += 1` on every state transition.
 - Timers check whether their sequence ID matches the active sequence before reverting. If a newer state was triggered in the interim (e.g. `ERROR` after `HAPPY`), the older timer is automatically discarded.
+

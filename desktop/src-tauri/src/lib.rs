@@ -91,11 +91,14 @@ pub fn run() {
         })
         .setup(|app| {
             if let Some(mascot_win) = app.get_webview_window("mascot") {
-                if let Ok(Some(monitor)) = mascot_win.current_monitor() {
+                let monitor_opt = mascot_win.current_monitor().ok().flatten()
+                    .or_else(|| mascot_win.primary_monitor().ok().flatten());
+                if let Some(monitor) = monitor_opt {
                     let size = monitor.size();
                     let scale = monitor.scale_factor();
-                    let x = ((size.width as f64 / scale) - 200.0).max(0.0) as i32;
-                    let y = ((size.height as f64 / scale) - 260.0).max(0.0) as i32;
+                    // Position strictly in bottom-right workspace (x >= 320 to avoid left sidebar)
+                    let x = (((size.width as f64) - (200.0 * scale)) as i32).max((320.0 * scale) as i32);
+                    let y = (((size.height as f64) - (260.0 * scale)) as i32).max((100.0 * scale) as i32);
                     let _ = mascot_win.set_position(PhysicalPosition::new(x, y));
                 }
             }

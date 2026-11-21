@@ -47,3 +47,4 @@ Phase D3 completes the transition from the legacy purple orb to the approved TES
   - Strictly adheres to `@media (prefers-reduced-motion: reduce)` by disabling all floating and pulsing CSS animations.
 - **Theme Adaptability**:
   - Evaluated on both Dark Void (`#080910`) and Light Cloud (`#F8FAF6`) surfaces with zero visual clipping or contrast degradation.
+

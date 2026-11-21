@@ -85,3 +85,4 @@ desktop/src/
   }
   ```
 - **Theme Adaptability**: Blends seamlessly across dark mode and light mode surfaces using CSS variables.
+

@@ -53,3 +53,4 @@
   - `dist/assets/index-*.css`: 8.75 kB
   - `dist/assets/index-*.js`: 596.27 kB
   - Build Duration: 1.59s
+

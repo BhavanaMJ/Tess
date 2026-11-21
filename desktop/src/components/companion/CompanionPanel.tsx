@@ -143,7 +143,15 @@ export const CompanionPanel: React.FC<CompanionPanelProps> = ({
           }}
         >
           <div className="flex items-center gap-2.5">
-            <Mascot state={mascotState} size="sm" />
+            <div
+              className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+              style={{
+                background: 'linear-gradient(135deg, #35B9A5 0%, #168F83 100%)',
+                boxShadow: '0 0 10px rgba(53, 185, 165, 0.3)'
+              }}
+            >
+              <Sparkles style={{ width: '0.9rem', height: '0.9rem', color: '#F4FFFB' }} />
+            </div>
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="font-bold text-xs tracking-wider text-primary font-mono">
@@ -313,3 +321,4 @@ export const CompanionPanel: React.FC<CompanionPanelProps> = ({
     </div>
   );
 };
+
