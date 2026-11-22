@@ -77,6 +77,14 @@ class GarmentImagePlaceholder extends StatelessWidget {
   }
 
   Widget _buildFallback() {
+    double iconSize = 48.0;
+    if (width.isFinite && width > 0) {
+      iconSize = width * 0.45;
+    } else if (height.isFinite && height > 0) {
+      iconSize = height * 0.35;
+    }
+    iconSize = iconSize.clamp(20.0, 96.0);
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -84,10 +92,11 @@ class GarmentImagePlaceholder extends StatelessWidget {
           Icon(
             _getCategoryIcon(category),
             color: const Color(0xFF475569), // Dark slate icon on white card
-            size: width * 0.45,
+            size: iconSize,
           ),
         ],
       ),
     );
   }
 }
+

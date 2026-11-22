@@ -90,3 +90,4 @@
 - [ ] Smart Wishlist with priority ratings and target budget.
 - [ ] "Does it match my wardrobe?" simulator before purchasing new items.
 - [ ] Desktop TESS Clothes Organizer rollout (mirroring mobile features into Tauri desktop client).
+

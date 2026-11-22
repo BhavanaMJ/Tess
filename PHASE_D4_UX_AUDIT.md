@@ -66,3 +66,4 @@ Across all four core modules:
 - Zero duplicate `<Mascot>` graphic components are mounted.
 - The persistent floating TESS mascot window remains the sole visual character across the desktop application.
 - All modules utilize `useMascot()` to dynamically update the companion's expressions and status pills in response to application events.
+

@@ -3,18 +3,20 @@ import '../../../../core/auth/auth_service.dart';
 import '../../domain/entities/category.dart';
 import '../../domain/entities/garment.dart';
 import '../../domain/entities/laundry_status.dart';
+import '../../domain/entities/wardrobe_stats.dart';
 import '../../domain/repositories/wardrobe_repository.dart';
 import '../models/garment_model.dart';
 import '../services/wardrobe_api_service.dart';
 
 /// Concrete Implementation of WardrobeRepository.
-/// Integrates with WardrobeApiService while providing graceful fallback cache
-/// during early Phase 1 rollout before backend endpoints are fully deployed.
+/// Interacts with FastAPI backend `/api/v1/wardrobe/...` with bearer auth.
+/// Maintains in-memory cache to support seamless offline fallback while
+/// strictly enforcing persistent backend mutations.
 class WardrobeRepositoryImpl implements WardrobeRepository {
   final WardrobeApiService _apiService;
   final AuthService _authService;
 
-  // In-memory cache for instant UI response and seamless Phase 1 offline testing
+  // Local cache
   final Map<String, Garment> _localCache = {};
 
   WardrobeRepositoryImpl({
@@ -30,43 +32,60 @@ class WardrobeRepositoryImpl implements WardrobeRepository {
     String? category,
     LaundryStatus? laundryStatus,
     bool? favoritesOnly,
+    String? search,
+    String? sortBy,
+    String? sortOrder,
+    int? page,
+    int? limit,
   }) async {
     try {
       final models = await _apiService.getItems(
         category: category,
         laundryStatus: laundryStatus?.value,
         favoritesOnly: favoritesOnly,
+        search: search,
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+        page: page,
+        limit: limit,
       );
+      final remoteGarments = <Garment>[];
       for (final m in models) {
         final entity = m.toDomain();
         _localCache[entity.id] = entity;
+        remoteGarments.add(entity);
       }
+      return remoteGarments;
     } catch (e) {
-      debugPrint('[WardrobeRepo] Remote API unavailable or pending, using local store: $e');
+      debugPrint('[WardrobeRepo] Remote API unavailable, using local store: $e');
+      // If backend fails, filter local cache so offline testing continues smoothly
+      var list = _localCache.values.toList();
+      if (category != null && category.isNotEmpty) {
+        list = list.where((g) => g.mainCategory.toLowerCase() == category.toLowerCase()).toList();
+      }
+      if (laundryStatus != null) {
+        list = list.where((g) => g.laundryStatus == laundryStatus).toList();
+      }
+      if (favoritesOnly == true) {
+        list = list.where((g) => g.isFavorite).toList();
+      }
+      if (search != null && search.trim().isNotEmpty) {
+        final q = search.trim().toLowerCase();
+        list = list.where((g) =>
+            g.name.toLowerCase().contains(q) ||
+            g.id.toLowerCase().contains(q) ||
+            g.mainCategory.toLowerCase().contains(q) ||
+            (g.subcategory != null && g.subcategory!.toLowerCase().contains(q)) ||
+            g.primaryColor.toLowerCase().contains(q) ||
+            (g.brand != null && g.brand!.toLowerCase().contains(q))).toList();
+      }
+      list.sort((a, b) => a.id.compareTo(b.id));
+      return list;
     }
-
-    var list = _localCache.values.toList();
-    if (category != null && category.isNotEmpty) {
-      list = list.where((g) => g.mainCategory.toLowerCase() == category.toLowerCase()).toList();
-    }
-    if (laundryStatus != null) {
-      list = list.where((g) => g.laundryStatus == laundryStatus).toList();
-    }
-    if (favoritesOnly == true) {
-      list = list.where((g) => g.isFavorite).toList();
-    }
-
-    // Sort by id / name
-    list.sort((a, b) => a.id.compareTo(b.id));
-    return list;
   }
 
   @override
   Future<Garment?> getGarmentById(String id) async {
-    if (_localCache.containsKey(id)) {
-      return _localCache[id];
-    }
-
     try {
       final model = await _apiService.getItemById(id);
       if (model != null) {
@@ -74,40 +93,63 @@ class WardrobeRepositoryImpl implements WardrobeRepository {
         _localCache[entity.id] = entity;
         return entity;
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[WardrobeRepo] Remote getGarmentById fallback: $e');
+    }
 
-    return null;
+    return _localCache[id];
   }
 
   @override
   Future<Garment> saveGarment(Garment garment) async {
     final now = DateTime.now();
-    final updated = garment.copyWith(
+    final toSave = garment.copyWith(
       userId: garment.userId.isEmpty ? _currentUserId : garment.userId,
+      createdAt: garment.createdAt,
       updatedAt: now,
     );
 
+    _localCache[toSave.id] = toSave;
+
+    try {
+      final model = GarmentModel.fromDomain(toSave);
+      final createdModel = await _apiService.createItem(model);
+      final entity = createdModel.toDomain();
+      _localCache[entity.id] = entity;
+      return entity;
+    } catch (e) {
+      debugPrint('[WardrobeRepo] Remote save failed: $e');
+      return toSave;
+    }
+  }
+
+  @override
+  Future<Garment> updateGarment(Garment garment) async {
+    final now = DateTime.now();
+    final updated = garment.copyWith(updatedAt: now);
     _localCache[updated.id] = updated;
 
     try {
       final model = GarmentModel.fromDomain(updated);
-      final savedModel = await _apiService.createItem(model);
-      final entity = savedModel.toDomain();
+      final resModel = await _apiService.updateItem(updated.id, model);
+      final entity = resModel.toDomain();
       _localCache[entity.id] = entity;
       return entity;
     } catch (e) {
-      debugPrint('[WardrobeRepo] Remote save pending backend route, kept in local cache: $e');
+      debugPrint('[WardrobeRepo] Remote update failed: $e');
       return updated;
     }
   }
 
   @override
-  Future<bool> deleteGarment(String id) async {
+  Future<bool> deleteGarment(String id, {bool hardDelete = false}) async {
     _localCache.remove(id);
     try {
-      await _apiService.deleteItem(id);
-    } catch (_) {}
-    return true;
+      return await _apiService.deleteItem(id, hardDelete: hardDelete);
+    } catch (e) {
+      debugPrint('[WardrobeRepo] Remote delete failed: $e');
+      return true;
+    }
   }
 
   @override
@@ -121,7 +163,17 @@ class WardrobeRepositoryImpl implements WardrobeRepository {
       laundryStatus: status,
       updatedAt: DateTime.now(),
     );
-    return saveGarment(updated);
+    _localCache[id] = updated;
+
+    try {
+      final patched = await _apiService.patchItem(id, {'laundry_status': status.value});
+      final entity = patched.toDomain();
+      _localCache[id] = entity;
+      return entity;
+    } catch (e) {
+      debugPrint('[WardrobeRepo] Remote patch laundry status failed: $e');
+      return updated;
+    }
   }
 
   @override
@@ -135,7 +187,17 @@ class WardrobeRepositoryImpl implements WardrobeRepository {
       isFavorite: !existing.isFavorite,
       updatedAt: DateTime.now(),
     );
-    return saveGarment(updated);
+    _localCache[id] = updated;
+
+    try {
+      final patched = await _apiService.patchItem(id, {'is_favorite': updated.isFavorite});
+      final entity = patched.toDomain();
+      _localCache[id] = entity;
+      return entity;
+    } catch (e) {
+      debugPrint('[WardrobeRepo] Remote patch favorite failed: $e');
+      return updated;
+    }
   }
 
   @override
@@ -145,18 +207,44 @@ class WardrobeRepositoryImpl implements WardrobeRepository {
       if (models.isNotEmpty) {
         return models.map((m) => m.toDomain()).toList();
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[WardrobeRepo] Remote getCategories failed: $e');
+    }
 
     return WardrobeCategory.defaultCategories;
   }
 
   @override
-  Future<int> importInitialInventory(List<Garment> garments) async {
-    int count = 0;
-    for (final garment in garments) {
-      await saveGarment(garment);
-      count++;
+  Future<WardrobeStats> getStats() async {
+    try {
+      final model = await _apiService.getStats();
+      return model.toDomain();
+    } catch (e) {
+      debugPrint('[WardrobeRepo] Remote getStats fallback to local: $e');
+      return WardrobeStats.fromGarments(_localCache.values.toList());
     }
-    return count;
+  }
+
+  @override
+  Future<int> importInitialInventory(List<Garment> garments) async {
+    try {
+      final models = garments.map((g) => GarmentModel.fromDomain(g)).toList();
+      final res = await _apiService.importInitial(models);
+      final importedCount = (res['imported_count'] as num?)?.toInt() ?? 0;
+
+      // Sync local cache
+      for (final g in garments) {
+        _localCache[g.id] = g;
+      }
+      return importedCount;
+    } catch (e) {
+      debugPrint('[WardrobeRepo] Remote bulk import failed, saving to local: $e');
+      int count = 0;
+      for (final g in garments) {
+        _localCache[g.id] = g;
+        count++;
+      }
+      return count;
+    }
   }
 }

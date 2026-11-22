@@ -75,3 +75,4 @@ class GarmentStatusIndicator extends StatelessWidget {
     );
   }
 }
+

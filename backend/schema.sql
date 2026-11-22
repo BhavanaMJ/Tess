@@ -465,5 +465,63 @@ CREATE POLICY "Users can manage own companion activity" ON companion_activity FO
 ALTER TABLE memories ADD COLUMN IF NOT EXISTS is_confirmed BOOLEAN DEFAULT TRUE;
 ALTER TABLE memories ADD COLUMN IF NOT EXISTS provenance TEXT DEFAULT 'USER_STATED';
 
+-- PHASE: WARDROBE INTELLIGENCE
+CREATE TABLE IF NOT EXISTS public.wardrobe_categories (
+    id TEXT PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    icon_name TEXT,
+    parent_category_id TEXT REFERENCES public.wardrobe_categories(id),
+    subcategories TEXT[] DEFAULT '{}',
+    order_index INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.wardrobe_categories ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can read categories" ON public.wardrobe_categories FOR SELECT USING (user_id IS NULL OR user_id = auth.uid());
+CREATE POLICY "Users can manage own categories" ON public.wardrobe_categories FOR ALL USING (auth.uid() = user_id);
+
+CREATE TABLE IF NOT EXISTS public.wardrobe_items (
+    id TEXT PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    main_category TEXT NOT NULL,
+    subcategory TEXT,
+    original_image_ref TEXT,
+    processed_image_ref TEXT,
+    thumbnail_ref TEXT,
+    primary_color TEXT NOT NULL DEFAULT 'Unknown',
+    secondary_colors TEXT[] DEFAULT '{}',
+    pattern TEXT,
+    fabric_material TEXT,
+    neckline TEXT,
+    sleeve_length TEXT,
+    fit TEXT,
+    silhouette TEXT,
+    garment_length TEXT,
+    size TEXT,
+    brand TEXT,
+    purchase_date DATE,
+    purchase_price NUMERIC(10, 2),
+    occasions TEXT[] DEFAULT '{}',
+    seasons TEXT[] DEFAULT '{}',
+    laundry_status TEXT CHECK (laundry_status IN ('CLEAN', 'WORN', 'WASHING', 'DRYING', 'STORED') OR laundry_status IS NULL),
+    is_favorite BOOLEAN DEFAULT FALSE,
+    notes TEXT,
+    is_archived BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_wardrobe_items_user_id ON public.wardrobe_items(user_id);
+CREATE INDEX IF NOT EXISTS idx_wardrobe_items_category ON public.wardrobe_items(user_id, main_category);
+CREATE INDEX IF NOT EXISTS idx_wardrobe_items_laundry ON public.wardrobe_items(user_id, laundry_status);
+CREATE INDEX IF NOT EXISTS idx_wardrobe_items_archived ON public.wardrobe_items(user_id, is_archived);
+
+ALTER TABLE public.wardrobe_items ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own wardrobe items" ON public.wardrobe_items FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can manage own wardrobe items" ON public.wardrobe_items FOR ALL USING (auth.uid() = user_id);
+
+
 
 

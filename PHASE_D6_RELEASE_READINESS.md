@@ -85,3 +85,4 @@ The TESS v2.0 Desktop Application has successfully completed all phases of the c
 **Decision: APPROVED FOR RELEASE**
 
 The TESS v2.0 desktop application meets or exceeds all performance, visual design, accessibility, and functional criteria defined in the redesign specifications. All regression tests pass without flaw, the production build completes cleanly, and the user experience is polished, responsive, and coherent across all workspaces.
+

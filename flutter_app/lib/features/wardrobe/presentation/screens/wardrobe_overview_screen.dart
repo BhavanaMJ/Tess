@@ -10,10 +10,11 @@ import '../widgets/wardrobe_action_card.dart';
 import '../widgets/wardrobe_empty_state.dart';
 import '../widgets/wardrobe_section_header.dart';
 import '../widgets/wardrobe_summary_card.dart';
+import 'garment_form_screen.dart';
 import 'wardrobe_inventory_screen.dart';
 
 /// WardrobeOverviewScreen: Foundational Home Dashboard for TESS Clothes Organizer.
-/// Implements Phase 1 navigation, telemetry summary, and module routing.
+/// Implements persistent inventory navigation, real-time telemetry summary, and module routing.
 class WardrobeOverviewScreen extends StatefulWidget {
   final WardrobeRepository? repository;
   final AuthService? authService;
@@ -56,6 +57,78 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
           authService: _authService,
         ),
       ),
+    );
+  }
+
+  void _navigateToAddGarment() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => GarmentFormScreen(
+          controller: _controller,
+          userId: _authService.currentUser?.id ?? 'tess_user',
+        ),
+      ),
+    );
+  }
+
+  void _showAddClothesSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: WardrobeTheme.elevatedSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Add Clothes to Wardrobe',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: WardrobeTheme.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.edit_note_rounded, color: WardrobeTheme.electricCyan),
+                  title: const Text('Add Garment Manually', style: TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600)),
+                  subtitle: const Text('Enter garment attributes, color, category and specs', style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 12)),
+                  trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: WardrobeTheme.textMuted),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _navigateToAddGarment();
+                  },
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.camera_alt_outlined, color: WardrobeTheme.electricViolet),
+                  title: const Text('Smart Capture (Camera)', style: TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600)),
+                  subtitle: const Text('AI background removal & attribute extraction (Phase 3)', style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 12)),
+                  trailing: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: WardrobeTheme.electricViolet.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text('PHASE 3', style: TextStyle(fontSize: 10, color: WardrobeTheme.softViolet, fontWeight: FontWeight.w700)),
+                  ),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _showComingSoonSnackbar('Smart Capture with Background Removal', 'Phase 3');
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -116,7 +189,7 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                 ),
               ),
               child: const Text(
-                'PHASE 1',
+                'PHASE 2',
                 style: TextStyle(
                   fontSize: 9,
                   fontWeight: FontWeight.w700,
@@ -222,9 +295,9 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                   // 3. Primary Add Clothes Action
                   TessButton(
                     label: 'Smart Capture / Add Clothes',
-                    icon: Icons.camera_alt_outlined,
+                    icon: Icons.add_circle_outline_rounded,
                     variant: TessButtonVariant.primary,
-                    onPressed: () => _showComingSoonSnackbar('Smart Capture with Background Removal', 'Phase 3'),
+                    onPressed: _showAddClothesSheet,
                   ),
 
                   const SizedBox(height: 20),
@@ -311,7 +384,7 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                           );
                         }
                       },
-                      onAddGarment: () => _showComingSoonSnackbar('Add New Garment', 'Phase 3'),
+                      onAddGarment: _navigateToAddGarment,
                     ),
                   ],
                 ],

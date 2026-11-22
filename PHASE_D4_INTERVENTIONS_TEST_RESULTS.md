@@ -84,3 +84,4 @@ Tested against live FastAPI daemon (`http://localhost:8000`):
 - `GET /api/v1/proactive/interventions`: HTTP 200 OK.
 - `POST /api/v1/proactive/evaluate`: HTTP 200 OK.
 - `POST /api/v1/proactive/interventions/{id}/respond`: Handled with response payload validation.
+

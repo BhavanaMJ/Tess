@@ -38,3 +38,4 @@ class WardrobeTheme {
   // Garment Photography Studio Background
   static const Color studioBackground = Color(0xFFFAFAFA);
 }
+

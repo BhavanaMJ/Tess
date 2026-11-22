@@ -256,6 +256,48 @@ class ApiClient {
     }
   }
 
+  /// PATCH Request
+  Future<dynamic> patch(
+    String endpoint, {
+    dynamic body,
+    Map<String, String>? headers,
+    bool requiresAuth = true,
+  }) async {
+    final uri = Uri.parse('${config.apiBaseUrl}$endpoint');
+
+    try {
+      final requestHeaders = await _buildHeaders(
+        extraHeaders: headers,
+        requiresAuth: requiresAuth,
+      );
+
+      final encodedBody = body != null ? jsonEncode(body) : null;
+
+      final response = await _httpClient
+          .patch(uri, headers: requestHeaders, body: encodedBody)
+          .timeout(config.timeout);
+
+      _log('PATCH', uri, statusCode: response.statusCode);
+      return _handleResponse(response);
+    } on SocketException catch (e) {
+      _log('PATCH', uri, error: 'SocketException: ${e.message}');
+      throw ApiException(
+        statusCode: 503,
+        message: 'Unable to reach TESS backend server at ${config.apiBaseUrl}.',
+      );
+    } on TimeoutException {
+      _log('PATCH', uri, error: 'Timeout');
+      throw ApiException(
+        statusCode: 408,
+        message: 'Request timed out after ${config.timeout.inSeconds} seconds.',
+      );
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      _log('PATCH', uri, error: e.toString());
+      throw ApiException(statusCode: 500, message: e.toString());
+    }
+  }
+
   /// DELETE Request
   Future<dynamic> delete(
     String endpoint, {

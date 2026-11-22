@@ -78,3 +78,4 @@ class WardrobeSectionHeader extends StatelessWidget {
     );
   }
 }
+

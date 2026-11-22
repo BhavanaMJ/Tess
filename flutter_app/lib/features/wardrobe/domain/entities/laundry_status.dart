@@ -24,3 +24,4 @@ enum LaundryStatus {
     return null;
   }
 }
+

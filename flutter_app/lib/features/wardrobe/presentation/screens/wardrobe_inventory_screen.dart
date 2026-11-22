@@ -8,9 +8,11 @@ import '../theme/wardrobe_theme.dart';
 import '../widgets/category_chip.dart';
 import '../widgets/garment_image_placeholder.dart';
 import '../widgets/garment_status_indicator.dart';
+import 'garment_form_screen.dart';
+import 'wardrobe_detail_screen.dart';
 
-/// WardrobeInventoryScreen: Digital Wardrobe Inventory Foundation.
-/// Displays categorized garments with studio photography cards, status badges, and filtering.
+/// WardrobeInventoryScreen: Digital Wardrobe Inventory.
+/// Displays categorized garments with studio photography cards, status badges, multi-factor filtering, and sorting.
 class WardrobeInventoryScreen extends StatefulWidget {
   final WardrobeController controller;
   final AuthService? authService;
@@ -26,8 +28,13 @@ class WardrobeInventoryScreen extends StatefulWidget {
 }
 
 class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
-  String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.text = widget.controller.searchQuery;
+  }
 
   @override
   void dispose() {
@@ -35,29 +42,17 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
     super.dispose();
   }
 
-  List<Garment> _applySearch(List<Garment> list) {
-    if (_searchQuery.trim().isEmpty) return list;
-    final q = _searchQuery.trim().toLowerCase();
-    return list.where((g) {
-      return g.name.toLowerCase().contains(q) ||
-          g.id.toLowerCase().contains(q) ||
-          g.mainCategory.toLowerCase().contains(q) ||
-          (g.subcategory != null && g.subcategory!.toLowerCase().contains(q)) ||
-          g.primaryColor.toLowerCase().contains(q) ||
-          (g.brand != null && g.brand!.toLowerCase().contains(q));
-    }).toList();
-  }
-
   void _showLaundryStatusSheet(Garment garment) {
     showModalBottomSheet(
       context: context,
       backgroundColor: WardrobeTheme.elevatedSurface,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) {
         return SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -66,12 +61,16 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Update Status: ${garment.name}',
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: WardrobeTheme.textPrimary,
+                    Expanded(
+                      child: Text(
+                        'Update Status: ${garment.name}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: WardrobeTheme.textPrimary,
+                        ),
                       ),
                     ),
                     IconButton(
@@ -111,8 +110,220 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
     );
   }
 
+  void _showFilterModal() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: WardrobeTheme.elevatedSurface,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setModalState) {
+            final activeCount = widget.controller.activeFilterCount;
+
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Filter Wardrobe',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: WardrobeTheme.textPrimary,
+                          ),
+                        ),
+                        if (activeCount > 0)
+                          TextButton(
+                            onPressed: () {
+                              widget.controller.clearAllFilters();
+                              setModalState(() {});
+                            },
+                            child: const Text(
+                              'Reset All',
+                              style: TextStyle(color: WardrobeTheme.electricCyan, fontSize: 13),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Favorites Only Switch
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text(
+                        'Favorites Only',
+                        style: TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
+                      ),
+                      value: widget.controller.favoritesOnly,
+                      activeColor: WardrobeTheme.electricViolet,
+                      onChanged: (val) {
+                        widget.controller.toggleFavoritesOnly();
+                        setModalState(() {});
+                      },
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Laundry Status Filter
+                    const Text(
+                      'LAUNDRY STATUS',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: WardrobeTheme.textMuted,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        ChoiceChip(
+                          label: const Text('All'),
+                          selected: widget.controller.selectedLaundryStatus == null,
+                          onSelected: (_) {
+                            widget.controller.setLaundryFilter(null);
+                            setModalState(() {});
+                          },
+                          selectedColor: WardrobeTheme.electricViolet,
+                        ),
+                        ...LaundryStatus.values.map((s) {
+                          final isSelected = widget.controller.selectedLaundryStatus == s;
+                          return ChoiceChip(
+                            label: Text(s.label),
+                            selected: isSelected,
+                            onSelected: (_) {
+                              widget.controller.setLaundryFilter(isSelected ? null : s);
+                              setModalState(() {});
+                            },
+                            selectedColor: WardrobeTheme.electricViolet,
+                          );
+                        }),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: WardrobeTheme.electricViolet,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: const Text('Apply Filters', style: TextStyle(fontWeight: FontWeight.w700)),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showSortModal() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: WardrobeTheme.elevatedSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Sort Wardrobe',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: WardrobeTheme.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Recently Added', style: TextStyle(color: WardrobeTheme.textPrimary)),
+                  trailing: widget.controller.sortBy == 'created_at' && widget.controller.sortOrder == 'desc'
+                      ? const Icon(Icons.check, color: WardrobeTheme.electricViolet)
+                      : null,
+                  onTap: () {
+                    widget.controller.setSort('created_at', 'desc');
+                    Navigator.pop(ctx);
+                  },
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Name (A-Z)', style: TextStyle(color: WardrobeTheme.textPrimary)),
+                  trailing: widget.controller.sortBy == 'name' && widget.controller.sortOrder == 'asc'
+                      ? const Icon(Icons.check, color: WardrobeTheme.electricViolet)
+                      : null,
+                  onTap: () {
+                    widget.controller.setSort('name', 'asc');
+                    Navigator.pop(ctx);
+                  },
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Recently Updated', style: TextStyle(color: WardrobeTheme.textPrimary)),
+                  trailing: widget.controller.sortBy == 'updated_at' && widget.controller.sortOrder == 'desc'
+                      ? const Icon(Icons.check, color: WardrobeTheme.electricViolet)
+                      : null,
+                  onTap: () {
+                    widget.controller.setSort('updated_at', 'desc');
+                    Navigator.pop(ctx);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _navigateToDetail(Garment garment) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => WardrobeDetailScreen(
+          initialGarment: garment,
+          controller: widget.controller,
+          userId: widget.authService?.currentUser?.id ?? 'tess_user',
+        ),
+      ),
+    );
+  }
+
+  void _navigateToAddGarment() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => GarmentFormScreen(
+          controller: widget.controller,
+          userId: widget.authService?.currentUser?.id ?? 'tess_user',
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final activeFilterCount = widget.controller.activeFilterCount;
+
     return Scaffold(
       backgroundColor: WardrobeTheme.voidBg,
       appBar: AppBar(
@@ -133,17 +344,60 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.tune_rounded, color: WardrobeTheme.textSecondary, size: 20),
-            tooltip: 'Filter Options',
-            onPressed: () {},
+            icon: const Icon(Icons.sort_rounded, color: WardrobeTheme.textSecondary, size: 20),
+            tooltip: 'Sort Options',
+            onPressed: _showSortModal,
+          ),
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.tune_rounded, color: WardrobeTheme.textSecondary, size: 20),
+                tooltip: 'Filter Options',
+                onPressed: _showFilterModal,
+              ),
+              if (activeFilterCount > 0)
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: WardrobeTheme.electricViolet,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                    child: Text(
+                      '$activeFilterCount',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          IconButton(
+            icon: const Icon(Icons.add_rounded, color: WardrobeTheme.electricCyan, size: 24),
+            tooltip: 'Add Garment',
+            onPressed: _navigateToAddGarment,
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: WardrobeTheme.electricViolet,
+        foregroundColor: Colors.white,
+        tooltip: 'Add Garment',
+        onPressed: _navigateToAddGarment,
+        child: const Icon(Icons.add),
       ),
       body: AnimatedBuilder(
         animation: widget.controller,
         builder: (context, _) {
-          final allGarments = widget.controller.filteredGarments;
-          final displayedGarments = _applySearch(allGarments);
+          final displayedGarments = widget.controller.filteredGarments;
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -160,18 +414,18 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                   ),
                   child: TextField(
                     controller: _searchController,
-                    onChanged: (val) => setState(() => _searchQuery = val),
+                    onChanged: (val) => widget.controller.setSearchQuery(val),
                     style: const TextStyle(fontSize: 13, color: WardrobeTheme.textPrimary),
                     decoration: InputDecoration(
                       hintText: 'Search garments by name, color, category...',
                       hintStyle: const TextStyle(fontSize: 12, color: WardrobeTheme.textMuted),
                       prefixIcon: const Icon(Icons.search, size: 18, color: WardrobeTheme.textMuted),
-                      suffixIcon: _searchQuery.isNotEmpty
+                      suffixIcon: widget.controller.searchQuery.isNotEmpty
                           ? IconButton(
                               icon: const Icon(Icons.clear, size: 16, color: WardrobeTheme.textMuted),
                               onPressed: () {
                                 _searchController.clear();
-                                setState(() => _searchQuery = '');
+                                widget.controller.setSearchQuery('');
                               },
                             )
                           : null,
@@ -196,7 +450,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                     ),
                     const SizedBox(width: 8),
                     ...widget.controller.categories.map((cat) {
-                      final isSelected = widget.controller.selectedCategory == cat.name;
+                      final isSelected = widget.controller.selectedCategory?.toLowerCase() == cat.name.toLowerCase();
                       return Padding(
                         padding: const EdgeInsets.only(right: 8.0),
                         child: CategoryChip(
@@ -248,9 +502,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                               TextButton(
                                 onPressed: () {
                                   _searchController.clear();
-                                  setState(() => _searchQuery = '');
-                                  widget.controller.setCategoryFilter(null);
-                                  widget.controller.setLaundryFilter(null);
+                                  widget.controller.clearAllFilters();
                                 },
                                 child: const Text(
                                   'Clear All Filters',
@@ -268,86 +520,93 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                           final garment = displayedGarments[i];
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 12.0),
-                            child: TessCard(
-                              backgroundColor: WardrobeTheme.spatialSurface,
-                              borderColor: WardrobeTheme.border,
-                              padding: const EdgeInsets.all(12.0),
-                              child: Row(
-                                children: [
-                                  // Clean Studio Photography Placeholder Card
-                                  GarmentImagePlaceholder(
-                                    imageUrl: garment.displayImageRef,
-                                    category: garment.mainCategory,
-                                    width: 64,
-                                    height: 64,
-                                  ),
-                                  const SizedBox(width: 14),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                garment.name,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: WardrobeTheme.textPrimary,
+                            child: GestureDetector(
+                              onTap: () => _navigateToDetail(garment),
+                              child: TessCard(
+                                backgroundColor: WardrobeTheme.spatialSurface,
+                                borderColor: WardrobeTheme.border,
+                                padding: const EdgeInsets.all(12.0),
+                                child: Row(
+                                  children: [
+                                    // Clean Studio Photography Placeholder Card
+                                    GarmentImagePlaceholder(
+                                      imageUrl: garment.displayImageRef,
+                                      category: garment.mainCategory,
+                                      width: 64,
+                                      height: 64,
+                                    ),
+                                    const SizedBox(width: 14),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  garment.name,
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: WardrobeTheme.textPrimary,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            GestureDetector(
-                                              onTap: () => widget.controller.toggleFavorite(garment.id),
-                                              child: Icon(
-                                                garment.isFavorite
-                                                    ? Icons.favorite_rounded
-                                                    : Icons.favorite_border_rounded,
-                                                color: garment.isFavorite
-                                                    ? WardrobeTheme.statusCritical
-                                                    : WardrobeTheme.textMuted,
-                                                size: 18,
+                                              GestureDetector(
+                                                onTap: () => widget.controller.toggleFavorite(garment.id),
+                                                child: Icon(
+                                                  garment.isFavorite
+                                                      ? Icons.favorite_rounded
+                                                      : Icons.favorite_border_rounded,
+                                                  color: garment.isFavorite
+                                                      ? WardrobeTheme.statusCritical
+                                                      : WardrobeTheme.textMuted,
+                                                  size: 18,
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              garment.id,
-                                              style: const TextStyle(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w700,
-                                                fontFamily: 'monospace',
-                                                color: WardrobeTheme.softViolet,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Text(
-                                              '•  ${garment.mainCategory}${garment.sleeveLength != null ? " • ${garment.sleeveLength}" : ""}',
-                                              style: const TextStyle(
-                                                fontSize: 11,
-                                                color: WardrobeTheme.textSecondary,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 8),
-                                        GestureDetector(
-                                          onTap: () => _showLaundryStatusSheet(garment),
-                                          child: GarmentStatusIndicator(
-                                            status: garment.laundryStatus,
-                                            compact: true,
+                                            ],
                                           ),
-                                        ),
-                                      ],
+                                          const SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                garment.id,
+                                                style: const TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w700,
+                                                  fontFamily: 'monospace',
+                                                  color: WardrobeTheme.softViolet,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Expanded(
+                                                child: Text(
+                                                  '•  ${garment.mainCategory}${garment.sleeveLength != null ? " • ${garment.sleeveLength}" : ""}',
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                    fontSize: 11,
+                                                    color: WardrobeTheme.textSecondary,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 8),
+                                          GestureDetector(
+                                            onTap: () => _showLaundryStatusSheet(garment),
+                                            child: GarmentStatusIndicator(
+                                              status: garment.laundryStatus,
+                                              compact: true,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           );

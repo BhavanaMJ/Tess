@@ -54,3 +54,4 @@ In live testing with Ollama (`llama3.2:1b`), a conversation message was sent via
 - **Bearer Token Handling**: Validated that `dev-token` and authenticated Supabase JWTs are attached via `Authorization: Bearer <token>`.
 - **401 Unauthorized Recovery**: Validated that unauthenticated requests trigger session renewal without crashing the UI.
 - **403 Forbidden Handling**: Cleanly prompts for authentication when credentials expire.
+

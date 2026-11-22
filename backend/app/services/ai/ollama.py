@@ -16,7 +16,7 @@ class OllamaProvider(BaseAIProvider):
         }
         try:
             async with httpx.AsyncClient() as client:
-                response = await client.post(self.api_url, json=payload, timeout=30.0)
+                response = await client.post(self.api_url, json=payload, timeout=180.0)
                 response.raise_for_status()
                 data = response.json()
                 return data.get("response", "")

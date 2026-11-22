@@ -150,3 +150,4 @@ wardrobe/
 Smart Capture image processing requires backend AI workers:
 1. **Background Removal & Studio Normalization**: Rembg / BiRefNet / SAM (Segment Anything Model) running on GPU worker or Ollama/OpenRouter vision microservice.
 2. **Attribute Extraction**: Vision-Language Model (e.g. Gemini 2.5 Flash / Qwen-VL) to extract primary color, neckline, sleeve length, pattern, and fabric from the photograph.
+

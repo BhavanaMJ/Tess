@@ -160,3 +160,4 @@ flutter_app/lib/features/wardrobe/
 | `lib/features/profile/screens/profile_screen.dart` | Modified | Integrated Clothes Organizer settings shortcut |
 | `test/wardrobe_unit_test.dart` | Created | Unit tests for models, serialization, fixture, repo |
 | `test/wardrobe_widget_test.dart` | Created | Widget tests for overview, inventory, import flow |
+

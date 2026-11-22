@@ -55,3 +55,4 @@ When launching the TESS desktop application, users observed two mascot instances
 3. `desktop/src/components/Sidebar.tsx`
 4. `desktop/src/components/companion/CompanionPanel.tsx`
 5. `desktop/src-tauri/src/lib.rs`
+

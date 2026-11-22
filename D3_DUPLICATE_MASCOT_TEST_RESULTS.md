@@ -42,3 +42,4 @@
 | Single emotion state | Floating mascot, Header, and Dashboard status text all derive from authoritative `MascotContext` | PASS |
 | Navigation across all 8 modules | Navigating to Tasks, Chat, Futures, etc. renders zero duplicate mascot characters | PASS |
 | Drag & drop safety | Dragging the floating mascot prevents movement into the left sidebar region | PASS |
+
