@@ -21,6 +21,9 @@ import 'laundry_dashboard_screen.dart';
 import '../../data/repositories/outfit_repository_impl.dart';
 import '../controllers/outfit_controller.dart';
 import 'outfit_studio_screen.dart';
+import '../../data/repositories/calendar_repository_impl.dart';
+import '../controllers/calendar_controller.dart';
+import 'outfit_calendar_screen.dart';
 
 /// WardrobeOverviewScreen: Foundational Home Dashboard for TESS Clothes Organizer.
 /// Implements persistent inventory navigation, real-time telemetry summary, and module routing.
@@ -120,6 +123,22 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
         builder: (_) => OutfitStudioScreen(
           controller: OutfitController(
             repository: OutfitRepositoryImpl(),
+          ),
+        ),
+      ),
+    )
+        .then((_) {
+      _controller.loadInitialData();
+    });
+  }
+
+  void _navigateToOutfitCalendar() {
+    Navigator.of(context)
+        .push(
+      MaterialPageRoute(
+        builder: (_) => OutfitCalendarScreen(
+          controller: CalendarController(
+            repository: CalendarRepositoryImpl(),
           ),
         ),
       ),
@@ -271,7 +290,7 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                 ),
               ),
               child: const Text(
-                'PHASE 5',
+                'PHASE 6',
                 style: TextStyle(
                   fontSize: 9,
                   fontWeight: FontWeight.w700,
@@ -441,10 +460,10 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                     icon: Icons.calendar_month_outlined,
                     title: 'Outfit Calendar',
                     subtitle: 'Plan upcoming outfits and log wear history',
-                    badge: 'PHASE 6',
-                    badgeColor: WardrobeTheme.textMuted,
-                    onTap: () =>
-                        _showComingSoonSnackbar('Outfit Calendar', 'Phase 6'),
+                    badge: 'ACTIVE',
+                    badgeColor: WardrobeTheme.electricViolet,
+                    isFeatured: true,
+                    onTap: _navigateToOutfitCalendar,
                   ),
 
                   const SizedBox(height: 10),

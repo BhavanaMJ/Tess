@@ -25,12 +25,15 @@ class WardrobeApiService {
   }) async {
     try {
       final queryParams = <String, String>{};
-      if (category != null && category.isNotEmpty)
+      if (category != null && category.isNotEmpty) {
         queryParams['category'] = category;
-      if (laundryStatus != null && laundryStatus.isNotEmpty)
+      }
+      if (laundryStatus != null && laundryStatus.isNotEmpty) {
         queryParams['laundry_status'] = laundryStatus;
-      if (favoritesOnly != null)
+      }
+      if (favoritesOnly != null) {
         queryParams['is_favorite'] = favoritesOnly.toString();
+      }
       if (search != null && search.isNotEmpty) queryParams['search'] = search;
       if (sortBy != null) queryParams['sort_by'] = sortBy;
       if (sortOrder != null) queryParams['sort_order'] = sortOrder;

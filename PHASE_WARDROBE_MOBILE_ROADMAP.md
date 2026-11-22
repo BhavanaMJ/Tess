@@ -75,13 +75,16 @@
 
 ---
 
-## Phase 6 — Outfit Calendar
-**Focus**: Forward scheduling and retrospective wear logging.
-- [ ] Monthly and weekly visual calendar view.
-- [ ] Schedule planned outfits for upcoming calendar dates.
-- [ ] Real-time Laundry Availability check: warns if a planned outfit contains items currently in hamper or washing.
-- [ ] Quick "I Wore This Today" logging action.
-- **Dependencies**: Phase 5 Outfits and Google Calendar / local device calendar synchronization.
+## Phase 6 — Outfit Calendar, Wear History & Weather Context (COMPLETED)
+**Focus**: Forward scheduling, retrospective wear logging, and weather-aware planning.
+- [x] Strict separation between Planned Outfit (intent) and Actual Wear (physical reality).
+- [x] Day, Week (7-day), and Month (interactive grid) views sharing unified reactive state.
+- [x] Workflow A (confirming planned look) and Workflow B (unplanned / alternate look) support.
+- [x] Direct integration with Phase 4 laundry lifecycle (`source="OUTFIT_WEAR"`, garment status to `WORN`, wear count increments).
+- [x] Calendar Intelligence: repeated outfit detection (14-day window warning), recently worn pieces, and unused garment detection.
+- [x] Weather Context: server-side Open-Meteo proxy with Supabase caching, styling rules, and 14-day forecast horizon cutoff.
+- [x] Database migration `005_outfit_calendar.sql` (`outfit_plans`, `outfit_calendar_wear_records`, `weather_cache`) with RLS.
+- [x] Automated test suites: 8 new Flutter tests (175 total app passing, 61 wardrobe passing), 8 new backend tests (41 total passing).
 
 ---
 

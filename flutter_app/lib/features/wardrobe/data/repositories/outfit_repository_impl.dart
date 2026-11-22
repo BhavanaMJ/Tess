@@ -154,8 +154,9 @@ class OutfitRepositoryImpl implements OutfitRepository {
     if (occasion != null) body['occasion'] = occasion;
     if (notes != null) body['notes'] = notes;
     if (isFavourite != null) body['is_favourite'] = isFavourite;
-    if (stylingExplanation != null)
+    if (stylingExplanation != null) {
       body['styling_explanation'] = stylingExplanation;
+    }
     if (garmentIds != null) body['garment_ids'] = garmentIds;
 
     try {

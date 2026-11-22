@@ -135,8 +135,9 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
                       TextButton(
                         onPressed: () {
                           for (final c in candidates) {
-                            if (!c.isIncluded)
+                            if (!c.isIncluded) {
                               widget.controller.toggleCandidateInclusion(c.id);
+                            }
                           }
                         },
                         child: const Text(

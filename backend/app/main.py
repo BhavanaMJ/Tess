@@ -13,6 +13,7 @@ from app.api.wardrobe import router as wardrobe_router
 from app.api.wardrobe_capture import router as wardrobe_capture_router
 from app.api.wardrobe_laundry import router as wardrobe_laundry_router
 from app.api.wardrobe_outfit import router as wardrobe_outfit_router
+from app.api.wardrobe_calendar import router as wardrobe_calendar_router, weather_router
 from app.core.config import settings
 
 # Initialize robust rotating logging with sensitive data masking
@@ -44,3 +45,5 @@ app.include_router(wardrobe_router, prefix="/api/v1/wardrobe")
 app.include_router(wardrobe_capture_router, prefix="/api/v1/wardrobe/capture")
 app.include_router(wardrobe_laundry_router)
 app.include_router(wardrobe_outfit_router)
+app.include_router(wardrobe_calendar_router)
+app.include_router(weather_router)
