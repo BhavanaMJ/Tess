@@ -319,7 +319,7 @@ void main() {
       // Assistant reply should appear
       expect(find.text('Telemetry confirmed. Nominal.'), findsOneWidget);
       // Mascot should be HAPPY
-      expect(find.text('TRAJECTORY SYNCHRONIZED'), findsOneWidget);
+      expect(find.text('Ready to assist'), findsOneWidget);
     });
 
     testWidgets('Triggers Mascot ATTENTION state when response contains warning keywords', (tester) async {
@@ -358,7 +358,7 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.text('CONVERGENCE ALERT DETECTED'), findsOneWidget);
+      expect(find.text('Needs attention'), findsOneWidget);
     });
 
     testWidgets('Shows error banner and retry button on transmission failure', (tester) async {
@@ -400,7 +400,7 @@ void main() {
 
       // Error banner and failed indicator should appear
       expect(find.text('Failed to transmit. Tap to retry.'), findsOneWidget);
-      expect(find.text('TRANSMISSION ANOMALY'), findsOneWidget);
+      expect(find.text('Connection error'), findsOneWidget);
 
       // Now fix backend and tap retry
       shouldFail = false;

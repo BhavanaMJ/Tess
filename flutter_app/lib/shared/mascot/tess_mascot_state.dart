@@ -1,3 +1,5 @@
+import '../companion/tess_emotion.dart';
+
 /// The nine canonical expressive states for the TESS Mascot Companion
 /// according to the TESS Expressive Companion Design Specification v1.0.
 enum TessMascotState {
@@ -58,21 +60,45 @@ extension TessMascotStateX on TessMascotState {
       case TessMascotState.idle:
         return 'TESS Companion Online';
       case TessMascotState.thinking:
-        return 'Synthesizing Intelligence...';
+        return 'Thinking...';
       case TessMascotState.happy:
-        return 'Trajectory Harmonized';
+        return 'Ready to help';
       case TessMascotState.attention:
-        return 'Risk Divergence Detected';
+        return 'Attention required';
       case TessMascotState.planning:
-        return 'Formulating Action Steps...';
+        return 'Planning steps...';
       case TessMascotState.confirming:
-        return 'Confirmation Barrier Active';
+        return 'Awaiting confirmation';
       case TessMascotState.acting:
-        return 'Executing Autonomous Plan...';
+        return 'Executing task...';
       case TessMascotState.success:
-        return 'Objective Successfully Met';
+        return 'Goal achieved';
       case TessMascotState.error:
-        return 'Connection Anomaly';
+        return 'Connection error';
+    }
+  }
+
+  /// Convert to equivalent TessEmotion
+  TessEmotion toTessEmotion() {
+    switch (this) {
+      case TessMascotState.idle:
+        return TessEmotion.idle;
+      case TessMascotState.thinking:
+        return TessEmotion.thinking;
+      case TessMascotState.happy:
+        return TessEmotion.happy;
+      case TessMascotState.attention:
+        return TessEmotion.attention;
+      case TessMascotState.planning:
+        return TessEmotion.planning;
+      case TessMascotState.confirming:
+        return TessEmotion.confirming;
+      case TessMascotState.acting:
+        return TessEmotion.acting;
+      case TessMascotState.success:
+        return TessEmotion.success;
+      case TessMascotState.error:
+        return TessEmotion.error;
     }
   }
 }

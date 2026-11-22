@@ -125,7 +125,7 @@ class _TasksScreenState extends State<TasksScreen> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          'AGENT TASK MATRIX',
+          'Tasks & Priorities',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -135,7 +135,7 @@ class _TasksScreenState extends State<TasksScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.add_task_rounded, color: AppColors.tessTeal),
-            tooltip: 'Add Objective',
+            tooltip: 'Add Task',
             onPressed: _navigateToCreateTask,
           ),
         ],

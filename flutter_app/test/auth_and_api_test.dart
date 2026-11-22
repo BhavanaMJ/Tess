@@ -6,6 +6,7 @@ import 'package:http/testing.dart';
 import 'package:tess/core/network/api_client.dart';
 import 'package:tess/features/auth/screens/login_screen.dart';
 import 'package:tess/features/auth/screens/signup_screen.dart';
+import 'package:tess/shared/widgets/tess_button.dart';
 import 'test_helpers.dart';
 
 void main() {
@@ -113,11 +114,11 @@ void main() {
       );
 
       // Verify login UI elements
-      expect(find.text('TESS OS // ACCESS'), findsOneWidget);
-      expect(find.text('Initialize Connection'), findsOneWidget);
+      expect(find.text('Welcome to TESS'), findsOneWidget);
+      expect(find.text('Sign In'), findsOneWidget);
 
       // Submit empty form
-      await tester.tap(find.text('Initialize Connection'));
+      await tester.tap(find.text('Sign In'));
       await tester.pump();
 
       expect(find.text('Email is required'), findsOneWidget);
@@ -127,7 +128,7 @@ void main() {
       final textFields = find.byType(TextFormField);
       await tester.enterText(textFields.first, 'notanemail');
       await tester.enterText(textFields.last, 'secret123');
-      await tester.tap(find.text('Initialize Connection'));
+      await tester.tap(find.text('Sign In'));
       await tester.pump();
 
       expect(find.text('Enter a valid email address'), findsOneWidget);
@@ -145,7 +146,7 @@ void main() {
       final textFields = find.byType(TextFormField);
       await tester.enterText(textFields.first, 'commander@tess.ai');
       await tester.enterText(textFields.last, 'wrongpassword');
-      await tester.tap(find.text('Initialize Connection'));
+      await tester.tap(find.text('Sign In'));
       await tester.pump();
 
       expect(find.text('Invalid email or password. Please verify credentials.'), findsOneWidget);
@@ -160,7 +161,7 @@ void main() {
         ),
       );
 
-      expect(find.text('REGISTER PERSONA'), findsOneWidget);
+      expect(find.text('Create Account'), findsWidgets);
 
       final textFields = find.byType(TextFormField);
       // textFields: 0: Callsign, 1: Email, 2: Password, 3: ConfirmPassword
@@ -168,7 +169,7 @@ void main() {
       await tester.enterText(textFields.at(2), '123'); // < 6 chars
       await tester.enterText(textFields.at(3), '123456');
 
-      await tester.tap(find.text('Establish Identity'));
+      await tester.tap(find.byType(TessButton));
       await tester.pump();
 
       expect(find.text('Password must be at least 6 characters'), findsOneWidget);

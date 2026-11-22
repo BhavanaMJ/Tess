@@ -5,5 +5,7 @@ class AppRoutes {
   static const String futures = '/futures';
   static const String tasks = '/tasks';
   static const String profile = '/profile';
+  static const String wardrobe = '/wardrobe';
+  static const String wardrobeInventory = '/wardrobe/inventory';
 }
 

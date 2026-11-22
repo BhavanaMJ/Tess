@@ -9,6 +9,7 @@ import '../../../shared/mascot/tess_mascot_state.dart';
 import '../../../shared/widgets/tess_button.dart';
 import '../../../shared/widgets/tess_card.dart';
 import '../../memory/screens/memory_screen.dart';
+import '../../wardrobe/presentation/screens/wardrobe_overview_screen.dart';
 
 /// Profile & Settings Screen.
 /// Provides account details, persistent Theme Selector (Light, Dark, System),
@@ -305,6 +306,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 2),
                         Text(
                           'Browse semantic preferences & episodic continuity',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // 4. Clothes Organizer (Wardrobe Intelligence) Shortcut
+            TessCard(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const WardrobeOverviewScreen()),
+                );
+              },
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFF8B5CF6).withValues(alpha: isDark ? 0.20 : 0.12),
+                      border: Border.all(
+                        color: const Color(0xFF8B5CF6).withValues(alpha: isDark ? 0.40 : 0.30),
+                      ),
+                    ),
+                    child: const Icon(Icons.checkroom_outlined, color: Color(0xFF8B5CF6), size: 22),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Clothes Organizer',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Digital wardrobe, laundry cycles & outfit studio',
                           style: TextStyle(
                             fontSize: 12,
                             color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,

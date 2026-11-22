@@ -66,6 +66,7 @@ class ChatService {
     final response = await _apiClient.post(
       '/api/v1/conversations/$conversationId/messages',
       body: {'message': message},
+      timeout: _apiClient.config.chatTimeout,
     );
 
     if (response is Map<String, dynamic> && response.containsKey('response')) {

@@ -71,7 +71,7 @@ class _ChatScreenState extends State<ChatScreen> {
         await _selectConversation(threads.first);
       } else {
         // Automatically spawn a default thread if user has none
-        await _createNewConversation(title: 'Mission Briefing');
+        await _createNewConversation(title: 'Chat with TESS');
       }
     } catch (e) {
       if (!mounted) return;

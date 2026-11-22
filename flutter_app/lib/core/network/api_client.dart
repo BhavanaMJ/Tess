@@ -176,7 +176,9 @@ class ApiClient {
     dynamic body,
     Map<String, String>? headers,
     bool requiresAuth = true,
+    Duration? timeout,
   }) async {
+    final effectiveTimeout = timeout ?? config.timeout;
     final uri = Uri.parse('${config.apiBaseUrl}$endpoint');
 
     try {
@@ -189,7 +191,7 @@ class ApiClient {
 
       final response = await _httpClient
           .post(uri, headers: requestHeaders, body: encodedBody)
-          .timeout(config.timeout);
+          .timeout(effectiveTimeout);
 
       _log('POST', uri, statusCode: response.statusCode);
       return _handleResponse(response);
@@ -200,10 +202,10 @@ class ApiClient {
         message: 'Unable to reach TESS backend server at ${config.apiBaseUrl}.',
       );
     } on TimeoutException {
-      _log('POST', uri, error: 'Timeout');
+      _log('POST', uri, error: 'Timeout after ${effectiveTimeout.inSeconds}s');
       throw ApiException(
         statusCode: 408,
-        message: 'Request timed out after ${config.timeout.inSeconds} seconds.',
+        message: 'Request timed out after ${effectiveTimeout.inSeconds} seconds.',
       );
     } catch (e) {
       if (e is ApiException) rethrow;

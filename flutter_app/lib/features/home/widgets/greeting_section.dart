@@ -23,6 +23,17 @@ class GreetingSection extends StatelessWidget {
     required this.onNavigateTab,
   });
 
+  String get _greetingText {
+    final trimmed = callsign.trim();
+    if (trimmed.isEmpty || trimmed.toLowerCase() == 'commander') {
+      return 'Welcome back';
+    }
+    if (trimmed.toLowerCase().startsWith('commander ')) {
+      return 'Welcome back, ${trimmed.substring(10).trim()}';
+    }
+    return 'Welcome back, $trimmed';
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -40,9 +51,9 @@ class GreetingSection extends StatelessWidget {
           ),
           const SizedBox(height: 14.0),
 
-          // 2. Personal Greeting
+          // 2. Personal Greeting (clean & natural, never duplicated)
           Text(
-            'Commander $callsign',
+            _greetingText,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,

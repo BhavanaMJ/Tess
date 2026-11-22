@@ -3,6 +3,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/tess_button.dart';
 import '../../../shared/widgets/tess_card.dart';
 import '../../agent/screens/agent_screen.dart';
+import '../../wardrobe/presentation/screens/wardrobe_overview_screen.dart';
 import '../models/dashboard_model.dart';
 import '../services/dashboard_service.dart';
 import '../widgets/daily_intelligence.dart';
@@ -79,11 +80,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String get _mascotStatusText {
-    if (_isLoading) return 'Synthesizing Telemetry...';
-    if (_errorMessage != null) return 'Telemetry Interrupted';
-    if (_dashboardData?.summary.hasOverdue == true) return 'Attention Required';
-    if (_dashboardData?.predictions.any((p) => p.isRisk) == true) return 'Convergence Risk Detected';
-    return 'Neural Core Nominal';
+    if (_isLoading) return 'Updating your overview...';
+    if (_errorMessage != null) return 'Unable to reach TESS';
+    if (_dashboardData?.summary.hasOverdue == true) return 'Items require attention';
+    if (_dashboardData?.predictions.any((p) => p.isRisk) == true) return 'Schedule conflict detected';
+    return 'Everything is on track';
   }
 
   @override
@@ -109,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: const Text(
-                'FLUTTER OS',
+                'AI COMPANION',
                 style: TextStyle(
                   fontSize: 9,
                   fontWeight: FontWeight.w700,
@@ -123,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.psychology_rounded, color: AppColors.tessTeal, size: 22),
-            tooltip: 'Agent Action Core',
+            tooltip: 'Autonomous Agent',
             onPressed: () {
               Navigator.push(
                 context,
@@ -137,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
               color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
               size: 20,
             ),
-            tooltip: 'Refresh Intelligence',
+            tooltip: 'Refresh',
             onPressed: _loadDashboardData,
           ),
         ],
@@ -215,6 +216,85 @@ class _HomeScreenState extends State<HomeScreen> {
               // 4. System Telemetry & Cross-Device Sync State
               DailyIntelligence(
                 isBackendOnline: _errorMessage == null,
+              ),
+
+              const SizedBox(height: 16.0),
+
+              // 5. Wardrobe Intelligence — Clothes Organizer Module
+              TessCard(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const WardrobeOverviewScreen(),
+                    ),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFF8B5CF6).withValues(alpha: isDark ? 0.20 : 0.12),
+                        border: Border.all(
+                          color: const Color(0xFF8B5CF6).withValues(alpha: isDark ? 0.40 : 0.25),
+                        ),
+                      ),
+                      child: const Icon(Icons.checkroom_rounded, color: Color(0xFF8B5CF6), size: 22),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                'Wardrobe Intelligence',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF8B5CF6).withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: const Text(
+                                  'NEW',
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFFA78BFA),
+                                    fontFamily: 'monospace',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Clothes organizer, laundry tracking & outfit studio',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

@@ -94,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   // 2. Brand Title & Tagline
                   Center(
                     child: Text(
-                      'TESS OS // ACCESS',
+                      'Welcome to TESS',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
@@ -194,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // 5. Submit Action
                   TessButton(
-                    label: 'Initialize Connection',
+                    label: 'Sign In',
                     icon: Icons.arrow_forward_rounded,
                     isLoading: _isLoading,
                     variant: TessButtonVariant.primary,

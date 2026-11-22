@@ -12,7 +12,7 @@ void main() {
 
     // Verify that the AppBar branding title 'TESS' is present.
     expect(find.text('TESS'), findsOneWidget);
-    expect(find.text('FLUTTER OS'), findsOneWidget);
+    expect(find.text('AI COMPANION'), findsOneWidget);
 
     // Verify that navigation tab bar exists and contains primary destinations
     expect(find.byType(BottomNavigationBar), findsOneWidget);
@@ -30,7 +30,7 @@ void main() {
     // Tap on the Tasks tab
     await tester.tap(find.text('Tasks'));
     await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('AGENT TASK MATRIX'), findsOneWidget);
+    expect(find.text('Tasks & Priorities'), findsOneWidget);
 
     // Drain pending asynchronous timer from FuturesScreen simulation
     await tester.pump(const Duration(seconds: 2));
@@ -75,7 +75,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     // Verify returned to Tasks screen and new objective is rendered
-    expect(find.text('AGENT TASK MATRIX'), findsOneWidget);
+    expect(find.text('Tasks & Priorities'), findsOneWidget);
     expect(find.text('Construct Neural Memory Pipeline'), findsOneWidget);
 
     // Drain pending asynchronous timers
@@ -88,7 +88,7 @@ void main() {
     await tester.pump();
 
     // Verify login screen is displayed automatically by AuthGate
-    expect(find.text('TESS OS // ACCESS'), findsOneWidget);
-    expect(find.text('Initialize Connection'), findsOneWidget);
+    expect(find.text('Welcome to TESS'), findsOneWidget);
+    expect(find.text('Sign In'), findsOneWidget);
   });
 }

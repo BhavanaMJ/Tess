@@ -21,15 +21,15 @@ class ChatMascotHeader extends StatelessWidget {
   String get _statusLabel {
     switch (state) {
       case MascotState.thinking:
-        return 'PROCESSING DIRECTIVE...';
+        return 'Thinking...';
       case MascotState.happy:
-        return 'TRAJECTORY SYNCHRONIZED';
+        return 'Ready to assist';
       case MascotState.attention:
-        return 'CONVERGENCE ALERT DETECTED';
+        return 'Needs attention';
       case MascotState.error:
-        return 'TRANSMISSION ANOMALY';
+        return 'Connection error';
       default:
-        return 'COGNITIVE CORE ONLINE';
+        return 'TESS is active';
     }
   }
 

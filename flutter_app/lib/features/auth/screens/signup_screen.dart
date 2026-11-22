@@ -87,7 +87,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('REGISTER PERSONA'),
+        title: const Text('Create Account'),
       ),
       body: SafeArea(
         child: Center(
@@ -231,7 +231,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   // Submit
                   TessButton(
-                    label: 'Establish Identity',
+                    label: 'Create Account',
                     icon: Icons.check_circle_outline_rounded,
                     isLoading: _isLoading,
                     variant: TessButtonVariant.primary,

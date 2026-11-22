@@ -202,8 +202,8 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
-      // 1. Verify Greeting & Persona
-      expect(find.text('Commander Commander'), findsOneWidget);
+      // 1. Verify Greeting & Persona (Clean greeting, no duplicated 'Commander Commander')
+      expect(find.text('Welcome back'), findsOneWidget);
 
       // 2. Verify Real Productivity Numbers from Backend
       expect(find.text('5'), findsOneWidget); // totalActive
@@ -216,7 +216,7 @@ void main() {
       expect(find.text('75% Probability'), findsOneWidget);
 
       // 4. Verify Mascot Attention Text Triggered by Overdue Tasks
-      expect(find.text('ATTENTION REQUIRED'), findsOneWidget);
+      expect(find.text('ITEMS REQUIRE ATTENTION'), findsOneWidget);
 
       // 5. Test Quick Navigation Action Button
       await tester.tap(find.text('Talk to TESS'));

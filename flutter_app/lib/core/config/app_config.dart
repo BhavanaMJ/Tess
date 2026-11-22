@@ -9,13 +9,15 @@ class AppConfig {
   final String supabaseAnonKey;
   final String apiBaseUrl;
   final Duration timeout;
+  final Duration chatTimeout;
   final bool enableDebugTelemetry;
 
   const AppConfig({
     required this.supabaseUrl,
     required this.supabaseAnonKey,
     required this.apiBaseUrl,
-    this.timeout = const Duration(seconds: 15),
+    this.timeout = const Duration(seconds: 30),
+    this.chatTimeout = const Duration(seconds: 90),
     this.enableDebugTelemetry = true,
   });
 
@@ -29,7 +31,7 @@ class AppConfig {
     if (envUrl.isNotEmpty) return envUrl;
 
     // 2. Physical LAN IP takes precedence for local development across phones
-    const lanUrl = 'http://192.168.1.175:8000';
+    const lanUrl = 'http://192.168.2.204:8000';
 
     // 3. Platform detection for emulators and web
     if (!kIsWeb) {
@@ -63,7 +65,8 @@ class AppConfig {
         defaultValue: 'sb_publishable_FLJXDR4I8Qpox5W1ixkiwA_Bx35A77m',
       ),
       apiBaseUrl: resolveDefaultBackendUrl(),
-      timeout: const Duration(seconds: 15),
+      timeout: const Duration(seconds: 30),
+      chatTimeout: const Duration(seconds: 90),
       enableDebugTelemetry: true,
     );
   }
@@ -74,7 +77,8 @@ class AppConfig {
       supabaseUrl: String.fromEnvironment('SUPABASE_URL'),
       supabaseAnonKey: String.fromEnvironment('SUPABASE_ANON_KEY'),
       apiBaseUrl: String.fromEnvironment('BACKEND_URL', defaultValue: 'https://api.tess.ai'),
-      timeout: Duration(seconds: 10),
+      timeout: Duration(seconds: 20),
+      chatTimeout: Duration(seconds: 60),
       enableDebugTelemetry: false,
     );
   }
