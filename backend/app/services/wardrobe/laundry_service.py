@@ -641,3 +641,4 @@ class LaundryService:
                 logger.warning(f"[LaundryService] Remote batch item remove fallback: {e}")
 
         return found
+

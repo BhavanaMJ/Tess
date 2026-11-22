@@ -50,7 +50,8 @@ class LaundryBatchCard extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
                           color: WardrobeTheme.elevatedSurface,
                           borderRadius: BorderRadius.circular(6),
@@ -68,7 +69,8 @@ class LaundryBatchCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
                           color: statusColor.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(6),
@@ -110,7 +112,8 @@ class LaundryBatchCard extends StatelessWidget {
                   batch.notes!,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 12, color: WardrobeTheme.textMuted),
+                  style: const TextStyle(
+                      fontSize: 12, color: WardrobeTheme.textMuted),
                 ),
               ],
             ],

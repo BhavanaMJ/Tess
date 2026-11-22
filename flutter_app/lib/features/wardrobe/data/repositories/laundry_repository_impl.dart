@@ -28,13 +28,20 @@ class LaundryRepositoryImpl implements LaundryRepository {
       debugPrint('[LaundryRepositoryImpl] Remote getLaundryStats notice: $e');
       final garments = _garmentsCache.values.toList();
       final total = garments.length;
-      final clean = garments.where((g) => g.laundryStatus == LaundryStatus.clean).length;
-      final worn = garments.where((g) => g.laundryStatus == LaundryStatus.worn).length;
-      final washing = garments.where((g) => g.laundryStatus == LaundryStatus.washing).length;
-      final drying = garments.where((g) => g.laundryStatus == LaundryStatus.drying).length;
-      final stored = garments.where((g) => g.laundryStatus == LaundryStatus.stored).length;
+      final clean =
+          garments.where((g) => g.laundryStatus == LaundryStatus.clean).length;
+      final worn =
+          garments.where((g) => g.laundryStatus == LaundryStatus.worn).length;
+      final washing = garments
+          .where((g) => g.laundryStatus == LaundryStatus.washing)
+          .length;
+      final drying =
+          garments.where((g) => g.laundryStatus == LaundryStatus.drying).length;
+      final stored =
+          garments.where((g) => g.laundryStatus == LaundryStatus.stored).length;
       final unassigned = garments.where((g) => g.laundryStatus == null).length;
-      final activeBatches = _batchesCache.values.where((b) => b.isActive).length;
+      final activeBatches =
+          _batchesCache.values.where((b) => b.isActive).length;
 
       return LaundryStats(
         totalGarments: total,
@@ -77,15 +84,24 @@ class LaundryRepositoryImpl implements LaundryRepository {
         if (status.toUpperCase() == 'UNASSIGNED') {
           list = list.where((g) => g.laundryStatus == null).toList();
         } else {
-          list = list.where((g) => g.laundryStatus?.value == status.toUpperCase()).toList();
+          list = list
+              .where((g) => g.laundryStatus?.value == status.toUpperCase())
+              .toList();
         }
       }
       if (category != null && category.isNotEmpty) {
-        list = list.where((g) => g.mainCategory.toLowerCase() == category.toLowerCase()).toList();
+        list = list
+            .where(
+                (g) => g.mainCategory.toLowerCase() == category.toLowerCase())
+            .toList();
       }
       if (search != null && search.isNotEmpty) {
         final q = search.toLowerCase();
-        list = list.where((g) => g.name.toLowerCase().contains(q) || g.id.toLowerCase().contains(q)).toList();
+        list = list
+            .where((g) =>
+                g.name.toLowerCase().contains(q) ||
+                g.id.toLowerCase().contains(q))
+            .toList();
       }
       return list;
     }
@@ -109,7 +125,8 @@ class LaundryRepositoryImpl implements LaundryRepository {
       _garmentsCache[garmentId] = domain;
       return domain;
     } catch (e) {
-      debugPrint('[LaundryRepositoryImpl] Remote updateGarmentLaundryStatus notice: $e');
+      debugPrint(
+          '[LaundryRepositoryImpl] Remote updateGarmentLaundryStatus notice: $e');
       final existing = _garmentsCache[garmentId] ??
           Garment(
             id: garmentId,
@@ -126,11 +143,13 @@ class LaundryRepositoryImpl implements LaundryRepository {
       DateTime? lastWorn = existing.lastWornDate;
       DateTime? lastWashed = existing.lastWashedDate;
 
-      if (status == LaundryStatus.worn && existing.laundryStatus != LaundryStatus.worn) {
+      if (status == LaundryStatus.worn &&
+          existing.laundryStatus != LaundryStatus.worn) {
         wearCount += 1;
         lastWorn = DateTime.now();
       } else if (status == LaundryStatus.clean &&
-          (existing.laundryStatus == LaundryStatus.washing || existing.laundryStatus == LaundryStatus.drying)) {
+          (existing.laundryStatus == LaundryStatus.washing ||
+              existing.laundryStatus == LaundryStatus.drying)) {
         washCount += 1;
         lastWashed = DateTime.now();
       }
@@ -166,14 +185,16 @@ class LaundryRepositoryImpl implements LaundryRepository {
   }
 
   @override
-  Future<List<LaundryHistoryEntry>> getGarmentLaundryHistory(String garmentId) async {
+  Future<List<LaundryHistoryEntry>> getGarmentLaundryHistory(
+      String garmentId) async {
     try {
       final models = await _apiService.getGarmentLaundryHistory(garmentId);
       final entries = models.map((m) => m.toDomain()).toList();
       _historyCache[garmentId] = entries;
       return entries;
     } catch (e) {
-      debugPrint('[LaundryRepositoryImpl] Remote getGarmentLaundryHistory notice: $e');
+      debugPrint(
+          '[LaundryRepositoryImpl] Remote getGarmentLaundryHistory notice: $e');
       return _historyCache[garmentId] ?? [];
     }
   }
@@ -258,7 +279,9 @@ class LaundryRepositoryImpl implements LaundryRepository {
       debugPrint('[LaundryRepositoryImpl] Remote getBatches notice: $e');
       final list = _batchesCache.values.toList();
       if (status != null && status.isNotEmpty) {
-        return list.where((b) => b.status.toUpperCase() == status.toUpperCase()).toList();
+        return list
+            .where((b) => b.status.toUpperCase() == status.toUpperCase())
+            .toList();
       }
       return list;
     }
@@ -292,7 +315,8 @@ class LaundryRepositoryImpl implements LaundryRepository {
         idempotencyKey: idempotencyKey,
       );
     } catch (e) {
-      debugPrint('[LaundryRepositoryImpl] Remote advanceBatchStatus notice: $e');
+      debugPrint(
+          '[LaundryRepositoryImpl] Remote advanceBatchStatus notice: $e');
       final batch = _batchesCache[batchId];
       if (batch == null) throw Exception('Batch not found');
 
@@ -301,13 +325,15 @@ class LaundryRepositoryImpl implements LaundryRepository {
 
       final newBatchItems = batch.items.map((item) {
         final liveGarment = _garmentsCache[item.garmentId];
-        final currentGStatus = liveGarment?.laundryStatus?.value ?? item.currentLaundryStatus;
+        final currentGStatus =
+            liveGarment?.laundryStatus?.value ?? item.currentLaundryStatus;
 
         if (newStatus == 'DRYING') {
           if (currentGStatus == 'WASHING') {
             updatedItems.add(item.garmentId);
             if (_garmentsCache.containsKey(item.garmentId)) {
-              _garmentsCache[item.garmentId] = _garmentsCache[item.garmentId]!.copyWith(
+              _garmentsCache[item.garmentId] =
+                  _garmentsCache[item.garmentId]!.copyWith(
                 laundryStatus: LaundryStatus.drying,
               );
             }
@@ -328,7 +354,8 @@ class LaundryRepositoryImpl implements LaundryRepository {
                 activeBatchId: null,
               );
             }
-            return item.copyWith(currentLaundryStatus: 'CLEAN', status: 'COMPLETED');
+            return item.copyWith(
+                currentLaundryStatus: 'CLEAN', status: 'COMPLETED');
           } else {
             skippedItems.add(item.garmentId);
             return item.copyWith(currentLaundryStatus: currentGStatus);
@@ -355,7 +382,8 @@ class LaundryRepositoryImpl implements LaundryRepository {
   }
 
   @override
-  Future<LaundryBatch> addItemsToBatch(String batchId, List<String> garmentIds) async {
+  Future<LaundryBatch> addItemsToBatch(
+      String batchId, List<String> garmentIds) async {
     try {
       final model = await _apiService.addItemsToBatch(batchId, garmentIds);
       final domain = model.toDomain();
@@ -374,7 +402,8 @@ class LaundryRepositoryImpl implements LaundryRepository {
     try {
       return await _apiService.removeItemFromBatch(batchId, garmentId);
     } catch (e) {
-      debugPrint('[LaundryRepositoryImpl] Remote removeItemFromBatch notice: $e');
+      debugPrint(
+          '[LaundryRepositoryImpl] Remote removeItemFromBatch notice: $e');
       final batch = _batchesCache[batchId];
       if (batch != null) {
         final newItems = batch.items.map((i) {
@@ -386,7 +415,8 @@ class LaundryRepositoryImpl implements LaundryRepository {
         _batchesCache[batchId] = batch.copyWith(items: newItems);
       }
       if (_garmentsCache.containsKey(garmentId)) {
-        _garmentsCache[garmentId] = _garmentsCache[garmentId]!.copyWith(activeBatchId: null);
+        _garmentsCache[garmentId] =
+            _garmentsCache[garmentId]!.copyWith(activeBatchId: null);
       }
       return true;
     }

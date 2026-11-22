@@ -100,3 +100,4 @@ class BatchTransitionResponse(BaseModel):
     updated_garment_ids: List[str]
     skipped_garment_ids: List[str]
     message: str
+

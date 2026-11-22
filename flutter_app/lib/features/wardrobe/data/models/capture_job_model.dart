@@ -34,7 +34,8 @@ class CaptureJobModel {
     List<GarmentCandidateModel> cList = [];
     if (json['candidates'] is List) {
       cList = (json['candidates'] as List)
-          .map((item) => GarmentCandidateModel.fromJson(item as Map<String, dynamic>))
+          .map((item) =>
+              GarmentCandidateModel.fromJson(item as Map<String, dynamic>))
           .toList();
     }
 
@@ -43,14 +44,19 @@ class CaptureJobModel {
       userId: json['user_id']?.toString() ?? '',
       originalImageRef: json['original_image_ref']?.toString() ?? '',
       status: json['status']?.toString() ?? 'PENDING',
-      currentStage: json['current_stage']?.toString() ?? 'Validating photograph',
+      currentStage:
+          json['current_stage']?.toString() ?? 'Validating photograph',
       progressPercent: (json['progress_percent'] as num?)?.toInt() ?? 0,
       totalDetected: (json['total_detected'] as num?)?.toInt() ?? cList.length,
       providerType: json['provider_type']?.toString() ?? 'DEVELOPMENT_LOCAL',
       errorMessage: json['error_message']?.toString(),
       candidates: cList,
-      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at']) : null,
-      updatedAt: json['updated_at'] != null ? DateTime.tryParse(json['updated_at']) : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'])
+          : null,
     );
   }
 
@@ -99,10 +105,11 @@ class CaptureJobModel {
       totalDetected: entity.totalDetected,
       providerType: entity.providerType,
       errorMessage: entity.errorMessage,
-      candidates: entity.candidates.map((c) => GarmentCandidateModel.fromDomain(c)).toList(),
+      candidates: entity.candidates
+          .map((c) => GarmentCandidateModel.fromDomain(c))
+          .toList(),
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
     );
   }
 }
-

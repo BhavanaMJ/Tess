@@ -68,7 +68,9 @@ class GarmentCandidateCard extends StatelessWidget {
           color: WardrobeTheme.spatialSurface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isIncluded ? WardrobeTheme.borderViolet : WardrobeTheme.borderSubtle,
+            color: isIncluded
+                ? WardrobeTheme.borderViolet
+                : WardrobeTheme.borderSubtle,
             width: isIncluded ? 1.5 : 1.0,
           ),
         ),
@@ -97,9 +99,11 @@ class GarmentCandidateCard extends StatelessWidget {
                     top: 10,
                     left: 10,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: WardrobeTheme.spatialSurface.withValues(alpha: 0.85),
+                        color: WardrobeTheme.spatialSurface
+                            .withValues(alpha: 0.85),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(color: WardrobeTheme.border),
                       ),
@@ -119,7 +123,8 @@ class GarmentCandidateCard extends StatelessWidget {
                     right: 8,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: WardrobeTheme.spatialSurface.withValues(alpha: 0.85),
+                        color: WardrobeTheme.spatialSurface
+                            .withValues(alpha: 0.85),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
@@ -132,7 +137,9 @@ class GarmentCandidateCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
-                                color: isIncluded ? WardrobeTheme.statusSuccess : WardrobeTheme.textMuted,
+                                color: isIncluded
+                                    ? WardrobeTheme.statusSuccess
+                                    : WardrobeTheme.textMuted,
                               ),
                             ),
                           ),
@@ -171,7 +178,8 @@ class GarmentCandidateCard extends StatelessWidget {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.edit_note_rounded, color: WardrobeTheme.electricCyan, size: 22),
+                        icon: const Icon(Icons.edit_note_rounded,
+                            color: WardrobeTheme.electricCyan, size: 22),
                         tooltip: 'Edit Attributes',
                         onPressed: onEdit,
                       ),
@@ -182,7 +190,8 @@ class GarmentCandidateCard extends StatelessWidget {
                   // Key attributes line
                   Text(
                     '${candidate.primaryColor} • ${candidate.pattern ?? "Solid"}${candidate.sleeveLength != null ? " • ${candidate.sleeveLength}" : ""}${candidate.fabricMaterial != null ? " • ${candidate.fabricMaterial}" : ""}',
-                    style: const TextStyle(fontSize: 12, color: WardrobeTheme.textSecondary),
+                    style: const TextStyle(
+                        fontSize: 12, color: WardrobeTheme.textSecondary),
                   ),
 
                   const SizedBox(height: 10),
@@ -190,33 +199,45 @@ class GarmentCandidateCard extends StatelessWidget {
                   // Confidence badges
                   Wrap(
                     children: [
-                      _buildConfidenceBadge('Category', candidate.confidenceScores['category']),
-                      _buildConfidenceBadge('Color', candidate.confidenceScores['primary_color']),
-                      _buildConfidenceBadge('Pattern', candidate.confidenceScores['pattern']),
+                      _buildConfidenceBadge(
+                          'Category', candidate.confidenceScores['category']),
+                      _buildConfidenceBadge(
+                          'Color', candidate.confidenceScores['primary_color']),
+                      _buildConfidenceBadge(
+                          'Pattern', candidate.confidenceScores['pattern']),
                       if (candidate.sleeveLength != null)
-                        _buildConfidenceBadge('Sleeves', candidate.confidenceScores['sleeve_length']),
+                        _buildConfidenceBadge('Sleeves',
+                            candidate.confidenceScores['sleeve_length']),
                       if (candidate.fabricMaterial != null)
-                        _buildConfidenceBadge('Fabric', candidate.confidenceScores['fabric_material']),
+                        _buildConfidenceBadge('Fabric',
+                            candidate.confidenceScores['fabric_material']),
                     ],
                   ),
 
-                  if (candidate.uncertaintyNotes != null && candidate.uncertaintyNotes!.isNotEmpty) ...[
+                  if (candidate.uncertaintyNotes != null &&
+                      candidate.uncertaintyNotes!.isNotEmpty) ...[
                     const SizedBox(height: 8),
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: WardrobeTheme.statusWarning.withValues(alpha: 0.1),
+                        color:
+                            WardrobeTheme.statusWarning.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: WardrobeTheme.statusWarning.withValues(alpha: 0.25)),
+                        border: Border.all(
+                            color: WardrobeTheme.statusWarning
+                                .withValues(alpha: 0.25)),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.info_outline_rounded, color: WardrobeTheme.statusWarning, size: 14),
+                          const Icon(Icons.info_outline_rounded,
+                              color: WardrobeTheme.statusWarning, size: 14),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
                               candidate.uncertaintyNotes!,
-                              style: const TextStyle(fontSize: 11, color: WardrobeTheme.textSecondary),
+                              style: const TextStyle(
+                                  fontSize: 11,
+                                  color: WardrobeTheme.textSecondary),
                             ),
                           ),
                         ],
@@ -230,10 +251,14 @@ class GarmentCandidateCard extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: TextButton.icon(
                       onPressed: onEdit,
-                      icon: const Icon(Icons.tune_rounded, size: 14, color: WardrobeTheme.electricCyan),
+                      icon: const Icon(Icons.tune_rounded,
+                          size: 14, color: WardrobeTheme.electricCyan),
                       label: const Text(
                         'Refine Details',
-                        style: TextStyle(color: WardrobeTheme.electricCyan, fontSize: 12, fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                            color: WardrobeTheme.electricCyan,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700),
                       ),
                     ),
                   ),

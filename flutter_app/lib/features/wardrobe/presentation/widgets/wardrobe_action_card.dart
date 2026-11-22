@@ -30,9 +30,8 @@ class WardrobeActionCard extends StatelessWidget {
       backgroundColor: isFeatured
           ? WardrobeTheme.elevatedSurface
           : WardrobeTheme.spatialSurface,
-      borderColor: isFeatured
-          ? WardrobeTheme.borderViolet
-          : WardrobeTheme.border,
+      borderColor:
+          isFeatured ? WardrobeTheme.borderViolet : WardrobeTheme.border,
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
@@ -41,17 +40,23 @@ class WardrobeActionCard extends StatelessWidget {
             height: 44,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: (isFeatured ? WardrobeTheme.electricViolet : WardrobeTheme.electricCyan)
+              color: (isFeatured
+                      ? WardrobeTheme.electricViolet
+                      : WardrobeTheme.electricCyan)
                   .withValues(alpha: 0.15),
               border: Border.all(
-                color: (isFeatured ? WardrobeTheme.electricViolet : WardrobeTheme.electricCyan)
+                color: (isFeatured
+                        ? WardrobeTheme.electricViolet
+                        : WardrobeTheme.electricCyan)
                     .withValues(alpha: 0.35),
                 width: 1.0,
               ),
             ),
             child: Icon(
               icon,
-              color: isFeatured ? WardrobeTheme.softViolet : WardrobeTheme.electricCyan,
+              color: isFeatured
+                  ? WardrobeTheme.softViolet
+                  : WardrobeTheme.electricCyan,
               size: 22,
             ),
           ),
@@ -75,12 +80,15 @@ class WardrobeActionCard extends StatelessWidget {
                     if (badge != null) ...[
                       const SizedBox(width: 6),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: (badgeColor ?? WardrobeTheme.electricViolet).withValues(alpha: 0.15),
+                          color: (badgeColor ?? WardrobeTheme.electricViolet)
+                              .withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
-                            color: (badgeColor ?? WardrobeTheme.electricViolet).withValues(alpha: 0.35),
+                            color: (badgeColor ?? WardrobeTheme.electricViolet)
+                                .withValues(alpha: 0.35),
                             width: 1.0,
                           ),
                         ),
@@ -121,4 +129,3 @@ class WardrobeActionCard extends StatelessWidget {
     );
   }
 }
-

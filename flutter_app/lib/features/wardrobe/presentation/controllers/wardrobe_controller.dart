@@ -73,7 +73,8 @@ class WardrobeController extends ChangeNotifier {
         return false;
       }
       if (_selectedSleeveLength != null &&
-          g.sleeveLength?.toLowerCase() != _selectedSleeveLength!.toLowerCase()) {
+          g.sleeveLength?.toLowerCase() !=
+              _selectedSleeveLength!.toLowerCase()) {
         return false;
       }
       if (_favoritesOnly && !g.isFavorite) {
@@ -84,7 +85,8 @@ class WardrobeController extends ChangeNotifier {
         final matches = g.name.toLowerCase().contains(q) ||
             g.id.toLowerCase().contains(q) ||
             g.mainCategory.toLowerCase().contains(q) ||
-            (g.subcategory != null && g.subcategory!.toLowerCase().contains(q)) ||
+            (g.subcategory != null &&
+                g.subcategory!.toLowerCase().contains(q)) ||
             g.primaryColor.toLowerCase().contains(q) ||
             (g.brand != null && g.brand!.toLowerCase().contains(q)) ||
             (g.pattern != null && g.pattern!.toLowerCase().contains(q));
@@ -96,26 +98,34 @@ class WardrobeController extends ChangeNotifier {
     // In-memory sorting
     final isDesc = _sortOrder == 'desc';
     if (_sortBy == 'name') {
-      list.sort((a, b) => isDesc ? b.name.compareTo(a.name) : a.name.compareTo(b.name));
+      list.sort((a, b) =>
+          isDesc ? b.name.compareTo(a.name) : a.name.compareTo(b.name));
     } else if (_sortBy == 'updated_at') {
-      list.sort((a, b) => isDesc ? b.updatedAt.compareTo(a.updatedAt) : a.updatedAt.compareTo(b.updatedAt));
+      list.sort((a, b) => isDesc
+          ? b.updatedAt.compareTo(a.updatedAt)
+          : a.updatedAt.compareTo(b.updatedAt));
     } else {
-      list.sort((a, b) => isDesc ? b.createdAt.compareTo(a.createdAt) : a.createdAt.compareTo(b.createdAt));
+      list.sort((a, b) => isDesc
+          ? b.createdAt.compareTo(a.createdAt)
+          : a.createdAt.compareTo(b.createdAt));
     }
 
     return list;
   }
 
   // Telemetry counts
-  int get totalGarmentsCount => _stats.totalGarments > 0 ? _stats.totalGarments : _garments.length;
+  int get totalGarmentsCount =>
+      _stats.totalGarments > 0 ? _stats.totalGarments : _garments.length;
   int get cleanCount => _stats.cleanCount > 0
       ? _stats.cleanCount
       : _garments.where((g) => g.laundryStatus == LaundryStatus.clean).length;
   int get inLaundryCount => _stats.inLaundryCount > 0
       ? _stats.inLaundryCount
-      : _garments.where((g) =>
-          g.laundryStatus == LaundryStatus.washing ||
-          g.laundryStatus == LaundryStatus.drying).length;
+      : _garments
+          .where((g) =>
+              g.laundryStatus == LaundryStatus.washing ||
+              g.laundryStatus == LaundryStatus.drying)
+          .length;
   int get unassignedCount => _stats.unassignedCount > 0
       ? _stats.unassignedCount
       : _garments.where((g) => g.laundryStatus == null).length;
@@ -234,7 +244,8 @@ class WardrobeController extends ChangeNotifier {
 
   Future<bool> deleteGarment(String id, {bool hardDelete = false}) async {
     try {
-      final success = await _repository.deleteGarment(id, hardDelete: hardDelete);
+      final success =
+          await _repository.deleteGarment(id, hardDelete: hardDelete);
       if (success) {
         _garments.removeWhere((g) => g.id == id);
         _stats = await _repository.getStats();
@@ -262,7 +273,8 @@ class WardrobeController extends ChangeNotifier {
     }
   }
 
-  Future<void> updateLaundryStatus(String garmentId, LaundryStatus status) async {
+  Future<void> updateLaundryStatus(
+      String garmentId, LaundryStatus status) async {
     try {
       final updated = await _repository.updateLaundryStatus(garmentId, status);
       final index = _garments.indexWhere((g) => g.id == garmentId);

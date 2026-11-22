@@ -25,7 +25,8 @@ class WardrobeRepositoryImpl implements WardrobeRepository {
   })  : _apiService = apiService ?? WardrobeApiService(),
         _authService = authService ?? AuthService();
 
-  String get _currentUserId => _authService.currentUser?.id ?? 'tess_default_user';
+  String get _currentUserId =>
+      _authService.currentUser?.id ?? 'tess_default_user';
 
   @override
   Future<List<Garment>> getGarments({
@@ -57,11 +58,15 @@ class WardrobeRepositoryImpl implements WardrobeRepository {
       }
       return remoteGarments;
     } catch (e) {
-      debugPrint('[WardrobeRepo] Remote API unavailable, using local store: $e');
+      debugPrint(
+          '[WardrobeRepo] Remote API unavailable, using local store: $e');
       // If backend fails, filter local cache so offline testing continues smoothly
       var list = _localCache.values.toList();
       if (category != null && category.isNotEmpty) {
-        list = list.where((g) => g.mainCategory.toLowerCase() == category.toLowerCase()).toList();
+        list = list
+            .where(
+                (g) => g.mainCategory.toLowerCase() == category.toLowerCase())
+            .toList();
       }
       if (laundryStatus != null) {
         list = list.where((g) => g.laundryStatus == laundryStatus).toList();
@@ -71,13 +76,16 @@ class WardrobeRepositoryImpl implements WardrobeRepository {
       }
       if (search != null && search.trim().isNotEmpty) {
         final q = search.trim().toLowerCase();
-        list = list.where((g) =>
-            g.name.toLowerCase().contains(q) ||
-            g.id.toLowerCase().contains(q) ||
-            g.mainCategory.toLowerCase().contains(q) ||
-            (g.subcategory != null && g.subcategory!.toLowerCase().contains(q)) ||
-            g.primaryColor.toLowerCase().contains(q) ||
-            (g.brand != null && g.brand!.toLowerCase().contains(q))).toList();
+        list = list
+            .where((g) =>
+                g.name.toLowerCase().contains(q) ||
+                g.id.toLowerCase().contains(q) ||
+                g.mainCategory.toLowerCase().contains(q) ||
+                (g.subcategory != null &&
+                    g.subcategory!.toLowerCase().contains(q)) ||
+                g.primaryColor.toLowerCase().contains(q) ||
+                (g.brand != null && g.brand!.toLowerCase().contains(q)))
+            .toList();
       }
       list.sort((a, b) => a.id.compareTo(b.id));
       return list;
@@ -166,7 +174,8 @@ class WardrobeRepositoryImpl implements WardrobeRepository {
     _localCache[id] = updated;
 
     try {
-      final patched = await _apiService.patchItem(id, {'laundry_status': status.value});
+      final patched =
+          await _apiService.patchItem(id, {'laundry_status': status.value});
       final entity = patched.toDomain();
       _localCache[id] = entity;
       return entity;
@@ -190,7 +199,8 @@ class WardrobeRepositoryImpl implements WardrobeRepository {
     _localCache[id] = updated;
 
     try {
-      final patched = await _apiService.patchItem(id, {'is_favorite': updated.isFavorite});
+      final patched =
+          await _apiService.patchItem(id, {'is_favorite': updated.isFavorite});
       final entity = patched.toDomain();
       _localCache[id] = entity;
       return entity;
@@ -238,7 +248,8 @@ class WardrobeRepositoryImpl implements WardrobeRepository {
       }
       return importedCount;
     } catch (e) {
-      debugPrint('[WardrobeRepo] Remote bulk import failed, saving to local: $e');
+      debugPrint(
+          '[WardrobeRepo] Remote bulk import failed, saving to local: $e');
       int count = 0;
       for (final g in garments) {
         _localCache[g.id] = g;

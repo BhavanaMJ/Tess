@@ -39,12 +39,14 @@ class WardrobeSectionHeader extends StatelessWidget {
               if (badgeText != null) ...[
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: WardrobeTheme.electricViolet.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: WardrobeTheme.electricViolet.withValues(alpha: 0.35),
+                      color:
+                          WardrobeTheme.electricViolet.withValues(alpha: 0.35),
                       width: 1.0,
                     ),
                   ),
@@ -78,4 +80,3 @@ class WardrobeSectionHeader extends StatelessWidget {
     );
   }
 }
-

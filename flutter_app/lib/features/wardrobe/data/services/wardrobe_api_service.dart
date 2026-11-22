@@ -25,9 +25,12 @@ class WardrobeApiService {
   }) async {
     try {
       final queryParams = <String, String>{};
-      if (category != null && category.isNotEmpty) queryParams['category'] = category;
-      if (laundryStatus != null && laundryStatus.isNotEmpty) queryParams['laundry_status'] = laundryStatus;
-      if (favoritesOnly != null) queryParams['is_favorite'] = favoritesOnly.toString();
+      if (category != null && category.isNotEmpty)
+        queryParams['category'] = category;
+      if (laundryStatus != null && laundryStatus.isNotEmpty)
+        queryParams['laundry_status'] = laundryStatus;
+      if (favoritesOnly != null)
+        queryParams['is_favorite'] = favoritesOnly.toString();
       if (search != null && search.isNotEmpty) queryParams['search'] = search;
       if (sortBy != null) queryParams['sort_by'] = sortBy;
       if (sortOrder != null) queryParams['sort_order'] = sortOrder;
@@ -38,12 +41,14 @@ class WardrobeApiService {
           ? '?${queryParams.entries.map((e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&')}'
           : '';
 
-      final response = await _apiClient.get('/api/v1/wardrobe/items$queryString');
+      final response =
+          await _apiClient.get('/api/v1/wardrobe/items$queryString');
       if (response is List) {
         return response
             .map((item) => GarmentModel.fromJson(item as Map<String, dynamic>))
             .toList();
-      } else if (response is Map<String, dynamic> && response['items'] is List) {
+      } else if (response is Map<String, dynamic> &&
+          response['items'] is List) {
         return (response['items'] as List)
             .map((item) => GarmentModel.fromJson(item as Map<String, dynamic>))
             .toList();
@@ -78,7 +83,8 @@ class WardrobeApiService {
     if (response is Map<String, dynamic>) {
       return GarmentModel.fromJson(response);
     }
-    throw ApiException(statusCode: 500, message: 'Invalid response saving garment');
+    throw ApiException(
+        statusCode: 500, message: 'Invalid response saving garment');
   }
 
   /// PATCH /api/v1/wardrobe/items/{id}
@@ -90,7 +96,8 @@ class WardrobeApiService {
     if (response is Map<String, dynamic>) {
       return GarmentModel.fromJson(response);
     }
-    throw ApiException(statusCode: 500, message: 'Invalid response patching garment');
+    throw ApiException(
+        statusCode: 500, message: 'Invalid response patching garment');
   }
 
   /// PUT /api/v1/wardrobe/items/{id}
@@ -102,12 +109,14 @@ class WardrobeApiService {
     if (response is Map<String, dynamic>) {
       return GarmentModel.fromJson(response);
     }
-    throw ApiException(statusCode: 500, message: 'Invalid response updating garment');
+    throw ApiException(
+        statusCode: 500, message: 'Invalid response updating garment');
   }
 
   /// DELETE /api/v1/wardrobe/items/{id}
   Future<bool> deleteItem(String id, {bool hardDelete = false}) async {
-    await _apiClient.delete('/api/v1/wardrobe/items/$id?hard_delete=$hardDelete');
+    await _apiClient
+        .delete('/api/v1/wardrobe/items/$id?hard_delete=$hardDelete');
     return true;
   }
 
@@ -117,7 +126,8 @@ class WardrobeApiService {
       final response = await _apiClient.get('/api/v1/wardrobe/categories');
       if (response is List) {
         return response
-            .map((item) => WardrobeCategoryModel.fromJson(item as Map<String, dynamic>))
+            .map((item) =>
+                WardrobeCategoryModel.fromJson(item as Map<String, dynamic>))
             .toList();
       }
       return [];
@@ -149,7 +159,8 @@ class WardrobeApiService {
   }
 
   /// POST /api/v1/wardrobe/import-initial
-  Future<Map<String, dynamic>> importInitial(List<GarmentModel> garments) async {
+  Future<Map<String, dynamic>> importInitial(
+      List<GarmentModel> garments) async {
     final payload = {
       'garments': garments.map((g) => g.toJson()).toList(),
     };

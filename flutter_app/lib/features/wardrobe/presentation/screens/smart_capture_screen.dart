@@ -65,10 +65,12 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
                         width: 36,
                         height: 36,
                         decoration: BoxDecoration(
-                          color: WardrobeTheme.electricViolet.withValues(alpha: 0.15),
+                          color: WardrobeTheme.electricViolet
+                              .withValues(alpha: 0.15),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.auto_awesome_rounded, color: WardrobeTheme.softViolet, size: 20),
+                        child: const Icon(Icons.auto_awesome_rounded,
+                            color: WardrobeTheme.softViolet, size: 20),
                       ),
                       const SizedBox(width: 12),
                       const Expanded(
@@ -77,12 +79,18 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
                           children: [
                             Text(
                               'AI Garment Recognition',
-                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: WardrobeTheme.textPrimary),
+                              style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: WardrobeTheme.textPrimary),
                             ),
                             SizedBox(height: 2),
                             Text(
                               'Capture single garments or complete outfits. TESS will separate each item cleanly into your wardrobe.',
-                              style: TextStyle(fontSize: 11, color: WardrobeTheme.textSecondary, height: 1.3),
+                              style: TextStyle(
+                                  fontSize: 11,
+                                  color: WardrobeTheme.textSecondary,
+                                  height: 1.3),
                             ),
                           ],
                         ),
@@ -98,18 +106,24 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: WardrobeTheme.statusCritical.withValues(alpha: 0.15),
+                      color:
+                          WardrobeTheme.statusCritical.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: WardrobeTheme.statusCritical.withValues(alpha: 0.3)),
+                      border: Border.all(
+                          color: WardrobeTheme.statusCritical
+                              .withValues(alpha: 0.3)),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.warning_amber_rounded, color: WardrobeTheme.statusCritical, size: 20),
+                        const Icon(Icons.warning_amber_rounded,
+                            color: WardrobeTheme.statusCritical, size: 20),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             widget.controller.errorMessage!,
-                            style: const TextStyle(fontSize: 12, color: WardrobeTheme.statusCritical),
+                            style: const TextStyle(
+                                fontSize: 12,
+                                color: WardrobeTheme.statusCritical),
                           ),
                         ),
                       ],
@@ -132,7 +146,8 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
                       alignment: Alignment.center,
                       children: [
                         Image.memory(
-                          Uint8List.fromList(widget.controller.selectedImageBytes!),
+                          Uint8List.fromList(
+                              widget.controller.selectedImageBytes!),
                           fit: BoxFit.contain,
                           width: double.infinity,
                           height: 320,
@@ -146,8 +161,10 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
-                              icon: const Icon(Icons.close, color: Colors.white, size: 18),
-                              onPressed: () => widget.controller.clearSelection(),
+                              icon: const Icon(Icons.close,
+                                  color: Colors.white, size: 18),
+                              onPressed: () =>
+                                  widget.controller.clearSelection(),
                             ),
                           ),
                         ),
@@ -159,7 +176,8 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
                     children: [
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: () => widget.controller.pickImage(ImageSource.camera),
+                          onPressed: () =>
+                              widget.controller.pickImage(ImageSource.camera),
                           icon: const Icon(Icons.refresh_rounded, size: 16),
                           label: const Text('Retake'),
                           style: OutlinedButton.styleFrom(
@@ -181,7 +199,8 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
                               ),
                             );
                           },
-                          icon: const Icon(Icons.auto_awesome_rounded, size: 16),
+                          icon:
+                              const Icon(Icons.auto_awesome_rounded, size: 16),
                           label: const Text('Analyze Clothes'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: WardrobeTheme.electricViolet,
@@ -199,7 +218,8 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
                     decoration: BoxDecoration(
                       color: WardrobeTheme.spatialSurface,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: WardrobeTheme.border, width: 1.5),
+                      border:
+                          Border.all(color: WardrobeTheme.border, width: 1.5),
                     ),
                     child: Center(
                       child: Column(
@@ -208,7 +228,8 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
                           Icon(
                             Icons.add_a_photo_outlined,
                             size: 48,
-                            color: WardrobeTheme.electricViolet.withValues(alpha: 0.6),
+                            color: WardrobeTheme.electricViolet
+                                .withValues(alpha: 0.6),
                           ),
                           const SizedBox(height: 12),
                           const Text(
@@ -223,7 +244,8 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
                           const Text(
                             'Select from gallery or snap a photo with your camera',
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 12, color: WardrobeTheme.textMuted),
+                            style: TextStyle(
+                                fontSize: 12, color: WardrobeTheme.textMuted),
                           ),
                         ],
                       ),
@@ -233,28 +255,34 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
 
                   // Option A: Take Photo
                   ElevatedButton.icon(
-                    onPressed: () => widget.controller.pickImage(ImageSource.camera),
+                    onPressed: () =>
+                        widget.controller.pickImage(ImageSource.camera),
                     icon: const Icon(Icons.camera_alt_rounded),
-                    label: const Text('Take Photograph', style: TextStyle(fontWeight: FontWeight.w700)),
+                    label: const Text('Take Photograph',
+                        style: TextStyle(fontWeight: FontWeight.w700)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: WardrobeTheme.electricViolet,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                   ),
                   const SizedBox(height: 12),
 
                   // Option B: Upload Photo
                   OutlinedButton.icon(
-                    onPressed: () => widget.controller.pickImage(ImageSource.gallery),
+                    onPressed: () =>
+                        widget.controller.pickImage(ImageSource.gallery),
                     icon: const Icon(Icons.photo_library_outlined),
-                    label: const Text('Select from Gallery', style: TextStyle(fontWeight: FontWeight.w600)),
+                    label: const Text('Select from Gallery',
+                        style: TextStyle(fontWeight: FontWeight.w600)),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: WardrobeTheme.electricCyan,
                       side: const BorderSide(color: WardrobeTheme.borderCyan),
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                   ),
                 ],
@@ -266,4 +294,3 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
     );
   }
 }
-

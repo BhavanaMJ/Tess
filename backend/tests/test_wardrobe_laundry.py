@@ -271,3 +271,4 @@ def test_user_isolation_security():
         json={"status": "DRYING"},
     )
     assert resp_adv.status_code == 404
+

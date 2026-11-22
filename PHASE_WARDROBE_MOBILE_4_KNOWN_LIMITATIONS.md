@@ -30,3 +30,4 @@
 ## 4. Multi-Device Offline Batch Sync Race Conditions
 - **Limitation**: If a user modifies individual garment statuses on two devices while offline, reconciliation when reconnecting adheres to Last-Write-Wins (LWW) based on server arrival time.
 - **Mitigation**: Every transition records an immutable log in `wardrobe_laundry_history` with source attribution and timestamp so state alterations can always be audited and inspected.
+

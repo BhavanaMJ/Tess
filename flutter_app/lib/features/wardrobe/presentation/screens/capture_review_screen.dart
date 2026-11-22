@@ -49,7 +49,8 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
           backgroundColor: WardrobeTheme.elevatedSurface,
           content: Text(
             'Successfully registered $count garments to My Wardrobe!',
-            style: const TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+                color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600),
           ),
         ),
       );
@@ -93,10 +94,12 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
             children: [
               // Summary Telemetry Header Bar
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 12.0),
                 decoration: const BoxDecoration(
                   color: WardrobeTheme.spatialSurface,
-                  border: Border(bottom: BorderSide(color: WardrobeTheme.borderSubtle)),
+                  border: Border(
+                      bottom: BorderSide(color: WardrobeTheme.borderSubtle)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -104,9 +107,11 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
-                            color: WardrobeTheme.electricViolet.withValues(alpha: 0.2),
+                            color: WardrobeTheme.electricViolet
+                                .withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
@@ -121,7 +126,8 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
                         const SizedBox(width: 8),
                         Text(
                           '$included selected for wardrobe',
-                          style: const TextStyle(fontSize: 13, color: WardrobeTheme.textSecondary),
+                          style: const TextStyle(
+                              fontSize: 13, color: WardrobeTheme.textSecondary),
                         ),
                       ],
                     ),
@@ -129,12 +135,14 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
                       TextButton(
                         onPressed: () {
                           for (final c in candidates) {
-                            if (!c.isIncluded) widget.controller.toggleCandidateInclusion(c.id);
+                            if (!c.isIncluded)
+                              widget.controller.toggleCandidateInclusion(c.id);
                           }
                         },
                         child: const Text(
                           'Select All',
-                          style: TextStyle(color: WardrobeTheme.electricCyan, fontSize: 12),
+                          style: TextStyle(
+                              color: WardrobeTheme.electricCyan, fontSize: 12),
                         ),
                       ),
                   ],
@@ -148,9 +156,13 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
                   decoration: BoxDecoration(
                     color: WardrobeTheme.statusCritical.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: WardrobeTheme.statusCritical.withValues(alpha: 0.3)),
+                    border: Border.all(
+                        color: WardrobeTheme.statusCritical
+                            .withValues(alpha: 0.3)),
                   ),
-                  child: Text(error, style: const TextStyle(fontSize: 12, color: WardrobeTheme.statusCritical)),
+                  child: Text(error,
+                      style: const TextStyle(
+                          fontSize: 12, color: WardrobeTheme.statusCritical)),
                 ),
               ],
 
@@ -170,7 +182,8 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
                           final cand = candidates[i];
                           return GarmentCandidateCard(
                             candidate: cand,
-                            onToggleInclude: () => widget.controller.toggleCandidateInclusion(cand.id),
+                            onToggleInclude: () => widget.controller
+                                .toggleCandidateInclusion(cand.id),
                             onEdit: () => _openAttributeEditor(cand),
                           );
                         },
@@ -182,27 +195,33 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
                 padding: const EdgeInsets.all(16.0),
                 decoration: const BoxDecoration(
                   color: WardrobeTheme.elevatedSurface,
-                  border: Border(top: BorderSide(color: WardrobeTheme.borderSubtle)),
+                  border: Border(
+                      top: BorderSide(color: WardrobeTheme.borderSubtle)),
                 ),
                 child: SafeArea(
                   child: ElevatedButton(
-                    onPressed: isConfirming || included == 0 ? null : _handleConfirm,
+                    onPressed:
+                        isConfirming || included == 0 ? null : _handleConfirm,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: WardrobeTheme.electricViolet,
                       foregroundColor: Colors.white,
-                      disabledBackgroundColor: WardrobeTheme.electricViolet.withValues(alpha: 0.4),
+                      disabledBackgroundColor:
+                          WardrobeTheme.electricViolet.withValues(alpha: 0.4),
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                     child: isConfirming
                         ? const SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white),
                           )
                         : Text(
                             'Register $included ${included == 1 ? "Garment" : "Garments"} in Wardrobe',
-                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                            style: const TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w700),
                           ),
                   ),
                 ),
@@ -214,4 +233,3 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
     );
   }
 }
-

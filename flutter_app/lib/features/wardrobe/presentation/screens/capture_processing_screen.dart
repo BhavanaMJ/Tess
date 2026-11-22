@@ -13,7 +13,8 @@ class CaptureProcessingScreen extends StatefulWidget {
   });
 
   @override
-  State<CaptureProcessingScreen> createState() => _CaptureProcessingScreenState();
+  State<CaptureProcessingScreen> createState() =>
+      _CaptureProcessingScreenState();
 }
 
 class _CaptureProcessingScreenState extends State<CaptureProcessingScreen> {
@@ -71,7 +72,9 @@ class _CaptureProcessingScreenState extends State<CaptureProcessingScreen> {
           final progress = (job?.progressPercent ?? 30) / 100.0;
 
           // Check if ready to transition to review
-          if (job != null && job.isAwaitingApproval && !widget.controller.isProcessing) {
+          if (job != null &&
+              job.isAwaitingApproval &&
+              !widget.controller.isProcessing) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) _navigateToReview();
             });
@@ -87,27 +90,36 @@ class _CaptureProcessingScreenState extends State<CaptureProcessingScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: WardrobeTheme.statusCritical.withValues(alpha: 0.15),
+                        color: WardrobeTheme.statusCritical
+                            .withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.error_outline_rounded, color: WardrobeTheme.statusCritical, size: 48),
+                      child: const Icon(Icons.error_outline_rounded,
+                          color: WardrobeTheme.statusCritical, size: 48),
                     ),
                     const SizedBox(height: 16),
                     const Text(
                       'Analysis Interrupted',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: WardrobeTheme.textPrimary),
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: WardrobeTheme.textPrimary),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       error,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 13, color: WardrobeTheme.textSecondary, height: 1.4),
+                      style: const TextStyle(
+                          fontSize: 13,
+                          color: WardrobeTheme.textSecondary,
+                          height: 1.4),
                     ),
                     const SizedBox(height: 8),
                     const Text(
                       'Your original photograph is safely preserved.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 11, color: WardrobeTheme.textMuted),
+                      style: TextStyle(
+                          fontSize: 11, color: WardrobeTheme.textMuted),
                     ),
                     const SizedBox(height: 24),
                     Row(
@@ -153,7 +165,8 @@ class _CaptureProcessingScreenState extends State<CaptureProcessingScreen> {
                         child: CircularProgressIndicator(
                           value: progress,
                           strokeWidth: 4,
-                          valueColor: const AlwaysStoppedAnimation<Color>(WardrobeTheme.electricViolet),
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                              WardrobeTheme.electricViolet),
                           backgroundColor: WardrobeTheme.spatialSurface,
                         ),
                       ),
@@ -165,7 +178,6 @@ class _CaptureProcessingScreenState extends State<CaptureProcessingScreen> {
                     ],
                   ),
                   const SizedBox(height: 28),
-
                   Text(
                     stage,
                     textAlign: TextAlign.center,
@@ -176,17 +188,18 @@ class _CaptureProcessingScreenState extends State<CaptureProcessingScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-
                   const Text(
                     'Detecting garments, separating catalogue cards & extracting attributes.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 12, color: WardrobeTheme.textMuted, height: 1.3),
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: WardrobeTheme.textMuted,
+                        height: 1.3),
                   ),
-
                   const SizedBox(height: 32),
-
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 10),
                     decoration: BoxDecoration(
                       color: WardrobeTheme.spatialSurface,
                       borderRadius: BorderRadius.circular(10),
@@ -195,12 +208,15 @@ class _CaptureProcessingScreenState extends State<CaptureProcessingScreen> {
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.verified_outlined, color: WardrobeTheme.softViolet, size: 16),
+                        Icon(Icons.verified_outlined,
+                            color: WardrobeTheme.softViolet, size: 16),
                         SizedBox(width: 8),
                         Flexible(
                           child: Text(
                             'TESS preserves your actual garments without AI redesigns.',
-                            style: TextStyle(fontSize: 11, color: WardrobeTheme.textSecondary),
+                            style: TextStyle(
+                                fontSize: 11,
+                                color: WardrobeTheme.textSecondary),
                           ),
                         ),
                       ],
@@ -215,4 +231,3 @@ class _CaptureProcessingScreenState extends State<CaptureProcessingScreen> {
     );
   }
 }
-

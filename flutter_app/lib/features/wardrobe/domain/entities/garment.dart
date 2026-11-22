@@ -86,7 +86,8 @@ class Garment {
   bool get hasConfirmedLaundryStatus => laundryStatus != null;
 
   /// Returns preferred display image reference (processed catalogue image first, then original)
-  String? get displayImageRef => processedImageRef ?? thumbnailRef ?? originalImageRef;
+  String? get displayImageRef =>
+      processedImageRef ?? thumbnailRef ?? originalImageRef;
 
   Garment copyWith({
     String? id,
@@ -160,4 +161,3 @@ class Garment {
     );
   }
 }
-

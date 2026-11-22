@@ -68,7 +68,10 @@ class GarmentCandidateModel {
       mainCategory: json['main_category']?.toString() ?? 'Tops',
       subcategory: json['subcategory']?.toString(),
       primaryColor: json['primary_color']?.toString() ?? 'Unknown',
-      secondaryColors: (json['secondary_colors'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      secondaryColors: (json['secondary_colors'] as List?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
       pattern: json['pattern']?.toString(),
       fabricMaterial: json['fabric_material']?.toString(),
       sleeveLength: json['sleeve_length']?.toString(),
@@ -79,7 +82,9 @@ class GarmentCandidateModel {
       size: json['size']?.toString(),
       brand: json['brand']?.toString(),
       confidenceScores: confMap,
-      boundingBox: json['bounding_box'] is Map<String, dynamic> ? json['bounding_box'] : null,
+      boundingBox: json['bounding_box'] is Map<String, dynamic>
+          ? json['bounding_box']
+          : null,
       processedImageRef: json['processed_image_ref']?.toString(),
       originalCropRef: json['original_crop_ref']?.toString(),
       isIncluded: json['is_included'] ?? true,
@@ -176,4 +181,3 @@ class GarmentCandidateModel {
     );
   }
 }
-

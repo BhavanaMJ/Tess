@@ -28,7 +28,9 @@ class CategoryChip extends StatelessWidget {
               : WardrobeTheme.spatialSurface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? WardrobeTheme.electricViolet : WardrobeTheme.border,
+            color: isSelected
+                ? WardrobeTheme.electricViolet
+                : WardrobeTheme.border,
             width: 1.0,
           ),
           boxShadow: isSelected
@@ -70,4 +72,3 @@ class CategoryChip extends StatelessWidget {
     );
   }
 }
-

@@ -38,7 +38,9 @@ class LaundryApiService {
     final response = await _apiClient.get(url);
     final data = response as Map<String, dynamic>;
     final items = data['items'] as List<dynamic>? ?? [];
-    return items.map((i) => GarmentModel.fromJson(i as Map<String, dynamic>)).toList();
+    return items
+        .map((i) => GarmentModel.fromJson(i as Map<String, dynamic>))
+        .toList();
   }
 
   /// PATCH /api/v1/wardrobe/items/{garment_id}/laundry-status
@@ -63,10 +65,15 @@ class LaundryApiService {
   }
 
   /// GET /api/v1/wardrobe/items/{garment_id}/laundry-history
-  Future<List<LaundryHistoryEntryModel>> getGarmentLaundryHistory(String garmentId) async {
-    final response = await _apiClient.get('/api/v1/wardrobe/items/$garmentId/laundry-history');
+  Future<List<LaundryHistoryEntryModel>> getGarmentLaundryHistory(
+      String garmentId) async {
+    final response = await _apiClient
+        .get('/api/v1/wardrobe/items/$garmentId/laundry-history');
     final list = response as List<dynamic>? ?? [];
-    return list.map((i) => LaundryHistoryEntryModel.fromJson(i as Map<String, dynamic>)).toList();
+    return list
+        .map(
+            (i) => LaundryHistoryEntryModel.fromJson(i as Map<String, dynamic>))
+        .toList();
   }
 
   /// POST /api/v1/wardrobe/laundry/batches
@@ -100,12 +107,15 @@ class LaundryApiService {
     }
     final response = await _apiClient.get(url);
     final list = response as List<dynamic>? ?? [];
-    return list.map((i) => LaundryBatchModel.fromJson(i as Map<String, dynamic>)).toList();
+    return list
+        .map((i) => LaundryBatchModel.fromJson(i as Map<String, dynamic>))
+        .toList();
   }
 
   /// GET /api/v1/wardrobe/laundry/batches/{batch_id}
   Future<LaundryBatchModel> getBatch(String batchId) async {
-    final response = await _apiClient.get('/api/v1/wardrobe/laundry/batches/$batchId');
+    final response =
+        await _apiClient.get('/api/v1/wardrobe/laundry/batches/$batchId');
     return LaundryBatchModel.fromJson(response as Map<String, dynamic>);
   }
 
@@ -130,7 +140,8 @@ class LaundryApiService {
   }
 
   /// POST /api/v1/wardrobe/laundry/batches/{batch_id}/items
-  Future<LaundryBatchModel> addItemsToBatch(String batchId, List<String> garmentIds) async {
+  Future<LaundryBatchModel> addItemsToBatch(
+      String batchId, List<String> garmentIds) async {
     final response = await _apiClient.post(
       '/api/v1/wardrobe/laundry/batches/$batchId/items',
       body: {'garment_ids': garmentIds},
@@ -140,7 +151,8 @@ class LaundryApiService {
 
   /// DELETE /api/v1/wardrobe/laundry/batches/{batch_id}/items/{garment_id}
   Future<bool> removeItemFromBatch(String batchId, String garmentId) async {
-    await _apiClient.delete('/api/v1/wardrobe/laundry/batches/$batchId/items/$garmentId');
+    await _apiClient
+        .delete('/api/v1/wardrobe/laundry/batches/$batchId/items/$garmentId');
     return true;
   }
 }

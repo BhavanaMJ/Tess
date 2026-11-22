@@ -15,7 +15,8 @@ class WardrobeCaptureRepositoryImpl implements WardrobeCaptureRepository {
       : _apiService = apiService ?? WardrobeCaptureApiService();
 
   @override
-  Future<CaptureJob> uploadAndProcessCapture(List<int> imageBytes, String filename) async {
+  Future<CaptureJob> uploadAndProcessCapture(
+      List<int> imageBytes, String filename) async {
     try {
       final model = await _apiService.createJob(imageBytes, filename);
       final entity = model.toDomain();
@@ -23,7 +24,8 @@ class WardrobeCaptureRepositoryImpl implements WardrobeCaptureRepository {
       _candidatesCache[entity.id] = entity.candidates;
       return entity;
     } catch (e) {
-      debugPrint('[WardrobeCaptureRepo] Remote capture API call failed: $e. Falling back to local offline simulation.');
+      debugPrint(
+          '[WardrobeCaptureRepo] Remote capture API call failed: $e. Falling back to local offline simulation.');
       // Local offline fallback simulation
       final now = DateTime.now();
       final jobId = 'job_${now.millisecondsSinceEpoch}';
@@ -125,7 +127,8 @@ class WardrobeCaptureRepositoryImpl implements WardrobeCaptureRepository {
   }
 
   @override
-  Future<GarmentCandidate> updateCandidate(String candidateId, Map<String, dynamic> delta) async {
+  Future<GarmentCandidate> updateCandidate(
+      String candidateId, Map<String, dynamic> delta) async {
     try {
       final model = await _apiService.patchCandidate(candidateId, delta);
       final entity = model.toDomain();
@@ -185,7 +188,8 @@ class WardrobeCaptureRepositoryImpl implements WardrobeCaptureRepository {
   }
 
   @override
-  Future<Map<String, dynamic>> confirmJob(String jobId, {List<String>? candidateIds}) async {
+  Future<Map<String, dynamic>> confirmJob(String jobId,
+      {List<String>? candidateIds}) async {
     try {
       return await _apiService.confirmJob(jobId, candidateIds: candidateIds);
     } catch (e) {

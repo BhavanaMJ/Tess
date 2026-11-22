@@ -24,7 +24,8 @@ class LaundryController extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   LaundryStats get stats => _stats;
   List<LaundryBatch> get batches => _batches;
-  List<LaundryBatch> get activeBatches => _batches.where((b) => b.isActive).toList();
+  List<LaundryBatch> get activeBatches =>
+      _batches.where((b) => b.isActive).toList();
   List<Garment> get currentStatusItems => _currentStatusItems;
 
   Future<void> loadDashboardData() async {
@@ -46,7 +47,8 @@ class LaundryController extends ChangeNotifier {
     }
   }
 
-  Future<void> loadItemsByStatus(String? status, {String? category, String? search}) async {
+  Future<void> loadItemsByStatus(String? status,
+      {String? category, String? search}) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -67,7 +69,8 @@ class LaundryController extends ChangeNotifier {
     }
   }
 
-  Future<bool> updateGarmentStatus(String garmentId, LaundryStatus? newStatus, {String? notes}) async {
+  Future<bool> updateGarmentStatus(String garmentId, LaundryStatus? newStatus,
+      {String? notes}) async {
     try {
       final updated = await _repository.updateGarmentLaundryStatus(
         garmentId,
@@ -96,7 +99,8 @@ class LaundryController extends ChangeNotifier {
     }
   }
 
-  Future<LaundryBatch?> createBatch(List<String> garmentIds, {String? name, String? notes}) async {
+  Future<LaundryBatch?> createBatch(List<String> garmentIds,
+      {String? name, String? notes}) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -125,7 +129,8 @@ class LaundryController extends ChangeNotifier {
     }
   }
 
-  Future<Map<String, dynamic>?> advanceBatch(String batchId, String newStatus, {String? notes}) async {
+  Future<Map<String, dynamic>?> advanceBatch(String batchId, String newStatus,
+      {String? notes}) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();

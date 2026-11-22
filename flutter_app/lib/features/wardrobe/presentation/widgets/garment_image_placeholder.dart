@@ -54,7 +54,8 @@ class GarmentImagePlaceholder extends StatelessWidget {
       decoration: BoxDecoration(
         color: WardrobeTheme.studioBackground, // Clean white studio background
         borderRadius: BorderRadius.circular(borderRadius),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 1.0),
+        border:
+            Border.all(color: Colors.white.withValues(alpha: 0.15), width: 1.0),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.25),
@@ -99,4 +100,3 @@ class GarmentImagePlaceholder extends StatelessWidget {
     );
   }
 }
-

@@ -61,13 +61,17 @@
 
 ---
 
-## Phase 5 — Outfit Studio
-**Focus**: Creative styling canvas and daily lookbook curation.
-- [ ] Interactive 2D collage canvas for pairing tops, bottoms, outerwear, footwear, and accessories.
-- [ ] Layer ordering (undergarments, mid-layers, outer layers).
-- [ ] Smart Compatibility suggestions based on color harmonies and formality.
-- [ ] Outfit collections / Lookbooks (Work, Casual, Party, Travel, Seasonal).
-- **Dependencies**: Phase 2 garment repository and `outfits` table.
+## Phase 5 — Outfit Studio (COMPLETED)
+**Focus**: AI Personal Stylist, 3 creation modes (Automatic, Guided, Manual), and lookbook curation.
+- [x] Mode A: Automatic outfit suggestions based on available clean garments with explainable styling reasons.
+- [x] Mode B: Guided styling anchored on user-selected key garment with locked seed preservation.
+- [x] Mode C: Manual outfit builder with category browsing and live laundry conflict detection.
+- [x] Strict laundry eligibility policy (WASHING, DRYING, and UNASSIGNED strictly excluded).
+- [x] Saved Lookbook with custom names, notes, occasion tags, and favourite toggling.
+- [x] "Wear This Outfit" integration with Phase 4 Laundry Manager (idempotent status updates, wear_count increment).
+- [x] Backend FastAPI integration (`/api/v1/wardrobe/outfits/*`).
+- [x] Database migration `004_outfit_studio.sql` with RLS policies and performance indexes.
+- [x] Automated test suites: 12 new Flutter tests (53 total wardrobe passing), 9 new backend tests (33 total passing).
 
 ---
 

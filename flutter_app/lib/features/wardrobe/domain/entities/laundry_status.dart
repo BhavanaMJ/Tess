@@ -17,11 +17,11 @@ enum LaundryStatus {
     if (val == null || val.trim().isEmpty) return null;
     final normalized = val.trim().toUpperCase();
     for (final status in LaundryStatus.values) {
-      if (status.value == normalized || status.name.toUpperCase() == normalized) {
+      if (status.value == normalized ||
+          status.name.toUpperCase() == normalized) {
         return status;
       }
     }
     return null;
   }
 }
-

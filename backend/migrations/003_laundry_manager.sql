@@ -130,3 +130,4 @@ CREATE POLICY "Users can update own laundry history"
 CREATE POLICY "Users can delete own laundry history"
     ON public.wardrobe_laundry_history FOR DELETE
     USING (auth.uid() = user_id);
+

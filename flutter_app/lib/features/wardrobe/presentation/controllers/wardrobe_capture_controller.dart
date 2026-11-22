@@ -157,7 +157,8 @@ class WardrobeCaptureController extends ChangeNotifier {
 
   void _startPolling(String jobId) {
     _pollingTimer?.cancel();
-    _pollingTimer = Timer.periodic(const Duration(milliseconds: 1500), (timer) async {
+    _pollingTimer =
+        Timer.periodic(const Duration(milliseconds: 1500), (timer) async {
       try {
         final job = await _repository.getJobStatus(jobId);
         _activeJob = job;
@@ -169,7 +170,8 @@ class WardrobeCaptureController extends ChangeNotifier {
           timer.cancel();
           _isProcessing = false;
           if (job.isFailed) {
-            _errorMessage = job.errorMessage ?? 'Processing failed. Your original photograph is preserved.';
+            _errorMessage = job.errorMessage ??
+                'Processing failed. Your original photograph is preserved.';
           }
         }
         notifyListeners();
@@ -191,9 +193,11 @@ class WardrobeCaptureController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _repository.updateCandidate(candidateId, {'is_included': updatedInclusion});
+      await _repository
+          .updateCandidate(candidateId, {'is_included': updatedInclusion});
     } catch (e) {
-      debugPrint('[WardrobeCaptureController] Remote inclusion patch failed: $e');
+      debugPrint(
+          '[WardrobeCaptureController] Remote inclusion patch failed: $e');
     }
   }
 
@@ -250,7 +254,8 @@ class WardrobeCaptureController extends ChangeNotifier {
   Future<Map<String, dynamic>?> confirmSelectedGarments() async {
     if (_activeJob == null) return null;
 
-    final selectedIds = _candidates.where((c) => c.isIncluded).map((c) => c.id).toList();
+    final selectedIds =
+        _candidates.where((c) => c.isIncluded).map((c) => c.id).toList();
     if (selectedIds.isEmpty) {
       _errorMessage = 'Please include at least one garment before registering.';
       notifyListeners();
@@ -262,7 +267,8 @@ class WardrobeCaptureController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final result = await _repository.confirmJob(_activeJob!.id, candidateIds: selectedIds);
+      final result = await _repository.confirmJob(_activeJob!.id,
+          candidateIds: selectedIds);
       _isConfirming = false;
       notifyListeners();
       return result;
@@ -274,4 +280,3 @@ class WardrobeCaptureController extends ChangeNotifier {
     }
   }
 }
-

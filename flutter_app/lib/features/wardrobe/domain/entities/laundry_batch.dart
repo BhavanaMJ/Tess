@@ -6,7 +6,8 @@ class LaundryBatch {
   final String userId;
   final String batchNumber; // e.g. "BATCH-001"
   final String name;
-  final String status; // 'CREATED', 'WASHING', 'DRYING', 'COMPLETED', 'CANCELLED'
+  final String
+      status; // 'CREATED', 'WASHING', 'DRYING', 'COMPLETED', 'CANCELLED'
   final String? notes;
   final int itemsCount;
   final List<LaundryBatchItem> items;

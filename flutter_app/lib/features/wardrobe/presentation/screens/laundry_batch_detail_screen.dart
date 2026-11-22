@@ -17,7 +17,8 @@ class LaundryBatchDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<LaundryBatchDetailScreen> createState() => _LaundryBatchDetailScreenState();
+  State<LaundryBatchDetailScreen> createState() =>
+      _LaundryBatchDetailScreenState();
 }
 
 class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
@@ -32,9 +33,9 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
 
   void _loadBatch() {
     final b = widget.controller.batches.cast<LaundryBatch?>().firstWhere(
-      (item) => item?.id == widget.batchId,
-      orElse: () => null,
-    );
+          (item) => item?.id == widget.batchId,
+          orElse: () => null,
+        );
     setState(() {
       _batch = b;
       _isLoading = false;
@@ -55,21 +56,24 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
       return;
     }
 
-    final res = await widget.controller.advanceBatch(widget.batchId, nextStatus);
+    final res =
+        await widget.controller.advanceBatch(widget.batchId, nextStatus);
     if (!mounted) return;
 
     if (res != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: WardrobeTheme.elevatedSurface,
-          content: Text(res['message']?.toString() ?? 'Batch advanced to $nextStatus'),
+          content: Text(
+              res['message']?.toString() ?? 'Batch advanced to $nextStatus'),
         ),
       );
       _loadBatch();
     }
   }
 
-  void _overrideGarmentStatus(String garmentId, String garmentName, String? currentStatusStr) {
+  void _overrideGarmentStatus(
+      String garmentId, String garmentName, String? currentStatusStr) {
     showModalBottomSheet(
       context: context,
       backgroundColor: WardrobeTheme.elevatedSurface,
@@ -108,9 +112,13 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
               shape: BoxShape.circle,
               color: isCurrent
                   ? WardrobeTheme.electricViolet
-                  : (isCompleted ? WardrobeTheme.statusSuccess : WardrobeTheme.spatialSurface),
+                  : (isCompleted
+                      ? WardrobeTheme.statusSuccess
+                      : WardrobeTheme.spatialSurface),
               border: Border.all(
-                color: isCurrent || isCompleted ? WardrobeTheme.electricViolet : WardrobeTheme.border,
+                color: isCurrent || isCompleted
+                    ? WardrobeTheme.electricViolet
+                    : WardrobeTheme.border,
                 width: 1.5,
               ),
             ),
@@ -119,7 +127,10 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                   ? const Icon(Icons.check, size: 14, color: Colors.white)
                   : Text(
                       label[0],
-                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Colors.white),
+                      style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white),
                     ),
             ),
           ),
@@ -160,7 +171,9 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
         ),
       ),
       body: _isLoading || b == null
-          ? const Center(child: CircularProgressIndicator(color: WardrobeTheme.electricViolet))
+          ? const Center(
+              child: CircularProgressIndicator(
+                  color: WardrobeTheme.electricViolet))
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -189,9 +202,11 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 3),
                               decoration: BoxDecoration(
-                                color: WardrobeTheme.electricViolet.withValues(alpha: 0.15),
+                                color: WardrobeTheme.electricViolet
+                                    .withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -209,7 +224,9 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                           const SizedBox(height: 6),
                           Text(
                             b.notes!,
-                            style: const TextStyle(fontSize: 12, color: WardrobeTheme.textSecondary),
+                            style: const TextStyle(
+                                fontSize: 12,
+                                color: WardrobeTheme.textSecondary),
                           ),
                         ],
 
@@ -218,10 +235,16 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                         // Lifecycle Stepper
                         Row(
                           children: [
-                            _buildStep('Created', b.status != 'CREATED', b.status == 'CREATED'),
-                            _buildStep('Washing', b.status == 'DRYING' || b.status == 'COMPLETED', b.status == 'WASHING'),
-                            _buildStep('Drying', b.status == 'COMPLETED', b.status == 'DRYING'),
-                            _buildStep('Done', b.status == 'COMPLETED', b.status == 'COMPLETED'),
+                            _buildStep('Created', b.status != 'CREATED',
+                                b.status == 'CREATED'),
+                            _buildStep(
+                                'Washing',
+                                b.status == 'DRYING' || b.status == 'COMPLETED',
+                                b.status == 'WASHING'),
+                            _buildStep('Drying', b.status == 'COMPLETED',
+                                b.status == 'DRYING'),
+                            _buildStep('Done', b.status == 'COMPLETED',
+                                b.status == 'COMPLETED'),
                           ],
                         ),
                       ],
@@ -293,7 +316,8 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    item.garmentName ?? 'Garment ${item.garmentId}',
+                                    item.garmentName ??
+                                        'Garment ${item.garmentId}',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
@@ -315,10 +339,13 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                                       ),
                                       const SizedBox(width: 8),
                                       Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 6, vertical: 1),
                                         decoration: BoxDecoration(
-                                          color: WardrobeTheme.electricViolet.withValues(alpha: 0.15),
-                                          borderRadius: BorderRadius.circular(4),
+                                          color: WardrobeTheme.electricViolet
+                                              .withValues(alpha: 0.15),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
                                         ),
                                         child: Text(
                                           item.currentLaundryStatus ?? 'UNSET',
@@ -336,7 +363,8 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                             ),
                             // Override Status Button
                             IconButton(
-                              icon: const Icon(Icons.edit_outlined, color: WardrobeTheme.electricCyan, size: 20),
+                              icon: const Icon(Icons.edit_outlined,
+                                  color: WardrobeTheme.electricCyan, size: 20),
                               tooltip: 'Override Individual Status',
                               onPressed: () => _overrideGarmentStatus(
                                 item.garmentId,
@@ -362,7 +390,8 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                         backgroundColor: WardrobeTheme.electricCyan,
                         foregroundColor: WardrobeTheme.voidBg,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
                       ),
                     )
                   else if (b.status == 'WASHING')
@@ -374,7 +403,8 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                         backgroundColor: WardrobeTheme.electricViolet,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
                       ),
                     )
                   else if (b.status == 'DRYING')
@@ -386,21 +416,26 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                         backgroundColor: WardrobeTheme.statusSuccess,
                         foregroundColor: WardrobeTheme.voidBg,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
                       ),
                     )
                   else if (b.status == 'COMPLETED')
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: WardrobeTheme.statusSuccess.withValues(alpha: 0.1),
+                        color:
+                            WardrobeTheme.statusSuccess.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: WardrobeTheme.statusSuccess.withValues(alpha: 0.3)),
+                        border: Border.all(
+                            color: WardrobeTheme.statusSuccess
+                                .withValues(alpha: 0.3)),
                       ),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.verified_rounded, color: WardrobeTheme.statusSuccess, size: 18),
+                          Icon(Icons.verified_rounded,
+                              color: WardrobeTheme.statusSuccess, size: 18),
                           SizedBox(width: 8),
                           Text(
                             'Laundry Lifecycle Completed',

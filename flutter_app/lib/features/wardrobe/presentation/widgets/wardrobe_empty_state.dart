@@ -83,4 +83,3 @@ class WardrobeEmptyState extends StatelessWidget {
     );
   }
 }
-

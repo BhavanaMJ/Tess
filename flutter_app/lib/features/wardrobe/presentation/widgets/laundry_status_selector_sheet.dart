@@ -46,7 +46,8 @@ class LaundryStatusSelectorSheet extends StatelessWidget {
                         garmentName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 12, color: WardrobeTheme.textSecondary),
+                        style: const TextStyle(
+                            fontSize: 12, color: WardrobeTheme.textSecondary),
                       ),
                     ],
                   ),
@@ -70,11 +71,14 @@ class LaundryStatusSelectorSheet extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                    color: isSelected ? WardrobeTheme.textPrimary : WardrobeTheme.textSecondary,
+                    color: isSelected
+                        ? WardrobeTheme.textPrimary
+                        : WardrobeTheme.textSecondary,
                   ),
                 ),
                 trailing: isSelected
-                    ? const Icon(Icons.check_circle_rounded, color: WardrobeTheme.electricViolet, size: 20)
+                    ? const Icon(Icons.check_circle_rounded,
+                        color: WardrobeTheme.electricViolet, size: 20)
                     : null,
                 onTap: () {
                   Navigator.pop(context);
@@ -98,10 +102,14 @@ class LaundryStatusSelectorSheet extends StatelessWidget {
               ),
               title: const Text(
                 'Status Not Assigned (Unset)',
-                style: TextStyle(fontSize: 13, color: WardrobeTheme.textMuted, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                    fontSize: 13,
+                    color: WardrobeTheme.textMuted,
+                    fontWeight: FontWeight.w500),
               ),
               trailing: currentStatus == null
-                  ? const Icon(Icons.check_circle_rounded, color: WardrobeTheme.textMuted, size: 20)
+                  ? const Icon(Icons.check_circle_rounded,
+                      color: WardrobeTheme.textMuted, size: 20)
                   : null,
               onTap: () {
                 Navigator.pop(context);

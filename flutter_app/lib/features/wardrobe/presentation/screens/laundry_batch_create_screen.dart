@@ -15,7 +15,8 @@ class LaundryBatchCreateScreen extends StatefulWidget {
   });
 
   @override
-  State<LaundryBatchCreateScreen> createState() => _LaundryBatchCreateScreenState();
+  State<LaundryBatchCreateScreen> createState() =>
+      _LaundryBatchCreateScreenState();
 }
 
 class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
@@ -37,7 +38,8 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
 
     setState(() {
       if (preselected.isNotEmpty) {
-        _selectedGarments.addAll(wornItems.where((g) => preselected.contains(g.id)));
+        _selectedGarments
+            .addAll(wornItems.where((g) => preselected.contains(g.id)));
       } else {
         // By default include all worn items or allow selection
         _selectedGarments.addAll(wornItems);
@@ -58,24 +60,31 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           backgroundColor: WardrobeTheme.elevatedSurface,
-          content: Text('Please select at least one garment for this laundry batch.'),
+          content: Text(
+              'Please select at least one garment for this laundry batch.'),
         ),
       );
       return;
     }
 
     final garmentIds = _selectedGarments.map((g) => g.id).toList();
-    final name = _nameController.text.trim().isEmpty ? null : _nameController.text.trim();
-    final notes = _notesController.text.trim().isEmpty ? null : _notesController.text.trim();
+    final name = _nameController.text.trim().isEmpty
+        ? null
+        : _nameController.text.trim();
+    final notes = _notesController.text.trim().isEmpty
+        ? null
+        : _notesController.text.trim();
 
-    final batch = await widget.controller.createBatch(garmentIds, name: name, notes: notes);
+    final batch = await widget.controller
+        .createBatch(garmentIds, name: name, notes: notes);
     if (!mounted) return;
 
     if (batch != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: WardrobeTheme.elevatedSurface,
-          content: Text('Created ${batch.name} with ${batch.itemsCount} garments!'),
+          content:
+              Text('Created ${batch.name} with ${batch.itemsCount} garments!'),
         ),
       );
       Navigator.of(context).pop();
@@ -83,7 +92,8 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: WardrobeTheme.elevatedSurface,
-          content: Text(widget.controller.errorMessage ?? 'Failed to create batch.'),
+          content:
+              Text(widget.controller.errorMessage ?? 'Failed to create batch.'),
         ),
       );
     }
@@ -110,7 +120,9 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
         ),
       ),
       body: _isLoadingItems
-          ? const Center(child: CircularProgressIndicator(color: WardrobeTheme.electricViolet))
+          ? const Center(
+              child: CircularProgressIndicator(
+                  color: WardrobeTheme.electricViolet))
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -119,21 +131,26 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
                   // Batch Name Input
                   TextFormField(
                     controller: _nameController,
-                    style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
+                    style: const TextStyle(
+                        color: WardrobeTheme.textPrimary, fontSize: 14),
                     decoration: InputDecoration(
                       labelText: 'Batch Name (Optional)',
                       hintText: 'e.g. Regular Wash, Delicates, Workout Gear',
-                      hintStyle: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
-                      labelStyle: const TextStyle(color: WardrobeTheme.textSecondary, fontSize: 13),
+                      hintStyle: const TextStyle(
+                          color: WardrobeTheme.textMuted, fontSize: 13),
+                      labelStyle: const TextStyle(
+                          color: WardrobeTheme.textSecondary, fontSize: 13),
                       filled: true,
                       fillColor: WardrobeTheme.spatialSurface,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: WardrobeTheme.border),
+                        borderSide:
+                            const BorderSide(color: WardrobeTheme.border),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: WardrobeTheme.border),
+                        borderSide:
+                            const BorderSide(color: WardrobeTheme.border),
                       ),
                     ),
                   ),
@@ -143,21 +160,26 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
                   // Optional Notes
                   TextFormField(
                     controller: _notesController,
-                    style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
+                    style: const TextStyle(
+                        color: WardrobeTheme.textPrimary, fontSize: 14),
                     decoration: InputDecoration(
                       labelText: 'Batch Notes (Optional)',
                       hintText: 'e.g. Cold water 30°C, hang dry wool items',
-                      hintStyle: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
-                      labelStyle: const TextStyle(color: WardrobeTheme.textSecondary, fontSize: 13),
+                      hintStyle: const TextStyle(
+                          color: WardrobeTheme.textMuted, fontSize: 13),
+                      labelStyle: const TextStyle(
+                          color: WardrobeTheme.textSecondary, fontSize: 13),
                       filled: true,
                       fillColor: WardrobeTheme.spatialSurface,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: WardrobeTheme.border),
+                        borderSide:
+                            const BorderSide(color: WardrobeTheme.border),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: WardrobeTheme.border),
+                        borderSide:
+                            const BorderSide(color: WardrobeTheme.border),
                       ),
                     ),
                   ),
@@ -178,9 +200,11 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: WardrobeTheme.electricViolet.withValues(alpha: 0.15),
+                          color: WardrobeTheme.electricViolet
+                              .withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
@@ -208,7 +232,8 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
                       child: const Center(
                         child: Text(
                           'No garments selected. Go to Worn clothes to select items.',
-                          style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
+                          style: TextStyle(
+                              color: WardrobeTheme.textMuted, fontSize: 13),
                         ),
                       ),
                     )
@@ -225,7 +250,8 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
                           decoration: BoxDecoration(
                             color: WardrobeTheme.spatialSurface,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: WardrobeTheme.borderSubtle),
+                            border:
+                                Border.all(color: WardrobeTheme.borderSubtle),
                           ),
                           child: Row(
                             children: [
@@ -260,13 +286,18 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
                                     ),
                                     Text(
                                       '${g.id} • ${g.mainCategory}',
-                                      style: const TextStyle(fontSize: 11, color: WardrobeTheme.textMuted),
+                                      style: const TextStyle(
+                                          fontSize: 11,
+                                          color: WardrobeTheme.textMuted),
                                     ),
                                   ],
                                 ),
                               ),
                               IconButton(
-                                icon: const Icon(Icons.remove_circle_outline_rounded, color: WardrobeTheme.statusCritical, size: 20),
+                                icon: const Icon(
+                                    Icons.remove_circle_outline_rounded,
+                                    color: WardrobeTheme.statusCritical,
+                                    size: 20),
                                 tooltip: 'Remove from batch',
                                 onPressed: () {
                                   setState(() {
@@ -287,13 +318,16 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: WardrobeTheme.electricViolet,
                       foregroundColor: Colors.white,
-                      disabledBackgroundColor: WardrobeTheme.electricViolet.withValues(alpha: 0.3),
+                      disabledBackgroundColor:
+                          WardrobeTheme.electricViolet.withValues(alpha: 0.3),
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                     child: Text(
                       'Start Batch (${_selectedGarments.length} Garments)',
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w700),
                     ),
                   ),
                 ],

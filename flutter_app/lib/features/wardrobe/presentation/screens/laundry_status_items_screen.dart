@@ -20,7 +20,8 @@ class LaundryStatusItemsScreen extends StatefulWidget {
   });
 
   @override
-  State<LaundryStatusItemsScreen> createState() => _LaundryStatusItemsScreenState();
+  State<LaundryStatusItemsScreen> createState() =>
+      _LaundryStatusItemsScreenState();
 }
 
 class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
@@ -47,12 +48,14 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
         garmentName: garment.name,
         currentStatus: garment.laundryStatus,
         onSelected: (newStatus) async {
-          final ok = await widget.controller.updateGarmentStatus(garment.id, newStatus);
+          final ok = await widget.controller
+              .updateGarmentStatus(garment.id, newStatus);
           if (ok && mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 backgroundColor: WardrobeTheme.elevatedSurface,
-                content: Text('Updated ${garment.name} to ${newStatus?.label ?? "Unassigned"}'),
+                content: Text(
+                    'Updated ${garment.name} to ${newStatus?.label ?? "Unassigned"}'),
               ),
             );
           }
@@ -85,12 +88,14 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
             ),
             Text(
               '${widget.controller.currentStatusItems.length} items',
-              style: const TextStyle(fontSize: 11, color: WardrobeTheme.textMuted),
+              style:
+                  const TextStyle(fontSize: 11, color: WardrobeTheme.textMuted),
             ),
           ],
         ),
         actions: [
-          if (widget.statusFilter == 'WORN' && widget.controller.currentStatusItems.isNotEmpty)
+          if (widget.statusFilter == 'WORN' &&
+              widget.controller.currentStatusItems.isNotEmpty)
             TextButton(
               onPressed: () {
                 setState(() {
@@ -100,7 +105,9 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
               },
               child: Text(
                 _isSelectionMode ? 'Cancel' : 'Select',
-                style: const TextStyle(color: WardrobeTheme.electricViolet, fontWeight: FontWeight.w700),
+                style: const TextStyle(
+                    color: WardrobeTheme.electricViolet,
+                    fontWeight: FontWeight.w700),
               ),
             ),
         ],
@@ -109,15 +116,21 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
         animation: widget.controller,
         builder: (context, _) {
           if (widget.controller.isLoading) {
-            return const Center(child: CircularProgressIndicator(color: WardrobeTheme.electricViolet));
+            return const Center(
+                child: CircularProgressIndicator(
+                    color: WardrobeTheme.electricViolet));
           }
 
           final allItems = widget.controller.currentStatusItems;
           final items = _searchQuery.trim().isEmpty
               ? allItems
-              : allItems.where((g) =>
-                  g.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-                  g.id.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+              : allItems
+                  .where((g) =>
+                      g.name
+                          .toLowerCase()
+                          .contains(_searchQuery.toLowerCase()) ||
+                      g.id.toLowerCase().contains(_searchQuery.toLowerCase()))
+                  .toList();
 
           if (items.isEmpty) {
             return Center(
@@ -126,12 +139,16 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.checkroom_rounded, size: 48, color: WardrobeTheme.textMuted),
+                    const Icon(Icons.checkroom_rounded,
+                        size: 48, color: WardrobeTheme.textMuted),
                     const SizedBox(height: 12),
                     Text(
                       'No garments currently in "${widget.statusTitle}"',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: WardrobeTheme.textSecondary),
+                      style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: WardrobeTheme.textSecondary),
                     ),
                   ],
                 ),
@@ -143,13 +160,17 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
             children: [
               // Search Input
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: TextField(
-                  style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 13),
+                  style: const TextStyle(
+                      color: WardrobeTheme.textPrimary, fontSize: 13),
                   decoration: InputDecoration(
                     hintText: 'Search by name or CLO-ID...',
-                    hintStyle: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
-                    prefixIcon: const Icon(Icons.search_rounded, color: WardrobeTheme.textMuted, size: 18),
+                    hintStyle: const TextStyle(
+                        color: WardrobeTheme.textMuted, fontSize: 13),
+                    prefixIcon: const Icon(Icons.search_rounded,
+                        color: WardrobeTheme.textMuted, size: 18),
                     filled: true,
                     fillColor: WardrobeTheme.spatialSurface,
                     contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -206,7 +227,9 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
                             color: WardrobeTheme.spatialSurface,
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
-                              color: isSelected ? WardrobeTheme.electricViolet : WardrobeTheme.borderSubtle,
+                              color: isSelected
+                                  ? WardrobeTheme.electricViolet
+                                  : WardrobeTheme.borderSubtle,
                               width: isSelected ? 2.0 : 1.0,
                             ),
                           ),
@@ -265,7 +288,10 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
                                         const SizedBox(width: 6),
                                         Text(
                                           '• ${garment.mainCategory}',
-                                          style: const TextStyle(fontSize: 11, color: WardrobeTheme.textSecondary),
+                                          style: const TextStyle(
+                                              fontSize: 11,
+                                              color:
+                                                  WardrobeTheme.textSecondary),
                                         ),
                                       ],
                                     ),
@@ -285,16 +311,23 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
                                       children: [
                                         if (garment.wearCount > 0)
                                           Padding(
-                                            padding: const EdgeInsets.only(right: 8.0),
+                                            padding: const EdgeInsets.only(
+                                                right: 8.0),
                                             child: Text(
                                               'Worn: ${garment.wearCount}x',
-                                              style: const TextStyle(fontSize: 11, color: WardrobeTheme.statusWarning),
+                                              style: const TextStyle(
+                                                  fontSize: 11,
+                                                  color: WardrobeTheme
+                                                      .statusWarning),
                                             ),
                                           ),
                                         if (garment.washCount > 0)
                                           Text(
                                             'Washed: ${garment.washCount}x',
-                                            style: const TextStyle(fontSize: 11, color: WardrobeTheme.electricCyan),
+                                            style: const TextStyle(
+                                                fontSize: 11,
+                                                color:
+                                                    WardrobeTheme.electricCyan),
                                           ),
                                       ],
                                     ),
@@ -304,7 +337,9 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
 
                               // Quick status change button
                               IconButton(
-                                icon: const Icon(Icons.swap_horiz_rounded, color: WardrobeTheme.electricViolet, size: 22),
+                                icon: const Icon(Icons.swap_horiz_rounded,
+                                    color: WardrobeTheme.electricViolet,
+                                    size: 22),
                                 tooltip: 'Change Status',
                                 onPressed: () => _showStatusSelector(garment),
                               ),
@@ -323,33 +358,40 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
                   padding: const EdgeInsets.all(16.0),
                   decoration: const BoxDecoration(
                     color: WardrobeTheme.elevatedSurface,
-                    border: Border(top: BorderSide(color: WardrobeTheme.borderSubtle)),
+                    border: Border(
+                        top: BorderSide(color: WardrobeTheme.borderSubtle)),
                   ),
                   child: SafeArea(
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        Navigator.of(context).push(
+                        Navigator.of(context)
+                            .push(
                           MaterialPageRoute(
                             builder: (_) => LaundryBatchCreateScreen(
                               controller: widget.controller,
-                              preselectedGarmentIds: _selectedGarmentIds.toList(),
+                              preselectedGarmentIds:
+                                  _selectedGarmentIds.toList(),
                             ),
                           ),
-                        ).then((_) {
+                        )
+                            .then((_) {
                           setState(() {
                             _isSelectionMode = false;
                             _selectedGarmentIds.clear();
                           });
-                          widget.controller.loadItemsByStatus(widget.statusFilter);
+                          widget.controller
+                              .loadItemsByStatus(widget.statusFilter);
                         });
                       },
                       icon: const Icon(Icons.local_laundry_service_outlined),
-                      label: Text('Create Batch (${_selectedGarmentIds.length} items)'),
+                      label: Text(
+                          'Create Batch (${_selectedGarmentIds.length} items)'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: WardrobeTheme.electricViolet,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
                       ),
                     ),
                   ),

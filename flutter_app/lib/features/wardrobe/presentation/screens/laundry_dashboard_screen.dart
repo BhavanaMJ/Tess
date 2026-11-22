@@ -29,7 +29,8 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
   }
 
   void _navigateToStatus(String? status, String title) {
-    Navigator.of(context).push(
+    Navigator.of(context)
+        .push(
       MaterialPageRoute(
         builder: (_) => LaundryStatusItemsScreen(
           controller: widget.controller,
@@ -37,19 +38,22 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
           statusTitle: title,
         ),
       ),
-    ).then((_) {
+    )
+        .then((_) {
       widget.controller.loadDashboardData();
     });
   }
 
   void _navigateToBatchCreate() {
-    Navigator.of(context).push(
+    Navigator.of(context)
+        .push(
       MaterialPageRoute(
         builder: (_) => LaundryBatchCreateScreen(
           controller: widget.controller,
         ),
       ),
-    ).then((_) {
+    )
+        .then((_) {
       widget.controller.loadDashboardData();
     });
   }
@@ -102,7 +106,8 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: WardrobeTheme.textSecondary, size: 20),
+            icon: const Icon(Icons.refresh_rounded,
+                color: WardrobeTheme.textSecondary, size: 20),
             tooltip: 'Refresh Metrics',
             onPressed: () => widget.controller.loadDashboardData(),
           ),
@@ -111,9 +116,11 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
       body: AnimatedBuilder(
         animation: widget.controller,
         builder: (context, _) {
-          if (widget.controller.isLoading && widget.controller.stats.totalGarments == 0) {
+          if (widget.controller.isLoading &&
+              widget.controller.stats.totalGarments == 0) {
             return const Center(
-              child: CircularProgressIndicator(color: WardrobeTheme.electricViolet),
+              child: CircularProgressIndicator(
+                  color: WardrobeTheme.electricViolet),
             );
           }
 
@@ -145,8 +152,10 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
                           height: 44,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: WardrobeTheme.electricCyan.withValues(alpha: 0.15),
-                            border: Border.all(color: WardrobeTheme.borderCyan, width: 1.0),
+                            color: WardrobeTheme.electricCyan
+                                .withValues(alpha: 0.15),
+                            border: Border.all(
+                                color: WardrobeTheme.borderCyan, width: 1.0),
                           ),
                           child: const Icon(
                             Icons.local_laundry_service_outlined,
@@ -226,7 +235,8 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
                         count: stats.wornCount,
                         icon: Icons.checkroom_rounded,
                         accentColor: WardrobeTheme.statusWarning,
-                        onTap: () => _navigateToStatus('WORN', 'Worn / In Hamper'),
+                        onTap: () =>
+                            _navigateToStatus('WORN', 'Worn / In Hamper'),
                       ),
                       LaundryStatusCard(
                         title: 'In Washing',
@@ -250,7 +260,8 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
                         count: stats.cleanCount,
                         icon: Icons.verified_rounded,
                         accentColor: WardrobeTheme.statusSuccess,
-                        onTap: () => _navigateToStatus('CLEAN', 'Clean & Ready'),
+                        onTap: () =>
+                            _navigateToStatus('CLEAN', 'Clean & Ready'),
                       ),
                       LaundryStatusCard(
                         title: 'Stored',
@@ -258,7 +269,8 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
                         count: stats.storedCount,
                         icon: Icons.inventory_2_outlined,
                         accentColor: WardrobeTheme.softViolet,
-                        onTap: () => _navigateToStatus('STORED', 'Stored / Put Away'),
+                        onTap: () =>
+                            _navigateToStatus('STORED', 'Stored / Put Away'),
                       ),
                       LaundryStatusCard(
                         title: 'Status Not Assigned',
@@ -266,7 +278,8 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
                         count: stats.unassignedCount,
                         icon: Icons.help_outline_rounded,
                         accentColor: WardrobeTheme.textMuted,
-                        onTap: () => _navigateToStatus('UNASSIGNED', 'Status Not Assigned'),
+                        onTap: () => _navigateToStatus(
+                            'UNASSIGNED', 'Status Not Assigned'),
                       ),
                     ],
                   ),
@@ -277,12 +290,14 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
                   ElevatedButton.icon(
                     onPressed: _navigateToBatchCreate,
                     icon: const Icon(Icons.add_circle_outline_rounded),
-                    label: const Text('Start New Laundry Batch', style: TextStyle(fontWeight: FontWeight.w700)),
+                    label: const Text('Start New Laundry Batch',
+                        style: TextStyle(fontWeight: FontWeight.w700)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: WardrobeTheme.electricViolet,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                   ),
 
@@ -302,9 +317,11 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: WardrobeTheme.electricCyan.withValues(alpha: 0.15),
+                          color: WardrobeTheme.electricCyan
+                              .withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
@@ -333,7 +350,8 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
                         child: Text(
                           'No active wash batches right now. Group worn clothes into a batch when doing laundry.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 12, color: WardrobeTheme.textMuted),
+                          style: TextStyle(
+                              fontSize: 12, color: WardrobeTheme.textMuted),
                         ),
                       ),
                     ),
@@ -348,14 +366,16 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
                         return LaundryBatchCard(
                           batch: b,
                           onTap: () {
-                            Navigator.of(context).push(
+                            Navigator.of(context)
+                                .push(
                               MaterialPageRoute(
                                 builder: (_) => LaundryBatchDetailScreen(
                                   controller: widget.controller,
                                   batchId: b.id,
                                 ),
                               ),
-                            ).then((_) {
+                            )
+                                .then((_) {
                               widget.controller.loadDashboardData();
                             });
                           },

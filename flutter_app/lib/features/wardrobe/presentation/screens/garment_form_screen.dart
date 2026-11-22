@@ -96,7 +96,10 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
 
   bool get _showsSleeveAndNeckline {
     final cat = _selectedCategory.toLowerCase();
-    return cat == 'tops' || cat == 'ethnic wear' || cat == 'dresses' || cat == 'outerwear';
+    return cat == 'tops' ||
+        cat == 'ethnic wear' ||
+        cat == 'dresses' ||
+        cat == 'outerwear';
   }
 
   @override
@@ -106,17 +109,22 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
 
     _nameController = TextEditingController(text: g?.name ?? '');
     _subcategoryController = TextEditingController(text: g?.subcategory ?? '');
-    _primaryColorController = TextEditingController(text: g?.primaryColor ?? 'Navy Blue');
-    _secondaryColorsController = TextEditingController(text: g?.secondaryColors.join(', ') ?? '');
+    _primaryColorController =
+        TextEditingController(text: g?.primaryColor ?? 'Navy Blue');
+    _secondaryColorsController =
+        TextEditingController(text: g?.secondaryColors.join(', ') ?? '');
     _patternController = TextEditingController(text: g?.pattern ?? 'Solid');
-    _fabricController = TextEditingController(text: g?.fabricMaterial ?? 'Cotton');
-    _sleeveLengthController = TextEditingController(text: g?.sleeveLength ?? '');
+    _fabricController =
+        TextEditingController(text: g?.fabricMaterial ?? 'Cotton');
+    _sleeveLengthController =
+        TextEditingController(text: g?.sleeveLength ?? '');
     _necklineController = TextEditingController(text: g?.neckline ?? '');
     _fitController = TextEditingController(text: g?.fit ?? 'Regular Fit');
     _silhouetteController = TextEditingController(text: g?.silhouette ?? '');
     _sizeController = TextEditingController(text: g?.size ?? 'M');
     _brandController = TextEditingController(text: g?.brand ?? '');
-    _priceController = TextEditingController(text: g?.purchasePrice != null ? g!.purchasePrice.toString() : '');
+    _priceController = TextEditingController(
+        text: g?.purchasePrice != null ? g!.purchasePrice.toString() : '');
     _notesController = TextEditingController(text: g?.notes ?? '');
 
     if (g != null) {
@@ -165,32 +173,53 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
       final price = double.tryParse(_priceController.text.trim());
 
       final garmentToSave = Garment(
-        id: widget.garment?.id ?? 'CLO-${DateTime.now().millisecondsSinceEpoch % 100000}',
+        id: widget.garment?.id ??
+            'CLO-${DateTime.now().millisecondsSinceEpoch % 100000}',
         userId: widget.garment?.userId ?? widget.userId,
         name: _nameController.text.trim(),
         mainCategory: _selectedCategory,
-        subcategory: _subcategoryController.text.trim().isEmpty ? null : _subcategoryController.text.trim(),
+        subcategory: _subcategoryController.text.trim().isEmpty
+            ? null
+            : _subcategoryController.text.trim(),
         originalImageRef: widget.garment?.originalImageRef,
         processedImageRef: widget.garment?.processedImageRef,
         thumbnailRef: widget.garment?.thumbnailRef,
-        primaryColor: _primaryColorController.text.trim().isEmpty ? 'Navy Blue' : _primaryColorController.text.trim(),
+        primaryColor: _primaryColorController.text.trim().isEmpty
+            ? 'Navy Blue'
+            : _primaryColorController.text.trim(),
         secondaryColors: secColors,
-        pattern: _patternController.text.trim().isEmpty ? null : _patternController.text.trim(),
-        fabricMaterial: _fabricController.text.trim().isEmpty ? null : _fabricController.text.trim(),
-        neckline: _showsSleeveAndNeckline && _necklineController.text.trim().isNotEmpty
+        pattern: _patternController.text.trim().isEmpty
+            ? null
+            : _patternController.text.trim(),
+        fabricMaterial: _fabricController.text.trim().isEmpty
+            ? null
+            : _fabricController.text.trim(),
+        neckline: _showsSleeveAndNeckline &&
+                _necklineController.text.trim().isNotEmpty
             ? _necklineController.text.trim()
             : null,
-        sleeveLength: _showsSleeveAndNeckline && _sleeveLengthController.text.trim().isNotEmpty
+        sleeveLength: _showsSleeveAndNeckline &&
+                _sleeveLengthController.text.trim().isNotEmpty
             ? _sleeveLengthController.text.trim()
             : null,
-        fit: _fitController.text.trim().isEmpty ? null : _fitController.text.trim(),
-        silhouette: _silhouetteController.text.trim().isEmpty ? null : _silhouetteController.text.trim(),
-        size: _sizeController.text.trim().isEmpty ? null : _sizeController.text.trim(),
-        brand: _brandController.text.trim().isEmpty ? null : _brandController.text.trim(),
+        fit: _fitController.text.trim().isEmpty
+            ? null
+            : _fitController.text.trim(),
+        silhouette: _silhouetteController.text.trim().isEmpty
+            ? null
+            : _silhouetteController.text.trim(),
+        size: _sizeController.text.trim().isEmpty
+            ? null
+            : _sizeController.text.trim(),
+        brand: _brandController.text.trim().isEmpty
+            ? null
+            : _brandController.text.trim(),
         purchasePrice: price,
         laundryStatus: _selectedLaundryStatus,
         isFavorite: _isFavorite,
-        notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+        notes: _notesController.text.trim().isEmpty
+            ? null
+            : _notesController.text.trim(),
         createdAt: widget.garment?.createdAt ?? now,
         updatedAt: now,
       );
@@ -207,7 +236,9 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
           SnackBar(
             backgroundColor: WardrobeTheme.elevatedSurface,
             content: Text(
-              _isEditing ? 'Garment updated successfully' : 'Garment added to wardrobe',
+              _isEditing
+                  ? 'Garment updated successfully'
+                  : 'Garment added to wardrobe',
               style: const TextStyle(color: WardrobeTheme.textPrimary),
             ),
           ),
@@ -228,7 +259,8 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
     return InputDecoration(
       labelText: label,
       hintText: hint,
-      labelStyle: const TextStyle(color: WardrobeTheme.textSecondary, fontSize: 13),
+      labelStyle:
+          const TextStyle(color: WardrobeTheme.textSecondary, fontSize: 13),
       hintStyle: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
       filled: true,
       fillColor: WardrobeTheme.spatialSurface,
@@ -242,7 +274,8 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: WardrobeTheme.electricViolet, width: 1.5),
+        borderSide:
+            const BorderSide(color: WardrobeTheme.electricViolet, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
@@ -275,8 +308,12 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
         actions: [
           IconButton(
             icon: Icon(
-              _isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-              color: _isFavorite ? WardrobeTheme.statusCritical : WardrobeTheme.textMuted,
+              _isFavorite
+                  ? Icons.favorite_rounded
+                  : Icons.favorite_border_rounded,
+              color: _isFavorite
+                  ? WardrobeTheme.statusCritical
+                  : WardrobeTheme.textMuted,
             ),
             tooltip: 'Mark as Favorite',
             onPressed: () => setState(() => _isFavorite = !_isFavorite),
@@ -289,7 +326,8 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                   ? const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: WardrobeTheme.electricCyan),
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: WardrobeTheme.electricCyan),
                     )
                   : const Text(
                       'Save',
@@ -316,11 +354,14 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                   decoration: BoxDecoration(
                     color: WardrobeTheme.statusCritical.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: WardrobeTheme.statusCritical.withValues(alpha: 0.3)),
+                    border: Border.all(
+                        color: WardrobeTheme.statusCritical
+                            .withValues(alpha: 0.3)),
                   ),
                   child: Text(
                     _errorMessage!,
-                    style: const TextStyle(color: WardrobeTheme.statusCritical, fontSize: 13),
+                    style: const TextStyle(
+                        color: WardrobeTheme.statusCritical, fontSize: 13),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -340,8 +381,10 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
 
               TextFormField(
                 controller: _nameController,
-                style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
-                decoration: _inputDecoration('Garment Name *', hint: 'e.g. Navy Oxford Cotton Shirt'),
+                style: const TextStyle(
+                    color: WardrobeTheme.textPrimary, fontSize: 14),
+                decoration: _inputDecoration('Garment Name *',
+                    hint: 'e.g. Navy Oxford Cotton Shirt'),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
                     return 'Please enter a garment name';
@@ -355,7 +398,8 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
                 dropdownColor: WardrobeTheme.elevatedSurface,
-                style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
+                style: const TextStyle(
+                    color: WardrobeTheme.textPrimary, fontSize: 14),
                 decoration: _inputDecoration('Main Category *'),
                 items: _commonCategories.map((cat) {
                   return DropdownMenuItem<String>(
@@ -373,8 +417,10 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
 
               TextFormField(
                 controller: _subcategoryController,
-                style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
-                decoration: _inputDecoration('Subcategory', hint: 'e.g. Button-down, Chino, Kurta'),
+                style: const TextStyle(
+                    color: WardrobeTheme.textPrimary, fontSize: 14),
+                decoration: _inputDecoration('Subcategory',
+                    hint: 'e.g. Button-down, Chino, Kurta'),
               ),
               const SizedBox(height: 20),
 
@@ -394,21 +440,29 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                 children: [
                   Expanded(
                     child: Autocomplete<String>(
-                      initialValue: TextEditingValue(text: _primaryColorController.text),
+                      initialValue:
+                          TextEditingValue(text: _primaryColorController.text),
                       optionsBuilder: (textVal) {
                         if (textVal.text.isEmpty) return _commonColors;
-                        return _commonColors.where(
-                            (c) => c.toLowerCase().contains(textVal.text.toLowerCase()));
+                        return _commonColors.where((c) => c
+                            .toLowerCase()
+                            .contains(textVal.text.toLowerCase()));
                       },
-                      onSelected: (selection) => _primaryColorController.text = selection,
-                      fieldViewBuilder: (ctx, controller, focusNode, onSubmitted) {
+                      onSelected: (selection) =>
+                          _primaryColorController.text = selection,
+                      fieldViewBuilder:
+                          (ctx, controller, focusNode, onSubmitted) {
                         return TextFormField(
                           controller: controller,
                           focusNode: focusNode,
-                          style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
+                          style: const TextStyle(
+                              color: WardrobeTheme.textPrimary, fontSize: 14),
                           decoration: _inputDecoration('Primary Color *'),
-                          onChanged: (val) => _primaryColorController.text = val,
-                          validator: (val) => val == null || val.trim().isEmpty ? 'Enter color' : null,
+                          onChanged: (val) =>
+                              _primaryColorController.text = val,
+                          validator: (val) => val == null || val.trim().isEmpty
+                              ? 'Enter color'
+                              : null,
                         );
                       },
                     ),
@@ -417,8 +471,10 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _patternController,
-                      style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
-                      decoration: _inputDecoration('Pattern', hint: 'e.g. Solid, Striped'),
+                      style: const TextStyle(
+                          color: WardrobeTheme.textPrimary, fontSize: 14),
+                      decoration: _inputDecoration('Pattern',
+                          hint: 'e.g. Solid, Striped'),
                     ),
                   ),
                 ],
@@ -430,16 +486,20 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _fabricController,
-                      style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
-                      decoration: _inputDecoration('Fabric', hint: 'e.g. 100% Cotton, Linen'),
+                      style: const TextStyle(
+                          color: WardrobeTheme.textPrimary, fontSize: 14),
+                      decoration: _inputDecoration('Fabric',
+                          hint: 'e.g. 100% Cotton, Linen'),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: TextFormField(
                       controller: _secondaryColorsController,
-                      style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
-                      decoration: _inputDecoration('Secondary Colors', hint: 'White, Grey'),
+                      style: const TextStyle(
+                          color: WardrobeTheme.textPrimary, fontSize: 14),
+                      decoration: _inputDecoration('Secondary Colors',
+                          hint: 'White, Grey'),
                     ),
                   ),
                 ],
@@ -452,17 +512,25 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                   children: [
                     Expanded(
                       child: Autocomplete<String>(
-                        initialValue: TextEditingValue(text: _sleeveLengthController.text),
-                        optionsBuilder: (textVal) => _commonSleeves.where(
-                            (s) => s.toLowerCase().contains(textVal.text.toLowerCase())),
-                        onSelected: (selection) => _sleeveLengthController.text = selection,
-                        fieldViewBuilder: (ctx, controller, focusNode, onSubmitted) {
+                        initialValue: TextEditingValue(
+                            text: _sleeveLengthController.text),
+                        optionsBuilder: (textVal) => _commonSleeves.where((s) =>
+                            s
+                                .toLowerCase()
+                                .contains(textVal.text.toLowerCase())),
+                        onSelected: (selection) =>
+                            _sleeveLengthController.text = selection,
+                        fieldViewBuilder:
+                            (ctx, controller, focusNode, onSubmitted) {
                           return TextFormField(
                             controller: controller,
                             focusNode: focusNode,
-                            style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
-                            decoration: _inputDecoration('Sleeve Length', hint: 'e.g. 3/4 Sleeves'),
-                            onChanged: (val) => _sleeveLengthController.text = val,
+                            style: const TextStyle(
+                                color: WardrobeTheme.textPrimary, fontSize: 14),
+                            decoration: _inputDecoration('Sleeve Length',
+                                hint: 'e.g. 3/4 Sleeves'),
+                            onChanged: (val) =>
+                                _sleeveLengthController.text = val,
                           );
                         },
                       ),
@@ -471,8 +539,10 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                     Expanded(
                       child: TextFormField(
                         controller: _necklineController,
-                        style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
-                        decoration: _inputDecoration('Neckline', hint: 'e.g. Crew, Mandarin'),
+                        style: const TextStyle(
+                            color: WardrobeTheme.textPrimary, fontSize: 14),
+                        decoration: _inputDecoration('Neckline',
+                            hint: 'e.g. Crew, Mandarin'),
                       ),
                     ),
                   ],
@@ -485,15 +555,19 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                   Expanded(
                     child: Autocomplete<String>(
                       initialValue: TextEditingValue(text: _fitController.text),
-                      optionsBuilder: (textVal) => _commonFits.where(
-                          (f) => f.toLowerCase().contains(textVal.text.toLowerCase())),
-                      onSelected: (selection) => _fitController.text = selection,
-                      fieldViewBuilder: (ctx, controller, focusNode, onSubmitted) {
+                      optionsBuilder: (textVal) => _commonFits.where((f) =>
+                          f.toLowerCase().contains(textVal.text.toLowerCase())),
+                      onSelected: (selection) =>
+                          _fitController.text = selection,
+                      fieldViewBuilder:
+                          (ctx, controller, focusNode, onSubmitted) {
                         return TextFormField(
                           controller: controller,
                           focusNode: focusNode,
-                          style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
-                          decoration: _inputDecoration('Fit', hint: 'e.g. Slim Fit'),
+                          style: const TextStyle(
+                              color: WardrobeTheme.textPrimary, fontSize: 14),
+                          decoration:
+                              _inputDecoration('Fit', hint: 'e.g. Slim Fit'),
                           onChanged: (val) => _fitController.text = val,
                         );
                       },
@@ -503,8 +577,10 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _sizeController,
-                      style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
-                      decoration: _inputDecoration('Size', hint: 'e.g. M, 32, 40'),
+                      style: const TextStyle(
+                          color: WardrobeTheme.textPrimary, fontSize: 14),
+                      decoration:
+                          _inputDecoration('Size', hint: 'e.g. M, 32, 40'),
                     ),
                   ),
                 ],
@@ -528,16 +604,20 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _brandController,
-                      style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
-                      decoration: _inputDecoration('Brand / Retailer', hint: 'e.g. Uniqlo, Zara'),
+                      style: const TextStyle(
+                          color: WardrobeTheme.textPrimary, fontSize: 14),
+                      decoration: _inputDecoration('Brand / Retailer',
+                          hint: 'e.g. Uniqlo, Zara'),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: TextFormField(
                       controller: _priceController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      style: const TextStyle(
+                          color: WardrobeTheme.textPrimary, fontSize: 14),
                       decoration: _inputDecoration('Price', hint: 'e.g. 49.99'),
                     ),
                   ),
@@ -560,7 +640,8 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
               DropdownButtonFormField<LaundryStatus?>(
                 value: _selectedLaundryStatus,
                 dropdownColor: WardrobeTheme.elevatedSurface,
-                style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
+                style: const TextStyle(
+                    color: WardrobeTheme.textPrimary, fontSize: 14),
                 decoration: _inputDecoration('Current Laundry Status'),
                 items: [
                   const DropdownMenuItem<LaundryStatus?>(
@@ -595,8 +676,10 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
               TextFormField(
                 controller: _notesController,
                 maxLines: 3,
-                style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
-                decoration: _inputDecoration('Garment Notes', hint: 'Special care instructions, styling notes...'),
+                style: const TextStyle(
+                    color: WardrobeTheme.textPrimary, fontSize: 14),
+                decoration: _inputDecoration('Garment Notes',
+                    hint: 'Special care instructions, styling notes...'),
               ),
               const SizedBox(height: 32),
 
@@ -606,19 +689,23 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: WardrobeTheme.electricViolet,
                   foregroundColor: Colors.white,
-                  disabledBackgroundColor: WardrobeTheme.electricViolet.withValues(alpha: 0.4),
+                  disabledBackgroundColor:
+                      WardrobeTheme.electricViolet.withValues(alpha: 0.4),
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                 ),
                 child: _isSubmitting
                     ? const SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2),
                       )
                     : Text(
                         _isEditing ? 'Save Changes' : 'Add to Wardrobe',
-                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                        style: const TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w700),
                       ),
               ),
               const SizedBox(height: 40),
@@ -629,4 +716,3 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
     );
   }
 }
-

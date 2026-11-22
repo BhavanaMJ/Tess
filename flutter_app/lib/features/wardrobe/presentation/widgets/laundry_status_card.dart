@@ -32,7 +32,9 @@ class LaundryStatusCard extends StatelessWidget {
             color: WardrobeTheme.spatialSurface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: count > 0 ? accentColor.withValues(alpha: 0.35) : WardrobeTheme.border,
+              color: count > 0
+                  ? accentColor.withValues(alpha: 0.35)
+                  : WardrobeTheme.border,
               width: count > 0 ? 1.5 : 1.0,
             ),
           ),
@@ -57,7 +59,9 @@ class LaundryStatusCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w900,
-                      color: count > 0 ? WardrobeTheme.textPrimary : WardrobeTheme.textMuted,
+                      color: count > 0
+                          ? WardrobeTheme.textPrimary
+                          : WardrobeTheme.textMuted,
                       letterSpacing: -0.5,
                     ),
                   ),

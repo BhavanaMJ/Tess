@@ -112,3 +112,4 @@ CREATE POLICY "Users can only access their own laundry history"
 ON wardrobe_laundry_history FOR ALL
 USING (auth.uid() = user_id);
 ```
+

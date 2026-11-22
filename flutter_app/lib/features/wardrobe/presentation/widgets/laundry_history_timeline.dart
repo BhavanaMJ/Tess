@@ -57,11 +57,16 @@ class LaundryHistoryTimeline extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.history_rounded, size: 36, color: WardrobeTheme.textMuted.withValues(alpha: 0.5)),
+              Icon(Icons.history_rounded,
+                  size: 36,
+                  color: WardrobeTheme.textMuted.withValues(alpha: 0.5)),
               const SizedBox(height: 10),
               const Text(
                 'No Laundry History Yet',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: WardrobeTheme.textSecondary),
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: WardrobeTheme.textSecondary),
               ),
               const SizedBox(height: 4),
               const Text(
@@ -99,7 +104,8 @@ class LaundryHistoryTimeline extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: eventColor, width: 1.5),
                     ),
-                    child: Icon(_getEventIcon(entry.eventType), size: 14, color: eventColor),
+                    child: Icon(_getEventIcon(entry.eventType),
+                        size: 14, color: eventColor),
                   ),
                   if (!isLast)
                     Expanded(
@@ -139,11 +145,13 @@ class LaundryHistoryTimeline extends StatelessWidget {
                             ),
                             Text(
                               _formatTimestamp(entry.createdAt),
-                              style: const TextStyle(fontSize: 10, color: WardrobeTheme.textMuted),
+                              style: const TextStyle(
+                                  fontSize: 10, color: WardrobeTheme.textMuted),
                             ),
                           ],
                         ),
-                        if (entry.previousStatus != null || entry.newStatus != null) ...[
+                        if (entry.previousStatus != null ||
+                            entry.newStatus != null) ...[
                           const SizedBox(height: 4),
                           Text(
                             '${entry.previousStatus ?? "UNASSIGNED"}  ➔  ${entry.newStatus ?? "UNASSIGNED"}',
@@ -158,7 +166,9 @@ class LaundryHistoryTimeline extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             entry.notes!,
-                            style: const TextStyle(fontSize: 11, color: WardrobeTheme.textSecondary),
+                            style: const TextStyle(
+                                fontSize: 11,
+                                color: WardrobeTheme.textSecondary),
                           ),
                         ],
                       ],
