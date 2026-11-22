@@ -63,3 +63,4 @@ The active provider is governed by environment configuration:
    - Pass bounding box crops through lightweight background removal (`rembg` with `u2net_cloth_seg` model) onto `#FAFAFA` white cards.
 4. **Tier 4 (Graceful Fallback)**:
    - When external AI networks are unreachable or rate-limited, fall back automatically to `DevelopmentVisionProvider` so the user is never blocked.
+

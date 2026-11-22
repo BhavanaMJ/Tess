@@ -87,3 +87,4 @@ CREATE POLICY "Users can only access their own garment candidates"
     FOR ALL
     USING (auth.uid() = user_id)
     WITH CHECK (auth.uid() = user_id);
+

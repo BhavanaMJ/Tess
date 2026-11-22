@@ -27,3 +27,4 @@ Phase 3 intentionally stops at garment capture and catalogue registration. It do
 - Cost-per-wear analytics (Phase 7).
 
 All garments created in Phase 3 enter `wardrobe_items` with initial laundry status `null` (unassigned), fully prepared for Phase 4 Laundry Manager's 5-state lifecycle engine.
+

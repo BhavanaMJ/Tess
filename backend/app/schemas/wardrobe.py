@@ -35,6 +35,11 @@ class GarmentBase(BaseModel):
     laundry_status: Optional[str] = None
     is_favorite: bool = False
     notes: Optional[str] = None
+    wear_count: int = 0
+    wash_count: int = 0
+    last_worn_date: Optional[datetime] = None
+    last_washed_date: Optional[datetime] = None
+    active_batch_id: Optional[str] = None
 
 class GarmentCreate(GarmentBase):
     id: Optional[str] = None
@@ -64,6 +69,11 @@ class GarmentUpdate(BaseModel):
     laundry_status: Optional[str] = None
     is_favorite: Optional[bool] = None
     notes: Optional[str] = None
+    wear_count: Optional[int] = None
+    wash_count: Optional[int] = None
+    last_worn_date: Optional[datetime] = None
+    last_washed_date: Optional[datetime] = None
+    active_batch_id: Optional[str] = None
 
 class GarmentResponse(GarmentBase):
     id: str

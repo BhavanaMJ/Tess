@@ -115,3 +115,4 @@ Every extracted attribute carries explicit uncertainty indicators:
 - **Flutter Test Suite**: 148/148 tests passing across all suites.
 - **Backend Pytest Suite**: 16/16 tests passing across `test_wardrobe.py` and `test_wardrobe_capture.py`.
 - **Security**: Full RLS user isolation verified; users cannot query or modify another user's capture jobs or candidates.
+

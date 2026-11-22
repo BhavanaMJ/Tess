@@ -274,3 +274,4 @@ class WardrobeCaptureController extends ChangeNotifier {
     }
   }
 }
+

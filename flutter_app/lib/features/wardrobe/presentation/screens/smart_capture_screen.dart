@@ -266,3 +266,4 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
     );
   }
 }
+

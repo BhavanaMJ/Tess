@@ -46,14 +46,18 @@
 
 ---
 
-## Phase 4 — Laundry Manager
-**Focus**: Operational lifecycle tracking and hamper management.
-- [ ] 5-Status visual workflow: CLEAN → WORN → WASHING → DRYING → STORED.
-- [ ] Quick "Move to Hamper" action after wearing an item.
-- [ ] "Start Wash Cycle" batch selector grouping multiple worn garments.
-- [ ] Push notifications when wash or dry cycles complete.
-- [ ] Garment care tag decoder (washing temperature, ironing, dry cleaning symbols).
-- **Dependencies**: Backend `/api/v1/wardrobe/laundry` endpoints and Supabase scheduled triggers.
+## Phase 4 — Laundry Manager (COMPLETED)
+**Focus**: Operational lifecycle tracking, batch management, and garment lifecycle history.
+- [x] 5-Status visual workflow: CLEAN → WORN → WASHING → DRYING → STORED + Unassigned safety.
+- [x] Dedicated Laundry Manager dashboard with real-time status metrics and active batches.
+- [x] Multi-garment laundry batch management (creation, item preview, remove items).
+- [x] Batch lifecycle stepper and one-tap progression with override safety.
+- [x] Preservation of individual garment overrides within active batches.
+- [x] Wear and wash count tracking with automated increment rules and timestamp recording.
+- [x] Chronological garment laundry audit trail with source attribution and idempotency protection.
+- [x] Backend FastAPI integration (`/api/v1/wardrobe/laundry/*` and `/api/v1/wardrobe/items/{id}/laundry-*`).
+- [x] Database migration `003_laundry_manager.sql` with RLS policies and performance indexes.
+- [x] Automated test suites: 11 new Flutter tests (155 total passing), 8 new backend tests (24 total passing).
 
 ---
 

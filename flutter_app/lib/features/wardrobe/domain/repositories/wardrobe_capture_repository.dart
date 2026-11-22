@@ -9,3 +9,4 @@ abstract class WardrobeCaptureRepository {
   Future<CaptureJob> retryJob(String jobId);
   Future<Map<String, dynamic>> confirmJob(String jobId, {List<String>? candidateIds});
 }
+

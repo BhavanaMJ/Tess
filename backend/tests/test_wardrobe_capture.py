@@ -173,3 +173,4 @@ def test_retry_capture_job():
     assert retried_data["id"] == job_id
     assert retried_data["status"] == "AWAITING_APPROVAL"
     assert len(retried_data["candidates"]) >= 1
+

@@ -96,3 +96,4 @@ class CaptureJobConfirmResponse(BaseModel):
     registered_count: int
     registered_garment_ids: List[str]
     message: str
+

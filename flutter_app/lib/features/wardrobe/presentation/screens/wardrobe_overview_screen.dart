@@ -15,6 +15,9 @@ import 'smart_capture_screen.dart';
 import 'wardrobe_inventory_screen.dart';
 import '../../data/repositories/wardrobe_capture_repository_impl.dart';
 import '../controllers/wardrobe_capture_controller.dart';
+import '../../data/repositories/laundry_repository_impl.dart';
+import '../controllers/laundry_controller.dart';
+import 'laundry_dashboard_screen.dart';
 
 /// WardrobeOverviewScreen: Foundational Home Dashboard for TESS Clothes Organizer.
 /// Implements persistent inventory navigation, real-time telemetry summary, and module routing.
@@ -80,6 +83,20 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
         builder: (_) => SmartCaptureScreen(
           controller: WardrobeCaptureController(
             repository: WardrobeCaptureRepositoryImpl(),
+          ),
+        ),
+      ),
+    ).then((_) {
+      _controller.loadInitialData();
+    });
+  }
+
+  void _navigateToLaundry() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => LaundryDashboardScreen(
+          controller: LaundryController(
+            repository: LaundryRepositoryImpl(),
           ),
         ),
       ),
@@ -206,7 +223,7 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                 ),
               ),
               child: const Text(
-                'PHASE 3',
+                'PHASE 4',
                 style: TextStyle(
                   fontSize: 9,
                   fontWeight: FontWeight.w700,
@@ -356,9 +373,10 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                     icon: Icons.local_laundry_service_outlined,
                     title: 'Laundry Manager',
                     subtitle: '5-status garment lifecycle, hampers & wash cycles',
-                    badge: 'PHASE 4',
-                    badgeColor: WardrobeTheme.textMuted,
-                    onTap: () => _showComingSoonSnackbar('Laundry Manager', 'Phase 4'),
+                    badge: 'ACTIVE',
+                    badgeColor: WardrobeTheme.electricCyan,
+                    isFeatured: true,
+                    onTap: _navigateToLaundry,
                   ),
 
                   const SizedBox(height: 10),

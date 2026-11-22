@@ -45,3 +45,4 @@
 6. `test_confirm_job_sequential_id_generation`: Confirms collision-free `CLO-xxx` ID generation into `wardrobe_items`.
 7. `test_user_isolation_security`: Verifies other users cannot access capture jobs or candidates (RLS enforcement).
 8. `test_retry_capture_job`: Verifies re-running vision models preserves original photograph.
+

@@ -114,3 +114,4 @@ Finalizes the capture job. Registers all included candidates as permanent garmen
   ]
 }
 ```
+

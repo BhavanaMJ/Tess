@@ -246,3 +246,4 @@ class _GarmentAttributeEditorState extends State<GarmentAttributeEditor> {
     );
   }
 }
+

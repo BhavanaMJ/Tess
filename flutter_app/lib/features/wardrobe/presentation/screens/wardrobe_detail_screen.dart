@@ -6,6 +6,9 @@ import '../theme/wardrobe_theme.dart';
 import '../widgets/garment_image_placeholder.dart';
 import '../widgets/garment_status_indicator.dart';
 import 'garment_form_screen.dart';
+import '../../data/repositories/laundry_repository_impl.dart';
+import '../controllers/laundry_controller.dart';
+import 'garment_laundry_history_screen.dart';
 
 /// Screen for displaying complete details of a single garment in the digital wardrobe.
 /// Features studio photography presentation, attribute grid, laundry controls, and edit/delete actions.
@@ -454,6 +457,96 @@ class _WardrobeDetailScreenState extends State<WardrobeDetailScreen> {
                         _buildSpecItem('Brand', _garment.brand),
                         if (_garment.purchasePrice != null)
                           _buildSpecItem('Price', '\$${_garment.purchasePrice!.toStringAsFixed(2)}'),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // 4. Laundry Lifecycle & History Section
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: WardrobeTheme.spatialSurface,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: WardrobeTheme.borderViolet),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'LAUNDRY LIFECYCLE',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.6,
+                                color: WardrobeTheme.textMuted,
+                              ),
+                            ),
+                            TextButton.icon(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => GarmentLaundryHistoryScreen(
+                                      garment: _garment,
+                                      controller: LaundryController(
+                                        repository: LaundryRepositoryImpl(),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.history_rounded, size: 16, color: WardrobeTheme.electricViolet),
+                              label: const Text(
+                                'View History',
+                                style: TextStyle(fontSize: 12, color: WardrobeTheme.electricViolet, fontWeight: FontWeight.w700),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: WardrobeTheme.elevatedSurface,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('WEARS', style: TextStyle(fontSize: 10, color: WardrobeTheme.textMuted, fontWeight: FontWeight.w700)),
+                                    const SizedBox(height: 2),
+                                    Text('${_garment.wearCount}x', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: WardrobeTheme.statusWarning)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: WardrobeTheme.elevatedSurface,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('WASHES', style: TextStyle(fontSize: 10, color: WardrobeTheme.textMuted, fontWeight: FontWeight.w700)),
+                                    const SizedBox(height: 2),
+                                    Text('${_garment.washCount}x', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: WardrobeTheme.electricCyan)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),

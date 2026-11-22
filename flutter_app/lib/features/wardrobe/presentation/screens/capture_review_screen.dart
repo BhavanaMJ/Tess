@@ -214,3 +214,4 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
     );
   }
 }
+

@@ -37,6 +37,11 @@ class Garment {
   final LaundryStatus? laundryStatus; // null if unassigned/unknown
   final bool isFavorite;
   final String? notes;
+  final int wearCount;
+  final int washCount;
+  final DateTime? lastWornDate;
+  final DateTime? lastWashedDate;
+  final String? activeBatchId;
 
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -68,6 +73,11 @@ class Garment {
     this.laundryStatus,
     this.isFavorite = false,
     this.notes,
+    this.wearCount = 0,
+    this.washCount = 0,
+    this.lastWornDate,
+    this.lastWashedDate,
+    this.activeBatchId,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -105,6 +115,11 @@ class Garment {
     LaundryStatus? laundryStatus,
     bool? isFavorite,
     String? notes,
+    int? wearCount,
+    int? washCount,
+    DateTime? lastWornDate,
+    DateTime? lastWashedDate,
+    String? activeBatchId,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -135,6 +150,11 @@ class Garment {
       laundryStatus: laundryStatus ?? this.laundryStatus,
       isFavorite: isFavorite ?? this.isFavorite,
       notes: notes ?? this.notes,
+      wearCount: wearCount ?? this.wearCount,
+      washCount: washCount ?? this.washCount,
+      lastWornDate: lastWornDate ?? this.lastWornDate,
+      lastWashedDate: lastWashedDate ?? this.lastWashedDate,
+      activeBatchId: activeBatchId ?? this.activeBatchId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

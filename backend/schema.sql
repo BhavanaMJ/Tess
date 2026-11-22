@@ -579,6 +579,82 @@ CREATE POLICY "Users can manage own capture jobs" ON public.wardrobe_capture_job
 ALTER TABLE public.wardrobe_garment_candidates ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can manage own garment candidates" ON public.wardrobe_garment_candidates FOR ALL USING (auth.uid() = user_id);
 
+-- PHASE 4: LAUNDRY MANAGER & BATCH MANAGEMENT
+ALTER TABLE public.wardrobe_items
+    ADD COLUMN IF NOT EXISTS wear_count INT NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS wash_count INT NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS last_worn_date TIMESTAMPTZ,
+    ADD COLUMN IF NOT EXISTS last_washed_date TIMESTAMPTZ,
+    ADD COLUMN IF NOT EXISTS active_batch_id TEXT;
+
+CREATE TABLE IF NOT EXISTS public.laundry_batches (
+    id TEXT PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    batch_number TEXT NOT NULL,
+    name TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'CREATED' CHECK (status IN ('CREATED', 'WASHING', 'DRYING', 'COMPLETED', 'CANCELLED')),
+    notes TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    completed_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_laundry_batches_user_id ON public.laundry_batches(user_id);
+CREATE INDEX IF NOT EXISTS idx_laundry_batches_status ON public.laundry_batches(user_id, status);
+
+ALTER TABLE public.laundry_batches ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can manage own laundry batches" ON public.laundry_batches FOR ALL USING (auth.uid() = user_id);
+
+CREATE TABLE IF NOT EXISTS public.laundry_batch_items (
+    id TEXT PRIMARY KEY,
+    batch_id TEXT NOT NULL REFERENCES public.laundry_batches(id) ON DELETE CASCADE,
+    garment_id TEXT NOT NULL REFERENCES public.wardrobe_items(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    added_at TIMESTAMPTZ DEFAULT NOW(),
+    removed_at TIMESTAMPTZ,
+    status TEXT NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'REMOVED', 'COMPLETED')),
+    UNIQUE(batch_id, garment_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_laundry_batch_items_batch ON public.laundry_batch_items(batch_id);
+CREATE INDEX IF NOT EXISTS idx_laundry_batch_items_garment ON public.laundry_batch_items(garment_id);
+CREATE INDEX IF NOT EXISTS idx_laundry_batch_items_user ON public.laundry_batch_items(user_id);
+
+ALTER TABLE public.laundry_batch_items ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can manage own batch items" ON public.laundry_batch_items FOR ALL USING (auth.uid() = user_id);
+
+CREATE TABLE IF NOT EXISTS public.wardrobe_laundry_history (
+    id TEXT PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    garment_id TEXT NOT NULL REFERENCES public.wardrobe_items(id) ON DELETE CASCADE,
+    batch_id TEXT REFERENCES public.laundry_batches(id) ON DELETE SET NULL,
+    event_type TEXT NOT NULL CHECK (event_type IN (
+        'STATUS_CHANGE',
+        'WEAR',
+        'WASH_CYCLE_STARTED',
+        'WASH_CYCLE_COMPLETED',
+        'STORED',
+        'BATCH_ASSIGNED',
+        'BATCH_REMOVED',
+        'MANUAL_OVERRIDE'
+    )),
+    previous_status TEXT,
+    new_status TEXT,
+    source TEXT DEFAULT 'MANUAL',
+    notes TEXT,
+    idempotency_key TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_laundry_history_user ON public.wardrobe_laundry_history(user_id);
+CREATE INDEX IF NOT EXISTS idx_laundry_history_garment ON public.wardrobe_laundry_history(user_id, garment_id);
+CREATE INDEX IF NOT EXISTS idx_laundry_history_batch ON public.wardrobe_laundry_history(batch_id);
+CREATE INDEX IF NOT EXISTS idx_laundry_history_idempotency ON public.wardrobe_laundry_history(user_id, idempotency_key);
+
+ALTER TABLE public.wardrobe_laundry_history ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can manage own laundry history" ON public.wardrobe_laundry_history FOR ALL USING (auth.uid() = user_id);
+
+
 
 
 

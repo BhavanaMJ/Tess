@@ -30,6 +30,11 @@ class GarmentModel {
   final String? laundryStatus; // Raw string: 'CLEAN', 'WORN', etc. or null
   final bool isFavorite;
   final String? notes;
+  final int wearCount;
+  final int washCount;
+  final DateTime? lastWornDate;
+  final DateTime? lastWashedDate;
+  final String? activeBatchId;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -60,6 +65,11 @@ class GarmentModel {
     this.laundryStatus,
     this.isFavorite = false,
     this.notes,
+    this.wearCount = 0,
+    this.washCount = 0,
+    this.lastWornDate,
+    this.lastWashedDate,
+    this.activeBatchId,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -103,6 +113,15 @@ class GarmentModel {
       laundryStatus: json['laundry_status'] as String?,
       isFavorite: json['is_favorite'] as bool? ?? false,
       notes: json['notes'] as String?,
+      wearCount: (json['wear_count'] as num?)?.toInt() ?? 0,
+      washCount: (json['wash_count'] as num?)?.toInt() ?? 0,
+      lastWornDate: json['last_worn_date'] != null
+          ? DateTime.tryParse(json['last_worn_date'].toString())
+          : null,
+      lastWashedDate: json['last_washed_date'] != null
+          ? DateTime.tryParse(json['last_washed_date'].toString())
+          : null,
+      activeBatchId: json['active_batch_id'] as String?,
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now()
           : DateTime.now(),
@@ -140,6 +159,11 @@ class GarmentModel {
       'laundry_status': laundryStatus,
       'is_favorite': isFavorite,
       'notes': notes,
+      'wear_count': wearCount,
+      'wash_count': washCount,
+      'last_worn_date': lastWornDate?.toIso8601String(),
+      'last_washed_date': lastWashedDate?.toIso8601String(),
+      'active_batch_id': activeBatchId,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
@@ -174,6 +198,11 @@ class GarmentModel {
       laundryStatus: LaundryStatus.fromString(laundryStatus),
       isFavorite: isFavorite,
       notes: notes,
+      wearCount: wearCount,
+      washCount: washCount,
+      lastWornDate: lastWornDate,
+      lastWashedDate: lastWashedDate,
+      activeBatchId: activeBatchId,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );
@@ -208,6 +237,11 @@ class GarmentModel {
       laundryStatus: garment.laundryStatus?.value,
       isFavorite: garment.isFavorite,
       notes: garment.notes,
+      wearCount: garment.wearCount,
+      washCount: garment.washCount,
+      lastWornDate: garment.lastWornDate,
+      lastWashedDate: garment.lastWashedDate,
+      activeBatchId: garment.activeBatchId,
       createdAt: garment.createdAt,
       updatedAt: garment.updatedAt,
     );

@@ -215,3 +215,4 @@ class _CaptureProcessingScreenState extends State<CaptureProcessingScreen> {
     );
   }
 }
+
