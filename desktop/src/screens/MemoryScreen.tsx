@@ -1,7 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { apiService } from '../services/api';
 import { Memory } from '../types';
-import { Brain, Plus, Trash2, Tag, Star, CheckCircle2, AlertCircle, Edit2, Check, ShieldCheck, Sparkles } from 'lucide-react';
+import { useMascot } from '../contexts/MascotContext';
+import { MemoryMetricsOverview } from '../components/memory/MemoryMetricsOverview';
+import { MemoryFilterBar } from '../components/memory/MemoryFilterBar';
+import { MemoryCard } from '../components/memory/MemoryCard';
+import { MemoryInjectionForm } from '../components/memory/MemoryInjectionForm';
+import { MemoryDetailModal } from '../components/memory/MemoryDetailModal';
+import {
+  Brain,
+  Sparkles,
+  AlertCircle,
+  CheckCircle2,
+  Database
+} from 'lucide-react';
 
 export const MemoryScreen: React.FC = () => {
   const [memories, setMemories] = useState<Memory[]>([]);
@@ -10,11 +22,16 @@ export const MemoryScreen: React.FC = () => {
   const [importance, setImportance] = useState(3);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<{ text: string; error?: boolean } | null>(null);
 
-  // In-line edit state
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editContent, setEditContent] = useState('');
+  // Filters & Search
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('ALL');
+
+  // Deep-dive detail modal
+  const [inspectingMemory, setInspectingMemory] = useState<Memory | null>(null);
+
+  const { setState: setMascotState } = useMascot();
 
   const loadMemories = async () => {
     setLoading(true);
@@ -22,7 +39,7 @@ export const MemoryScreen: React.FC = () => {
       const data = await apiService.getMemories();
       setMemories(data);
     } catch (e: any) {
-      setError(e.message || 'Failed to load memories');
+      setStatusMessage({ text: e.message || 'Failed to load memories', error: true });
     } finally {
       setLoading(false);
     }
@@ -37,25 +54,30 @@ export const MemoryScreen: React.FC = () => {
     if (!content.trim() || creating) return;
 
     setCreating(true);
-    setError(null);
+    setStatusMessage(null);
+    setMascotState('PLANNING');
+
     try {
       const created = await apiService.createMemory(category, content.trim(), importance);
       setMemories((prev) => [created, ...prev]);
       setContent('');
+      setMascotState('SUCCESS');
+      setStatusMessage({ text: 'Memory encoded into long-term cognitive store.' });
     } catch (e: any) {
-      setError(e.message || 'Failed to create memory');
+      setStatusMessage({ text: e.message || 'Failed to create memory', error: true });
+      setMascotState('ERROR');
     } finally {
       setCreating(false);
     }
   };
 
-  const handleUpdateMemory = async (id: string, updates: { content?: string; is_confirmed?: boolean }) => {
+  const handleUpdateMemory = async (id: string, updates: Partial<Memory>) => {
     try {
       const updated = await apiService.updateMemory(id, updates);
       setMemories((prev) => prev.map((m) => (m.id === id ? { ...m, ...updated } : m)));
-      setEditingId(null);
+      setStatusMessage({ text: 'Memory updated successfully.' });
     } catch (e: any) {
-      setError(e.message || 'Failed to update memory');
+      setStatusMessage({ text: e.message || 'Failed to update memory', error: true });
     }
   };
 
@@ -63,28 +85,86 @@ export const MemoryScreen: React.FC = () => {
     try {
       await apiService.deleteMemory(id);
       setMemories((prev) => prev.filter((m) => m.id !== id));
+      setStatusMessage({ text: 'Memory deleted.' });
     } catch (e: any) {
-      setError(e.message || 'Failed to delete memory');
+      setStatusMessage({ text: e.message || 'Failed to delete memory', error: true });
     }
   };
+
+  // Filter & Search
+  const filteredMemories = useMemo(() => {
+    return memories.filter((m) => {
+      // Category filter
+      if (selectedCategory !== 'ALL') {
+        if (selectedCategory === 'CONFIRMED' && m.is_confirmed === false) return false;
+        if (selectedCategory === 'UNCONFIRMED' && m.is_confirmed !== false) return false;
+        if (selectedCategory === 'CORE' && (m.importance || 3) < 4) return false;
+        if (!['CONFIRMED', 'UNCONFIRMED', 'CORE'].includes(selectedCategory)) {
+          if (m.category.toLowerCase() !== selectedCategory.toLowerCase()) return false;
+        }
+      }
+
+      // Search query
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchesContent = m.content.toLowerCase().includes(q);
+        const matchesCategory = m.category.toLowerCase().includes(q);
+        const matchesProvenance = m.provenance?.toLowerCase().includes(q) || false;
+        if (!matchesContent && !matchesCategory && !matchesProvenance) return false;
+      }
+
+      return true;
+    });
+  }, [memories, selectedCategory, searchQuery]);
+
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {
+      ALL: memories.length,
+      preference: 0,
+      goal: 0,
+      project: 0,
+      workflow: 0,
+      commitment: 0,
+      routine: 0,
+      fact: 0
+    };
+    memories.forEach((m) => {
+      const cat = m.category.toLowerCase();
+      if (counts[cat] !== undefined) {
+        counts[cat]++;
+      }
+    });
+    return counts;
+  }, [memories]);
 
   return (
     <div
       className="flex-1 overflow-y-auto p-6"
       style={{ height: 'calc(100vh - 68px)', position: 'relative', zIndex: 1 }}
     >
-      {error && (
+      {/* Status / Alert Banner */}
+      {statusMessage && (
         <div
-          className="p-3 mb-4 rounded-xl text-xs flex items-center justify-between"
+          className="p-3 mb-4 rounded-xl text-xs flex items-center justify-between animate-fadeIn"
           style={{
-            backgroundColor: 'rgba(251, 113, 133, 0.12)',
-            color: '#FB7185',
-            border: '1px solid rgba(251, 113, 133, 0.3)'
+            backgroundColor: statusMessage.error
+              ? 'rgba(251, 113, 133, 0.12)'
+              : 'rgba(52, 211, 153, 0.12)',
+            color: statusMessage.error ? '#FB7185' : '#34D399',
+            border: `1px solid ${statusMessage.error ? 'rgba(251, 113, 133, 0.3)' : 'rgba(52, 211, 153, 0.3)'}`
           }}
         >
-          <span>{error}</span>
+          <span className="flex items-center gap-2">
+            {statusMessage.error ? (
+              <AlertCircle style={{ width: '0.9rem', height: '0.9rem' }} />
+            ) : (
+              <CheckCircle2 style={{ width: '0.9rem', height: '0.9rem' }} />
+            )}
+            {statusMessage.text}
+          </span>
           <button
-            onClick={() => setError(null)}
+            type="button"
+            onClick={() => setStatusMessage(null)}
             className="text-muted hover:text-primary cursor-pointer font-bold"
             style={{ background: 'none', border: 'none' }}
           >
@@ -93,189 +173,94 @@ export const MemoryScreen: React.FC = () => {
         </div>
       )}
 
-      {/* Add Memory Card */}
-      <div
-        className="tess-card p-5 mb-6"
-        style={{
-          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(17, 20, 38, 0.85) 100%)',
-          borderColor: 'rgba(139, 92, 246, 0.3)'
-        }}
-      >
-        <div className="flex items-center gap-2 mb-3">
-          <Brain style={{ width: '1.15rem', height: '1.15rem', color: '#A78BFA' }} />
-          <h3 className="text-sm font-bold text-primary tracking-wide font-mono uppercase m-0">
-            Cognitive Knowledge Core: Inject Memory
-          </h3>
+      {/* Top Section: Metrics Overview */}
+      <MemoryMetricsOverview
+        memories={memories}
+        selectedCategory={selectedCategory}
+        onSelectCategory={setSelectedCategory}
+      />
+
+      {/* Inject Memory Form */}
+      <MemoryInjectionForm
+        category={category}
+        onCategoryChange={setCategory}
+        importance={importance}
+        onImportanceChange={setImportance}
+        content={content}
+        onContentChange={setContent}
+        onSubmit={handleAddMemory}
+        creating={creating}
+      />
+
+      {/* Filter and Search Bar */}
+      <MemoryFilterBar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+        onRefresh={loadMemories}
+        loading={loading}
+        categoryCounts={categoryCounts}
+      />
+
+      {/* Memory List Header */}
+      <div className="flex items-center justify-between mb-3.5">
+        <div className="flex items-center gap-2">
+          <Sparkles style={{ width: '1rem', height: '1rem', color: '#22D3EE' }} />
+          <h4 className="text-xs font-bold text-primary font-mono uppercase tracking-wider m-0">
+            Persisted Memories & Contextual Provenance ({filteredMemories.length})
+          </h4>
         </div>
+        <span className="text-[11px] font-mono text-muted">
+          Cross-Device Synced
+        </span>
+      </div>
 
-        <form onSubmit={handleAddMemory} className="flex flex-col gap-3">
-          <div className="flex gap-3">
-            <select
-              className="tess-input text-xs font-mono"
-              style={{ width: '180px' }}
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              <option value="preference">Preference</option>
-              <option value="goal">Goal</option>
-              <option value="project">Project Context</option>
-              <option value="workflow">Workflow</option>
-              <option value="commitment">Commitment</option>
-              <option value="routine">Routine</option>
-              <option value="fact">Personal Fact</option>
-            </select>
-
-            <select
-              className="tess-input text-xs font-mono"
-              style={{ width: '160px' }}
-              value={importance}
-              onChange={(e) => setImportance(Number(e.target.value))}
-            >
-              <option value={1}>Importance: 1 (Low)</option>
-              <option value={2}>Importance: 2 (Normal)</option>
-              <option value={3}>Importance: 3 (High)</option>
-              <option value={4}>Importance: 4 (Critical)</option>
-              <option value={5}>Importance: 5 (Core Directive)</option>
-            </select>
-
-            <input
-              type="text"
-              className="tess-input text-xs flex-1"
-              placeholder="e.g. 'I work best in 90-minute blocks without notifications' or 'Focus on Q4 launch'"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              disabled={creating}
+      {/* Memory Cards Stream */}
+      {loading && memories.length === 0 ? (
+        <div className="text-center text-muted py-12 text-xs font-mono">
+          Accessing long-term memory store...
+        </div>
+      ) : filteredMemories.length === 0 ? (
+        <div className="tess-card text-center py-12">
+          <Brain
+            style={{
+              width: '2rem',
+              height: '2rem',
+              color: 'var(--text-muted)',
+              margin: '0 auto 0.5rem',
+              opacity: 0.5
+            }}
+          />
+          <div className="text-sm font-semibold text-primary">No Memories Found</div>
+          <p className="text-xs text-muted mt-1 max-w-sm mx-auto">
+            {memories.length === 0
+              ? 'Add personal preferences, work habits, or project directives to shape how TESS assists and simulates your future.'
+              : 'No memories match your active category filter or search query.'}
+          </p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2.5">
+          {filteredMemories.map((m) => (
+            <MemoryCard
+              key={m.id}
+              memory={m}
+              onUpdate={handleUpdateMemory}
+              onDelete={handleDelete}
+              onInspect={(mem) => setInspectingMemory(mem)}
             />
-
-            <button
-              type="submit"
-              disabled={!content.trim() || creating}
-              className="btn-primary text-xs shrink-0"
-            >
-              <Plus style={{ width: '0.85rem', height: '0.85rem' }} />
-              <span>{creating ? 'Encoding...' : 'Save Memory'}</span>
-            </button>
-          </div>
-        </form>
-      </div>
-
-      {/* Memory List */}
-      <div>
-        <div className="flex items-center justify-between mb-3.5">
-          <div className="flex items-center gap-2">
-            <Sparkles style={{ width: '1rem', height: '1rem', color: '#22D3EE' }} />
-            <h4 className="text-xs font-bold text-primary font-mono uppercase tracking-wider m-0">
-              Persisted Memories & Contextual Provenance ({memories.length})
-            </h4>
-          </div>
-          <span className="text-[11px] font-mono text-muted">
-            Cross-Device Synced
-          </span>
+          ))}
         </div>
+      )}
 
-        {loading ? (
-          <div className="text-center text-muted py-12 text-xs font-mono">
-            Accessing long-term memory store...
-          </div>
-        ) : memories.length === 0 ? (
-          <div className="tess-card text-center py-12">
-            <Brain style={{ width: '2rem', height: '2rem', color: 'var(--text-muted)', margin: '0 auto 0.5rem', opacity: 0.5 }} />
-            <div className="text-sm font-semibold text-primary">No Memories Encoded Yet</div>
-            <p className="text-xs text-muted mt-1 max-w-sm mx-auto">
-              Add personal preferences, work habits, or project directives to shape how TESS assists and simulates your future.
-            </p>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-2.5">
-            {memories.map((m) => {
-              const isEditing = editingId === m.id;
-              return (
-                <div
-                  key={m.id}
-                  className="tess-card p-4 flex items-center justify-between transition-all hover:border-[rgba(139,92,246,0.35)]"
-                >
-                  <div className="flex items-start gap-3 flex-1 min-w-0 pr-4">
-                    <span
-                      className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider shrink-0 mt-0.5 bg-[rgba(139,92,246,0.12)] text-[#A78BFA] border border-[rgba(139,92,246,0.3)]"
-                    >
-                      {m.category}
-                    </span>
-
-                    <div className="flex-1 min-w-0">
-                      {isEditing ? (
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="text"
-                            className="tess-input text-xs py-1"
-                            value={editContent}
-                            onChange={(e) => setEditContent(e.target.value)}
-                          />
-                          <button
-                            onClick={() => handleUpdateMemory(m.id, { content: editContent })}
-                            className="p-1 rounded bg-[rgba(52,211,153,0.15)] text-[#34D399] border border-[rgba(52,211,153,0.3)] cursor-pointer"
-                          >
-                            <Check style={{ width: '0.85rem', height: '0.85rem' }} />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="text-xs font-medium text-primary leading-relaxed">
-                          {m.content}
-                        </div>
-                      )}
-
-                      <div className="flex items-center gap-3 mt-1.5 text-[10px] font-mono text-muted">
-                        <span className="flex items-center gap-1 text-[#FBBF24]">
-                          <Star style={{ width: '0.7rem', height: '0.7rem', fill: '#FBBF24' }} />
-                          LVL {m.importance || 3}
-                        </span>
-
-                        {m.provenance && (
-                          <span className="text-muted">
-                            SOURCE: {m.provenance}
-                          </span>
-                        )}
-
-                        {m.is_confirmed !== undefined && (
-                          <span
-                            className="flex items-center gap-1 cursor-pointer"
-                            onClick={() => handleUpdateMemory(m.id, { is_confirmed: !m.is_confirmed })}
-                            style={{ color: m.is_confirmed ? '#34D399' : 'var(--text-muted)' }}
-                          >
-                            <CheckCircle2 style={{ width: '0.75rem', height: '0.75rem' }} />
-                            {m.is_confirmed ? 'CONFIRMED' : 'UNCONFIRMED'}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <button
-                      onClick={() => {
-                        setEditingId(m.id);
-                        setEditContent(m.content);
-                      }}
-                      className="p-1.5 rounded text-muted hover:text-primary transition-colors cursor-pointer"
-                      style={{ background: 'none', border: 'none' }}
-                      title="Edit memory"
-                    >
-                      <Edit2 style={{ width: '0.85rem', height: '0.85rem' }} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(m.id)}
-                      className="p-1.5 rounded text-muted hover:text-[#FB7185] transition-colors cursor-pointer"
-                      style={{ background: 'none', border: 'none' }}
-                      title="Delete memory"
-                    >
-                      <Trash2 style={{ width: '0.85rem', height: '0.85rem' }} />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+      {/* Memory Detail & Continuity Modal */}
+      <MemoryDetailModal
+        memory={inspectingMemory}
+        isOpen={Boolean(inspectingMemory)}
+        onClose={() => setInspectingMemory(null)}
+        onUpdate={handleUpdateMemory}
+        onDelete={handleDelete}
+      />
     </div>
   );
 };
