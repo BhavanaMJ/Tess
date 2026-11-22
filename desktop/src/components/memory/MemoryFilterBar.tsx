@@ -116,3 +116,4 @@ export const MemoryFilterBar: React.FC<MemoryFilterBarProps> = ({
     </div>
   );
 };
+

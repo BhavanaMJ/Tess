@@ -72,3 +72,4 @@ export const SettingsDevicesSection: React.FC<SettingsDevicesSectionProps> = ({ 
     </div>
   );
 };
+

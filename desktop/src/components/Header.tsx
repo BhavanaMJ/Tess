@@ -1,6 +1,7 @@
 import React from 'react';
-import { RefreshCw, ExternalLink, Activity, Search } from 'lucide-react';
+import { RefreshCw, ExternalLink, Activity, Search, Sun, Moon } from 'lucide-react';
 import { useMascot } from '../contexts/MascotContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface HeaderProps {
   title: string;
@@ -18,6 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCommandPalette
 }) => {
   const { setFloatingVisible, state: mascotState, togglePanel } = useMascot();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <header
@@ -104,6 +106,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="p-2 rounded-lg text-muted hover:text-primary transition-all duration-200 hover:bg-[rgba(255,255,255,0.05)] cursor-pointer"
             style={{ background: 'none', border: '1px solid var(--border)' }}
             title="Refresh System Data"
+            aria-label="Refresh System Data"
           >
             <RefreshCw
               style={{
@@ -114,6 +117,21 @@ export const Header: React.FC<HeaderProps> = ({
             />
           </button>
         )}
+
+        {/* Theme Toggle Button (Light / Dark) */}
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-lg text-muted hover:text-primary transition-all duration-200 hover:bg-[rgba(255,255,255,0.05)] cursor-pointer"
+          style={{ background: 'none', border: '1px solid var(--border)' }}
+          title={theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+          aria-label={theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+        >
+          {theme === 'dark' ? (
+            <Sun style={{ width: '0.95rem', height: '0.95rem', color: '#FBBF24' }} />
+          ) : (
+            <Moon style={{ width: '0.95rem', height: '0.95rem', color: '#168F83' }} />
+          )}
+        </button>
 
         {/* Floating Mascot Launcher */}
         <button

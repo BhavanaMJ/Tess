@@ -1,6 +1,7 @@
 import React from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { MascotProvider } from './contexts/MascotContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { Layout } from './components/Layout';
 import { LoginScreen } from './screens/LoginScreen';
 import { FloatingMascotWindow } from './mascot/FloatingMascotWindow';
@@ -53,11 +54,13 @@ function MainApp() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <MascotProvider>
-        <MainApp />
-      </MascotProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <MascotProvider>
+          <MainApp />
+        </MascotProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

@@ -207,3 +207,4 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({
     </div>
   );
 };
+

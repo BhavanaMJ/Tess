@@ -183,7 +183,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             }}
           >
             <div className="flex items-center gap-2.5">
-              <Search style={{ width: '0.95rem', height: '0.95rem', color: '#A78BFA' }} />
+              <Search style={{ width: '0.95rem', height: '0.95rem', color: '#35B9A5' }} />
               {!collapsed && (
                 <span className="group-hover:text-primary transition-colors">
                   Quick Search
@@ -222,12 +222,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       padding: collapsed ? '0.7rem 0' : '0.6rem 0.85rem',
                       borderRadius: '0.65rem',
                       border: isActive
-                        ? '1px solid rgba(139, 92, 246, 0.4)'
+                        ? '1px solid rgba(53, 185, 165, 0.4)'
                         : '1px solid transparent',
                       backgroundColor: isActive
-                        ? 'rgba(139, 92, 246, 0.14)'
+                        ? 'rgba(53, 185, 165, 0.14)'
                         : 'transparent',
-                      color: isActive ? '#F8FAFC' : 'var(--text-secondary)'
+                      color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)'
                     }}
                   >
                     {/* Active Accent Left Bar */}
@@ -235,8 +235,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       <div
                         className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full"
                         style={{
-                          backgroundColor: '#8B5CF6',
-                          boxShadow: '0 0 10px #8B5CF6'
+                          backgroundColor: '#35B9A5',
+                          boxShadow: '0 0 10px rgba(53, 185, 165, 0.6)'
                         }}
                       />
                     )}
@@ -246,7 +246,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         style={{
                           width: '1.15rem',
                           height: '1.15rem',
-                          color: isActive ? '#A78BFA' : 'var(--text-muted)'
+                          color: isActive ? '#35B9A5' : 'var(--text-muted)'
                         }}
                       />
                       {!collapsed && (

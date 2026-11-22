@@ -214,3 +214,4 @@ export const SettingsCompanionSection: React.FC<SettingsCompanionSectionProps> =
     </div>
   );
 };
+

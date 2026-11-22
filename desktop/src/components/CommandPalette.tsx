@@ -16,8 +16,11 @@ import {
   Sparkles,
   Command,
   X,
-  Loader2
+  Loader2,
+  Sun,
+  Moon
 } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 import { ScreenTab } from './Sidebar';
 import { apiService } from '../services/api';
 import { ProductivityTask, Memory, FuturePrediction, Conversation } from '../types';
@@ -52,6 +55,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const { theme, toggleTheme } = useTheme();
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -240,8 +244,20 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         if (onToggleMascot) onToggleMascot();
         onClose();
       }
+    },
+    {
+      id: 'action-theme',
+      title: theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme',
+      subtitle: `Toggle application visual appearance (currently ${theme} mode)`,
+      category: 'Actions',
+      icon: theme === 'dark' ? Sun : Moon,
+      shortcut: '⌘T',
+      action: () => {
+        toggleTheme();
+        onClose();
+      }
     }
-  ], [onRefresh, onToggleMascot, onClose]);
+  ], [onRefresh, onToggleMascot, onClose, theme, toggleTheme]);
 
   // Search Results across Live Data
   const searchResults = useMemo<CommandItem[]>(() => {
@@ -408,8 +424,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         className="w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl flex flex-col animate-in zoom-in-95 duration-150"
         style={{
           backgroundColor: 'var(--bg-surface-elevated)',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(139, 92, 246, 0.15)',
+          border: '1px solid var(--border)',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(53, 185, 165, 0.15)',
           maxHeight: '70vh'
         }}
         onClick={(e) => e.stopPropagation()}
@@ -418,9 +434,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         {/* Search Input Bar */}
         <div
           className="flex items-center px-4 py-3.5 gap-3 border-b"
-          style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }}
+          style={{ borderColor: 'var(--border-subtle)' }}
         >
-          <Search style={{ width: '1.2rem', height: '1.2rem', color: '#A78BFA' }} />
+          <Search style={{ width: '1.2rem', height: '1.2rem', color: '#35B9A5' }} />
           <input
             ref={inputRef}
             type="text"
@@ -431,7 +447,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             style={{ color: 'var(--text-primary)' }}
           />
           {isLoading && (
-            <Loader2 style={{ width: '1rem', height: '1rem', color: '#A78BFA', animation: 'spin 1s linear infinite' }} />
+            <Loader2 style={{ width: '1rem', height: '1rem', color: '#35B9A5', animation: 'spin 1s linear infinite' }} />
           )}
           {query ? (
             <button
@@ -489,10 +505,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       className="flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-150"
                       style={{
                         backgroundColor: isSelected
-                          ? 'rgba(139, 92, 246, 0.16)'
+                          ? 'rgba(53, 185, 165, 0.14)'
                           : 'transparent',
                         border: isSelected
-                          ? '1px solid rgba(139, 92, 246, 0.35)'
+                          ? '1px solid rgba(53, 185, 165, 0.35)'
                           : '1px solid transparent'
                       }}
                     >
@@ -501,9 +517,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                           className="p-1.5 rounded-lg flex-shrink-0"
                           style={{
                             backgroundColor: isSelected
-                              ? 'rgba(139, 92, 246, 0.25)'
-                              : 'rgba(255, 255, 255, 0.04)',
-                            color: isSelected ? '#A78BFA' : 'var(--text-muted)'
+                              ? 'rgba(53, 185, 165, 0.22)'
+                              : 'var(--border-subtle)',
+                            color: isSelected ? '#35B9A5' : 'var(--text-muted)'
                           }}
                         >
                           <Icon style={{ width: '1rem', height: '1rem' }} />
@@ -545,7 +561,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                           </kbd>
                         )}
                         {isSelected && (
-                          <ArrowRight style={{ width: '0.85rem', height: '0.85rem', color: '#A78BFA' }} />
+                          <ArrowRight style={{ width: '0.85rem', height: '0.85rem', color: '#35B9A5' }} />
                         )}
                       </div>
                     </div>
@@ -560,8 +576,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         <div
           className="flex items-center justify-between px-4 py-2.5 text-[11px] font-mono text-muted border-t"
           style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.2)',
-            borderColor: 'rgba(255, 255, 255, 0.06)'
+            backgroundColor: 'var(--bg-surface)',
+            borderColor: 'var(--border-subtle)'
           }}
         >
           <div className="flex items-center gap-3">
@@ -584,7 +600,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
               Close
             </span>
           </div>
-          <div className="flex items-center gap-1.5 text-[#A78BFA]">
+          <div className="flex items-center gap-1.5 text-[#35B9A5]">
             <Sparkles style={{ width: '0.75rem', height: '0.75rem' }} />
             <span>TESS Global Command</span>
           </div>

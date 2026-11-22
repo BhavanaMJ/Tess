@@ -91,3 +91,4 @@ export const SettingsNotificationsSection: React.FC<SettingsNotificationsSection
     </div>
   );
 };
+

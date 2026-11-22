@@ -105,10 +105,22 @@ export const Layout: React.FC = () => {
   // Global Keyboard Shortcuts (Ctrl+K / Cmd+K and ⌘1-⌘8 Module switching)
   useEffect(() => {
     const handleGlobalShortcuts = (e: KeyboardEvent) => {
-      // Toggle Command Palette
+      // Toggle Command Palette (global)
       if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
         e.preventDefault();
         setIsCommandPaletteOpen((prev) => !prev);
+        return;
+      }
+
+      // Guard typing within input, textarea, or contentEditable elements
+      const target = e.target as HTMLElement | null;
+      const isInput =
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable);
+
+      if (isInput) {
         return;
       }
 

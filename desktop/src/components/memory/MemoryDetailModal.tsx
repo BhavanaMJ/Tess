@@ -242,3 +242,4 @@ export const MemoryDetailModal: React.FC<MemoryDetailModalProps> = ({
     </div>
   );
 };
+

@@ -148,12 +148,13 @@ body::before {
 
 /* Reduced Motion Accessibility */
 @media (prefers-reduced-motion: reduce) {
-  .tess-floating-anim,
-  .tess-antenna-pulse,
-  .animate-pulse,
-  .animate-spin {
-    animation: none !important;
-    transition: none !important;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

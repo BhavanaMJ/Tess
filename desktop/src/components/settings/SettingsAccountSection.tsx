@@ -61,3 +61,4 @@ export const SettingsAccountSection: React.FC<SettingsAccountSectionProps> = ({
     </div>
   );
 };
+
