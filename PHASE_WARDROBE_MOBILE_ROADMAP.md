@@ -19,28 +19,30 @@
 
 ---
 
-## Phase 2 — Digital Wardrobe (My Wardrobe Module)
-**Focus**: Complete garment inventory management and inspection.
-- [ ] Multi-column responsive garment grid with high-resolution photography cards.
-- [ ] Detailed Garment Inspector modal/screen (fabric, fit, silhouette, occasions, wear count, purchase metadata).
-- [ ] Advanced multi-factor filtering: Category, Color, Season, Occasion, Laundry Status, Favorites.
-- [ ] Manual Garment Creation form with attribute pickers (colors, sizes, tags).
-- [ ] Edit garment attributes and delete/archive actions.
-- [ ] Backend FastAPI integration for `/api/v1/wardrobe/items` CRUD.
-- **Dependencies**: Supabase `wardrobe_items` table and FastAPI endpoints.
-- **Risk**: Image loading latency over mobile network; mitigate via progressive WebP thumbnails and disk caching.
+## Phase 2 — Digital Wardrobe (My Wardrobe Module) (COMPLETED)
+- [x] Multi-column responsive garment grid with high-resolution photography cards.
+- [x] Detailed Garment Inspector modal/screen (fabric, fit, silhouette, occasions, wear count, purchase metadata).
+- [x] Advanced multi-factor filtering: Category, Color, Season, Occasion, Laundry Status, Favorites.
+- [x] Manual Garment Creation form with attribute pickers (colors, sizes, tags).
+- [x] Edit garment attributes and delete/archive actions.
+- [x] Backend FastAPI integration for `/api/v1/wardrobe/items` CRUD and stats.
+- [x] Sequential collision-free garment IDs (`CLO-001` ... `CLO-xxx`).
+- [x] Multi-user RLS data isolation and Supabase database persistence.
+- [x] Comprehensive test suites (138 passing Flutter tests, 8 passing backend tests).
 
 ---
 
-## Phase 3 — Smart Capture and AI Processing
-**Focus**: Streamlined garment digitizing with automated background removal.
-- [ ] In-app camera capture flow with silhouette alignment guides.
-- [ ] Multi-photo capture (front, back, label/care tag).
-- [ ] Automated background segmentation converting raw photos into clean studio cutouts.
-- [ ] AI visual attribute extraction (color detection, pattern recognition, sleeve length, neckline, category prediction).
-- [ ] User review & approval step before saving to wardrobe.
-- **Dependencies**: Supabase Storage `wardrobe` bucket; backend AI worker (SAM / Rembg + Vision-Language Model).
-- **Risk**: Inaccurate attribute predictions; mitigate by always presenting an editable confirmation form with the 18-item attribute corrections as golden ground truth.
+## Phase 3 — Smart Capture and AI Garment Recognition (COMPLETED)
+- [x] Phone camera snapshot & gallery image picker flow (`image_picker`).
+- [x] Support for single garments, multi-garment outfits (shirt + pants + blazer), and traditional garments (kurta + dupatta).
+- [x] Automated vertical multi-garment segmentation and studio catalogue framing (`#FAFAFA` cards).
+- [x] AI visual attribute extraction with explicit confidence scores (`HIGH`, `MEDIUM`, `LOW`, `UNCERTAIN`).
+- [x] Dual provider architecture: `DevelopmentVisionProvider` (deterministic local PIL Euclidean color mapping) and `MultimodalVisionProvider` (OpenRouter / Gemini Vision).
+- [x] Multi-candidate review interface with individual candidate cards, confidence pills, and uncertainty notes.
+- [x] Modal attribute editor (`GarmentAttributeEditor`) for pre-registration user overrides.
+- [x] Batch confirmation and sequential `CLO-xxx` registration into My Wardrobe with unassigned laundry status.
+- [x] Persistent database tables (`wardrobe_capture_jobs`, `wardrobe_garment_candidates`) with user isolation.
+- [x] Automated test suite: 10 new Flutter unit & widget tests (total 148 passing) and 8 new backend tests (total 16 passing).
 
 ---
 
@@ -90,4 +92,3 @@
 - [ ] Smart Wishlist with priority ratings and target budget.
 - [ ] "Does it match my wardrobe?" simulator before purchasing new items.
 - [ ] Desktop TESS Clothes Organizer rollout (mirroring mobile features into Tauri desktop client).
-

@@ -292,3 +292,4 @@ class WardrobeService:
             skipped_count=skipped,
             total_garments=total,
         )
+

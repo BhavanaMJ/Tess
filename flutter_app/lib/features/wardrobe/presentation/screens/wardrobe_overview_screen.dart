@@ -11,7 +11,10 @@ import '../widgets/wardrobe_empty_state.dart';
 import '../widgets/wardrobe_section_header.dart';
 import '../widgets/wardrobe_summary_card.dart';
 import 'garment_form_screen.dart';
+import 'smart_capture_screen.dart';
 import 'wardrobe_inventory_screen.dart';
+import '../../data/repositories/wardrobe_capture_repository_impl.dart';
+import '../controllers/wardrobe_capture_controller.dart';
 
 /// WardrobeOverviewScreen: Foundational Home Dashboard for TESS Clothes Organizer.
 /// Implements persistent inventory navigation, real-time telemetry summary, and module routing.
@@ -71,6 +74,20 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
     );
   }
 
+  void _navigateToSmartCapture() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => SmartCaptureScreen(
+          controller: WardrobeCaptureController(
+            repository: WardrobeCaptureRepositoryImpl(),
+          ),
+        ),
+      ),
+    ).then((_) {
+      _controller.loadInitialData();
+    });
+  }
+
   void _showAddClothesSheet() {
     showModalBottomSheet(
       context: context,
@@ -97,6 +114,24 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                 const SizedBox(height: 12),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.auto_awesome_rounded, color: WardrobeTheme.electricViolet),
+                  title: const Text('Smart Capture (Camera & AI)', style: TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600)),
+                  subtitle: const Text('Detect multiple garments, studio cutout & auto-attributes', style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 12)),
+                  trailing: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: WardrobeTheme.electricViolet.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text('AI ACTIVE', style: TextStyle(fontSize: 10, color: WardrobeTheme.softViolet, fontWeight: FontWeight.w700)),
+                  ),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _navigateToSmartCapture();
+                  },
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.edit_note_rounded, color: WardrobeTheme.electricCyan),
                   title: const Text('Add Garment Manually', style: TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600)),
                   subtitle: const Text('Enter garment attributes, color, category and specs', style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 12)),
@@ -104,24 +139,6 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                   onTap: () {
                     Navigator.pop(ctx);
                     _navigateToAddGarment();
-                  },
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.camera_alt_outlined, color: WardrobeTheme.electricViolet),
-                  title: const Text('Smart Capture (Camera)', style: TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600)),
-                  subtitle: const Text('AI background removal & attribute extraction (Phase 3)', style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 12)),
-                  trailing: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: WardrobeTheme.electricViolet.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Text('PHASE 3', style: TextStyle(fontSize: 10, color: WardrobeTheme.softViolet, fontWeight: FontWeight.w700)),
-                  ),
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    _showComingSoonSnackbar('Smart Capture with Background Removal', 'Phase 3');
                   },
                 ),
               ],
@@ -189,7 +206,7 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                 ),
               ),
               child: const Text(
-                'PHASE 2',
+                'PHASE 3',
                 style: TextStyle(
                   fontSize: 9,
                   fontWeight: FontWeight.w700,

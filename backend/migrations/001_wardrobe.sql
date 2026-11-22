@@ -95,3 +95,4 @@ CREATE POLICY "Users can update own wardrobe items"
 CREATE POLICY "Users can delete own wardrobe items"
     ON public.wardrobe_items FOR DELETE
     USING (auth.uid() = user_id);
+

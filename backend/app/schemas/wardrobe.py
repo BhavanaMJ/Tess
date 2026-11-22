@@ -103,3 +103,4 @@ class InitialImportResponse(BaseModel):
     imported_count: int
     skipped_count: int
     total_garments: int
+

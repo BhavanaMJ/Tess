@@ -27,9 +27,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Check App bar title and Phase 2 tag
+      // Check App bar title and Phase 3 tag
       expect(find.text('Wardrobe Intelligence'), findsOneWidget);
-      expect(find.text('PHASE 2'), findsOneWidget);
+      expect(find.text('PHASE 3'), findsOneWidget);
 
       // Check Contextual intro
       expect(find.text('Personal Clothes Organizer'), findsOneWidget);

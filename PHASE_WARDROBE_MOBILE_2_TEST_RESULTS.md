@@ -60,3 +60,4 @@
 6. `test_soft_delete_garment`: Verifies item is excluded from normal listing after soft deletion (`is_archived = true`).
 7. `test_wardrobe_stats`: Confirms accurate calculation of total garments, clean, in-laundry, and category distributions.
 8. `test_idempotent_import_initial`: Imports initial 18 inventory items and verifies re-import does not duplicate records.
+

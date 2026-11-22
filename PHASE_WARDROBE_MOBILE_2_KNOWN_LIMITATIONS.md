@@ -39,3 +39,4 @@ The following capabilities are deliberately scoped to future phases per the prod
 ### 8. Desktop Clothes Organizer (Phase 8)
 - **Current State**: Desktop application remains stable and untouched, continuing to pass all 113 D6 tests.
 - **Phase 8 Objective**: Bring the digital wardrobe, outfit studio, and laundry manager to the TESS Desktop UI using the shared FastAPI backend endpoints established in Phase 2.
+

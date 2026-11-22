@@ -156,3 +156,4 @@ def test_create_garment_validation_error():
     # Empty name
     resp = client.post("/api/v1/wardrobe/items", json={"name": "", "main_category": "Tops"}, headers=AUTH_HEADERS)
     assert resp.status_code in (400, 422)
+

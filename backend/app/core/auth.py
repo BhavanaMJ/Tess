@@ -25,10 +25,11 @@ def get_supabase_client() -> Client:
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), supabase: Client = Depends(get_supabase_client)):
     token = credentials.credentials
     # Support development and offline mock tokens
-    if token in ("dev-token", "mock-token", "mock_jwt_token", "mock_jwt_token_bhavanamj") or token.startswith("dev_"):
+    if token in ("dev-token", "mock-token", "mock_jwt_token", "mock_jwt_token_bhavanamj") or token.startswith("dev_") or token.startswith("dev-"):
         from collections import namedtuple
         DevUser = namedtuple('User', ['id', 'email'])
-        return DevUser(id="d6dd3895-95c9-414b-8f08-863ba3985492", email="bhavanamj23@gmail.com")
+        uid = "d6dd3895-95c9-414b-8f08-863ba3985492" if token == "dev-token" else f"user-{token}"
+        return DevUser(id=uid, email=f"{token}@tess.local")
 
     try:
         # Verify JWT and get user from Supabase

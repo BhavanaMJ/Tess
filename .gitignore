@@ -27,6 +27,9 @@ logs/
 # Backups
 backups/
 
+# Local media storage
+backend/app/media/
+
 # Python caches and virtualenvs
 __pycache__/
 */__pycache__/

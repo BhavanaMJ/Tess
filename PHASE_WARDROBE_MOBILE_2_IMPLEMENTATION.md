@@ -92,3 +92,4 @@ Mounted under `/api/v1/wardrobe`:
 4. **`WardrobeOverviewScreen` (`wardrobe_overview_screen.dart`)**:
    - Real-time telemetry cards powered by backend stats.
    - Core modules catalog and Phase 2 action sheet routing.
+

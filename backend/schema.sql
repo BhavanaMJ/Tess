@@ -522,6 +522,64 @@ ALTER TABLE public.wardrobe_items ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own wardrobe items" ON public.wardrobe_items FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can manage own wardrobe items" ON public.wardrobe_items FOR ALL USING (auth.uid() = user_id);
 
+-- WARDROBE INTELLIGENCE PHASE 3: SMART CAPTURE & GARMENT DETECTION
+
+CREATE TABLE IF NOT EXISTS public.wardrobe_capture_jobs (
+    id TEXT PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    original_image_ref TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'PENDING',
+    current_stage TEXT NOT NULL DEFAULT 'Validating photograph',
+    progress_percent INT NOT NULL DEFAULT 0,
+    total_detected INT NOT NULL DEFAULT 0,
+    provider_type TEXT NOT NULL DEFAULT 'DEVELOPMENT_LOCAL',
+    error_message TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.wardrobe_garment_candidates (
+    id TEXT PRIMARY KEY,
+    job_id TEXT NOT NULL REFERENCES public.wardrobe_capture_jobs(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    suggested_name TEXT NOT NULL,
+    main_category TEXT NOT NULL,
+    subcategory TEXT,
+    primary_color TEXT NOT NULL,
+    secondary_colors TEXT[] DEFAULT '{}',
+    pattern TEXT,
+    fabric_material TEXT,
+    sleeve_length TEXT,
+    neckline TEXT,
+    fit TEXT,
+    silhouette TEXT,
+    garment_length TEXT,
+    size TEXT,
+    brand TEXT,
+    confidence_scores JSONB DEFAULT '{}'::jsonb,
+    bounding_box JSONB DEFAULT '{}'::jsonb,
+    processed_image_ref TEXT,
+    original_crop_ref TEXT,
+    is_included BOOLEAN NOT NULL DEFAULT TRUE,
+    is_approved BOOLEAN NOT NULL DEFAULT FALSE,
+    registered_garment_id TEXT,
+    uncertainty_notes TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_capture_jobs_user ON public.wardrobe_capture_jobs (user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_capture_jobs_status ON public.wardrobe_capture_jobs (status);
+CREATE INDEX IF NOT EXISTS idx_garment_candidates_job ON public.wardrobe_garment_candidates (job_id);
+CREATE INDEX IF NOT EXISTS idx_garment_candidates_user ON public.wardrobe_garment_candidates (user_id);
+
+ALTER TABLE public.wardrobe_capture_jobs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can manage own capture jobs" ON public.wardrobe_capture_jobs FOR ALL USING (auth.uid() = user_id);
+
+ALTER TABLE public.wardrobe_garment_candidates ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can manage own garment candidates" ON public.wardrobe_garment_candidates FOR ALL USING (auth.uid() = user_id);
+
+
 
 
 

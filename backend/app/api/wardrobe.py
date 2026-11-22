@@ -153,3 +153,4 @@ def import_initial_inventory(
 ):
     """Import initial garment inventory batch (e.g. initial 18 garments)."""
     return service.import_initial_inventory(req.garments)
+

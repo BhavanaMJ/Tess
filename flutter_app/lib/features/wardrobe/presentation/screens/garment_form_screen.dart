@@ -629,3 +629,4 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
     );
   }
 }
+
