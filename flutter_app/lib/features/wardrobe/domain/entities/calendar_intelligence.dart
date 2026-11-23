@@ -57,3 +57,4 @@ class RepetitionCheck {
     this.repetitionCount = 0,
   });
 }
+

@@ -30,6 +30,7 @@ class GarmentBase(BaseModel):
     brand: Optional[str] = None
     purchase_date: Optional[date] = None
     purchase_price: Optional[float] = None
+    purchase_currency: str = "INR"
     occasions: List[str] = Field(default_factory=list)
     seasons: List[str] = Field(default_factory=list)
     laundry_status: Optional[str] = None
@@ -64,6 +65,7 @@ class GarmentUpdate(BaseModel):
     brand: Optional[str] = None
     purchase_date: Optional[date] = None
     purchase_price: Optional[float] = None
+    purchase_currency: Optional[str] = None
     occasions: Optional[List[str]] = None
     seasons: Optional[List[str]] = None
     laundry_status: Optional[str] = None

@@ -36,3 +36,4 @@
 | `wardrobe_unit_test.dart` | 8 | Passed | Domain models, fixture migration, laundry statuses |
 | *App Core Suites* (cross-feature, agent, voice, etc.) | 114 | Passed | Zero regressions |
 | **Total Flutter** | **175** | **175** | **100% Passing** |
+

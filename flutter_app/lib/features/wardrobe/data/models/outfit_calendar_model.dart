@@ -32,3 +32,4 @@ class CalendarDayDetailModel extends CalendarDayDetail {
     );
   }
 }
+

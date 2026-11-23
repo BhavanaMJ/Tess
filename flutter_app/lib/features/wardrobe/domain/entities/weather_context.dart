@@ -31,3 +31,4 @@ class WeatherContext {
 
   String get temperatureDisplay => '${temperatureC.toStringAsFixed(1)}°C';
 }
+

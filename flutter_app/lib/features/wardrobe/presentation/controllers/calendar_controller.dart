@@ -265,3 +265,4 @@ class CalendarController extends ChangeNotifier {
     } catch (_) {}
   }
 }
+

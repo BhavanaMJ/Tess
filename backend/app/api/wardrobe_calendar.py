@@ -213,3 +213,4 @@ async def get_weather(
 ):
     """Returns weather summary and outfit styling suggestion for a date."""
     return service.get_weather_for_date(date_str, location=location, latitude=lat, longitude=lon)
+

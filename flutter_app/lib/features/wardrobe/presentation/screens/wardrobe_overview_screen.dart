@@ -24,6 +24,9 @@ import 'outfit_studio_screen.dart';
 import '../../data/repositories/calendar_repository_impl.dart';
 import '../controllers/calendar_controller.dart';
 import 'outfit_calendar_screen.dart';
+import '../../data/repositories/insights_repository_impl.dart';
+import '../controllers/insights_controller.dart';
+import 'wardrobe_insights_screen.dart';
 
 /// WardrobeOverviewScreen: Foundational Home Dashboard for TESS Clothes Organizer.
 /// Implements persistent inventory navigation, real-time telemetry summary, and module routing.
@@ -139,6 +142,22 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
         builder: (_) => OutfitCalendarScreen(
           controller: CalendarController(
             repository: CalendarRepositoryImpl(),
+          ),
+        ),
+      ),
+    )
+        .then((_) {
+      _controller.loadInitialData();
+    });
+  }
+
+  void _navigateToInsights() {
+    Navigator.of(context)
+        .push(
+      MaterialPageRoute(
+        builder: (_) => WardrobeInsightsScreen(
+          controller: InsightsController(
+            repository: InsightsRepositoryImpl(),
           ),
         ),
       ),
@@ -290,7 +309,7 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                 ),
               ),
               child: const Text(
-                'PHASE 6',
+                'PHASE 7',
                 style: TextStyle(
                   fontSize: 9,
                   fontWeight: FontWeight.w700,
@@ -472,10 +491,22 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                     icon: Icons.insights_rounded,
                     title: 'Wardrobe Insights',
                     subtitle: 'Cost-per-wear analytics & category balance',
-                    badge: 'PHASE 7',
+                    badge: 'ACTIVE',
+                    badgeColor: WardrobeTheme.electricCyan,
+                    isFeatured: true,
+                    onTap: _navigateToInsights,
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  WardrobeActionCard(
+                    icon: Icons.bookmark_border_rounded,
+                    title: 'Wardrobe Wishlist',
+                    subtitle: 'Targeted shopping & capsule gap fillers',
+                    badge: 'PHASE 8',
                     badgeColor: WardrobeTheme.textMuted,
                     onTap: () =>
-                        _showComingSoonSnackbar('Wardrobe Insights', 'Phase 7'),
+                        _showComingSoonSnackbar('Wardrobe Wishlist', 'Phase 8'),
                   ),
 
                   const SizedBox(height: 20),

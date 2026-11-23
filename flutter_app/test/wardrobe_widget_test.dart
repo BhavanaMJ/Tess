@@ -27,9 +27,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Check App bar title and Phase 6 tag
+      // Check App bar title and Phase 7 tag
       expect(find.text('Wardrobe Intelligence'), findsOneWidget);
-      expect(find.text('PHASE 6'), findsOneWidget);
+      expect(find.text('PHASE 7'), findsOneWidget);
 
       // Check Contextual intro
       expect(find.text('Personal Clothes Organizer'), findsOneWidget);
@@ -91,14 +91,14 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Tap Wardrobe Insights (Phase 7)
-      final insights = find.text('Wardrobe Insights');
-      await tester.ensureVisible(insights);
+      // Tap Wardrobe Wishlist (Phase 8)
+      final wishlist = find.text('Wardrobe Wishlist');
+      await tester.ensureVisible(wishlist);
       await tester.pumpAndSettle();
-      await tester.tap(insights);
+      await tester.tap(wishlist);
       await tester.pumpAndSettle();
 
-      expect(find.text('Wardrobe Insights will be activated in Phase 7.'), findsOneWidget);
+      expect(find.text('Wardrobe Wishlist will be activated in Phase 8.'), findsOneWidget);
     });
   });
 

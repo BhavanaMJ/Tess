@@ -86,3 +86,4 @@ ON public.outfit_calendar_wear_records FOR ALL
 USING (auth.uid() = user_id)
 WITH CHECK (auth.uid() = user_id);
 ```
+

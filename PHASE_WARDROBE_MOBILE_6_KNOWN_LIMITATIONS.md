@@ -18,3 +18,4 @@ The next phase is **Phase 7: Wardrobe Insights & Cost-Per-Wear Analytics**:
 - Category distribution and balance metrics.
 - Wardrobe utilization index (active vs inactive percentage).
 - Unworn garment reminders and style rotation recommendations.
+

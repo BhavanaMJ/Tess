@@ -232,3 +232,4 @@ class _OutfitHistoryScreenState extends State<OutfitHistoryScreen>
     );
   }
 }
+

@@ -50,3 +50,4 @@ class WeatherModel extends WeatherContext {
     };
   }
 }
+

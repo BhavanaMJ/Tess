@@ -29,3 +29,4 @@ class ActualWearRecord {
     required this.createdAt,
   });
 }
+

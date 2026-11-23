@@ -150,3 +150,4 @@ Retrieves cached or Open-Meteo weather summary with styling suggestions.
     "is_forecast_available": true
   }
   ```
+

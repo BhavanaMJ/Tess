@@ -64,3 +64,4 @@ CREATE TABLE IF NOT EXISTS public.weather_cache (
 );
 
 CREATE INDEX IF NOT EXISTS idx_weather_lookup ON public.weather_cache(location_query, forecast_date);
+

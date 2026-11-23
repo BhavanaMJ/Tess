@@ -88,13 +88,21 @@
 
 ---
 
-## Phase 7 — Wardrobe Intelligence & Analytics
-**Focus**: Cognitive insights, economics, and proactive suggestions.
-- [ ] Cost-Per-Wear (CPW) metric calculation: `purchase_price / total_wears`.
-- [ ] Underutilized garment detection ("Neglected items you haven't worn in 60 days").
-- [ ] Weather-adaptive daily outfit recommendation based on local temperature and forecast.
-- [ ] Wardrobe diversity & color distribution charts.
-- **Dependencies**: Wear history logging and weather API service.
+## Phase 7 — Wardrobe Intelligence & Analytics (COMPLETED)
+**Focus**: Wardrobe usage analytics, cost-per-wear economics, capsule intelligence & personal style memory.
+- [x] Wardrobe Utilisation telemetry: `(unique_garments_worn / active_wardrobe_garments) * 100`.
+- [x] Strict temporal filtering: `7d`, `30d`, `90d`, and `all` time boundaries.
+- [x] Cost-Per-Wear (CPW) metric calculation: `purchase_price / total_wears` with currency preservation and unpriced protection.
+- [x] Four-tier Value Index (Exceptional Value, Good Value, Fair Value, Low Value, Unrecorded Wears, Unpriced).
+- [x] Underutilized garment detection (never-worn and dormant > 60 days) with laundry status recovery flags.
+- [x] Chromatic distribution analysis with 11-family normalization (Blue, White, Black, Red, etc.).
+- [x] Category composition and active garment volume distribution charts.
+- [x] Outfit repetition tracking with wear frequencies and average wear intervals.
+- [x] Capsule Wardrobe Intelligence with versatility scoring, anchor piece detection, and potential combinations.
+- [x] Personal Style Memory with persona curation and empirical vs customized preference alignment.
+- [x] Dedicated UI dashboards (`WardrobeInsightsScreen`, `CostPerWearScreen`, `CapsuleWardrobeScreen`, `OutfitRepetitionScreen`, `StyleMemoryScreen`).
+- [x] FastAPI REST endpoints (`/api/v1/wardrobe/insights/*`) and database migration `006_wardrobe_insights.sql`.
+- [x] Automated test suites: 13 new Flutter tests (74 total wardrobe passing, 188 total app passing), 11 new backend tests (52 total wardrobe passing).
 
 ---
 

@@ -28,3 +28,4 @@ The styling suggestion generator synthesizes temperature, precipitation probabil
 | Temperature | `>= 25°C` | Warm weather. Lightweight linen, breathable shorts or dresses recommended. |
 | Rain Probability | `>= 40%` or code contains `RAIN` | Rain expected—carry an umbrella or water-resistant outerwear. |
 | Wind Speed | `> 30 km/h` | Breezy conditions—consider a wind-resistant shell layer. |
+
