@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3.2:1b"
+    ollama_vision_model: str = "moondream:latest"
     
     openrouter_api_key: Optional[str] = None
     openrouter_model: Optional[str] = None

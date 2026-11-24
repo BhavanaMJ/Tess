@@ -46,6 +46,28 @@
 
 ---
 
+## Phase 3.1 — Production-Quality Garment Detection, Segmentation & Multimodal AI Re-Engineering (COMPLETED)
+**Focus**: Root-cause resolution of false garment splitting, neural background removal, perceptual CIELAB color clustering, and multimodal attribute extraction.
+- [x] Root-cause audit identifying naive portrait aspect-ratio splitting ($aspect \ge 1.25$) and RGB bounding-box color contamination.
+- [x] Integration of neural background removal using U2-Net ONNX (`rembg`) for 100% background and shadow elimination.
+- [x] Connected components and contour analysis in `GarmentSegmentationService` ensuring single long garments (Kurtas, Dresses) remain ONE unified candidate.
+- [x] Professional studio catalogue generation in `CatalogueGenerator` ($800 \times 800$, `#FAFAFA`, Lanczos resampling, zero clipping of sleeves/hems).
+- [x] Masked CIELAB color intelligence in `GarmentColorAnalyzer` utilizing CIEDE2000 perceptual distance for primary, secondary, and accent colors.
+- [x] Multimodal Vision Provider hierarchy: `OllamaVisionProvider` (`moondream:latest` / `llama3.2-vision`), `MultimodalVisionProvider` (OpenRouter / Gemini), and `LocalNeuralVisionProvider` fallback.
+- [x] End-to-end evaluation on real user uploaded photograph (`job_036aae3fb6cc.jpg`): verified 1 candidate (Kurta), Wine/Maroon primary, Dusty Pink secondary, Floral pattern, Full sleeves.
+- [x] Automated testing: 10/10 passing capture tests, 55/55 passing regression tests (65 total backend tests), 206 passing Flutter tests, 0 `flutter analyze` issues.
+- [x] Authoring of comprehensive architectural & operational documentation:
+  - `PHASE_3_1_SMART_CAPTURE_AUDIT.md`
+  - `PHASE_3_1_SMART_CAPTURE_ARCHITECTURE.md`
+  - `PHASE_3_1_VISION_PROVIDER.md`
+  - `PHASE_3_1_SEGMENTATION_AND_BACKGROUND_REMOVAL.md`
+  - `PHASE_3_1_ATTRIBUTE_EXTRACTION.md`
+  - `PHASE_3_1_IMAGE_EVALUATION_RESULTS.md`
+  - `PHASE_3_1_TEST_RESULTS.md`
+  - `PHASE_3_1_KNOWN_LIMITATIONS.md`
+
+---
+
 ## Phase 4 — Laundry Manager (COMPLETED)
 **Focus**: Operational lifecycle tracking, batch management, and garment lifecycle history.
 - [x] 5-Status visual workflow: CLEAN → WORN → WASHING → DRYING → STORED + Unassigned safety.

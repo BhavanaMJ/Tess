@@ -4,7 +4,7 @@ import uuid
 import logging
 from datetime import datetime, timezone
 from typing import List, Optional, Dict, Any, Tuple
-from PIL import Image, ImageStat
+from PIL import Image, ImageStat, ImageOps
 from supabase import Client
 
 from app.schemas.wardrobe import GarmentCreate
@@ -58,6 +58,7 @@ class WardrobeCaptureService:
             img.verify()
             # Reopen after verify to load pixel buffer
             img = Image.open(io.BytesIO(image_bytes))
+            img = ImageOps.exif_transpose(img)
             img.load()
         except Exception as e:
             raise ValueError(f"The photograph format is invalid or unreadable: {e}")

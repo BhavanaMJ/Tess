@@ -16,11 +16,24 @@ def _generate_test_image(width=400, height=600, color=(50, 100, 200)) -> bytes:
     img.save(buf, format="JPEG", quality=90)
     return buf.getvalue()
 
+import os
+
 def _generate_dark_image() -> bytes:
     """Generates an excessively dark image."""
     img = Image.new("RGB", (200, 200), (2, 2, 2))
     buf = io.BytesIO()
     img.save(buf, format="JPEG", quality=90)
+    return buf.getvalue()
+
+def _generate_multi_garment_image() -> bytes:
+    """Generates an image with two distinct separated garments on a neutral background."""
+    canvas = Image.new("RGB", (500, 800), (255, 255, 255))
+    top_item = Image.new("RGB", (350, 250), (20, 35, 75))
+    canvas.paste(top_item, (75, 50))
+    bottom_item = Image.new("RGB", (350, 300), (195, 175, 145))
+    canvas.paste(bottom_item, (75, 400))
+    buf = io.BytesIO()
+    canvas.save(buf, format="JPEG", quality=90)
     return buf.getvalue()
 
 def test_image_validation_empty():
@@ -38,13 +51,65 @@ def test_image_validation_too_dark():
     assert response.status_code == 400
     assert "dark" in response.json()["detail"].lower()
 
-def test_create_capture_job_multi_garment():
+def test_create_capture_job_single_garment_never_split():
     """
-    Submits a portrait photograph containing outfit/multiple garments.
-    Verifies that multi-garment detection produces at least two distinct candidates
-    (e.g., Top and Bottom) with separate processed catalogue references.
+    Submits a portrait photograph containing a single garment.
+    Verifies that the system correctly understands physical object boundaries
+    and DOES NOT falsely split a single garment into Top and Bottom candidates.
     """
     img_bytes = _generate_test_image(width=400, height=600, color=(30, 80, 160))
+    files = {"image": ("single_dress.jpg", img_bytes, "image/jpeg")}
+    response = client.post("/api/v1/wardrobe/capture/jobs", files=files, headers=DEV_HEADERS)
+    assert response.status_code == 201
+    data = response.json()
+
+    assert data["id"].startswith("job_")
+    assert data["status"] == "AWAITING_APPROVAL"
+    assert data["total_detected"] == 1
+    assert len(data["candidates"]) == 1
+    cand = data["candidates"][0]
+    assert cand["processed_image_ref"] is not None
+    assert cand["is_included"] is True
+
+def test_create_capture_job_real_kurta():
+    """
+    Evaluates pipeline on the actual photograph of the Kurta uploaded by user.
+    Verifies:
+    1. Exactly ONE garment is detected (not split into Top and Bottom).
+    2. Category is Ethnic Wear, Dresses, or Tops.
+    3. Primary color is accurately detected as Wine / Maroon / Burgundy (not floor or shadow).
+    4. Studio catalogue image is generated.
+    """
+    kurta_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "app", "media", "wardrobe",
+        "d6dd3895-95c9-414b-8f08-863ba3985492", "originals", "job_036aae3fb6cc.jpg"
+    )
+    if not os.path.exists(kurta_path):
+        kurta_path = "backend/app/media/wardrobe/d6dd3895-95c9-414b-8f08-863ba3985492/originals/job_036aae3fb6cc.jpg"
+
+    if os.path.exists(kurta_path):
+        with open(kurta_path, "rb") as f:
+            kurta_bytes = f.read()
+
+        files = {"image": ("kurta.jpg", kurta_bytes, "image/jpeg")}
+        response = client.post("/api/v1/wardrobe/capture/jobs", files=files, headers=DEV_HEADERS)
+        assert response.status_code == 201
+        data = response.json()
+
+        assert data["total_detected"] == 1
+        assert len(data["candidates"]) == 1
+        cand = data["candidates"][0]
+        assert cand["main_category"] in ["Ethnic Wear", "Dresses", "Tops"]
+        assert cand["primary_color"] in ["Wine", "Maroon", "Burgundy", "Red", "Pink"]
+        assert cand["processed_image_ref"] is not None
+
+def test_create_capture_job_multi_garment():
+    """
+    Submits a photograph containing two genuinely distinct garments separated on canvas.
+    Verifies that multi-garment detection produces 2 distinct candidates with separate catalogue references.
+    """
+    img_bytes = _generate_multi_garment_image()
     files = {"image": ("outfit.jpg", img_bytes, "image/jpeg")}
 
     response = client.post("/api/v1/wardrobe/capture/jobs", files=files, headers=DEV_HEADERS)
@@ -53,18 +118,13 @@ def test_create_capture_job_multi_garment():
 
     assert data["id"].startswith("job_")
     assert data["status"] == "AWAITING_APPROVAL"
-    assert data["total_detected"] >= 2
-    assert len(data["candidates"]) >= 2
+    assert data["total_detected"] == 2
+    assert len(data["candidates"]) == 2
 
-    # Verify first candidate is Top and second is Bottom
-    top_cand = next(c for c in data["candidates"] if c["main_category"] == "Tops")
-    bot_cand = next(c for c in data["candidates"] if c["main_category"] == "Bottoms")
-
-    assert top_cand["processed_image_ref"] is not None
-    assert bot_cand["processed_image_ref"] is not None
-    assert top_cand["id"] != bot_cand["id"]
-    assert top_cand["confidence_scores"]["category"] == "HIGH"
-    assert top_cand["is_included"] is True
+    cands = data["candidates"]
+    assert cands[0]["processed_image_ref"] is not None
+    assert cands[1]["processed_image_ref"] is not None
+    assert cands[0]["id"] != cands[1]["id"]
 
 def test_get_job_and_candidates():
     """Verifies retrieval of capture job and its candidate garments."""

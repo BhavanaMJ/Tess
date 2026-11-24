@@ -4,41 +4,16 @@ import math
 import logging
 import base64
 import json
+import re
 from typing import List, Dict, Any, Optional, Tuple
-from PIL import Image, ImageStat, ImageOps, ImageEnhance
+import requests
+from PIL import Image, ImageOps
+
+from app.services.wardrobe.segmentation_service import GarmentSegmentationService, GarmentInstance
+from app.services.wardrobe.color_analyzer import GarmentColorAnalyzer, match_color_rgb
+from app.services.wardrobe.catalogue_generator import CatalogueGenerator
 
 logger = logging.getLogger(__name__)
-
-# Standardized color palette for distance mapping
-STANDARD_COLORS = {
-    "Navy Blue": (15, 32, 67),
-    "Light Blue": (147, 197, 253),
-    "White": (245, 245, 245),
-    "Black": (20, 20, 25),
-    "Charcoal": (55, 65, 81),
-    "Grey": (156, 163, 175),
-    "Beige": (229, 211, 179),
-    "Olive Green": (85, 107, 47),
-    "Burgundy": (128, 0, 32),
-    "Red": (220, 38, 38),
-    "Yellow": (234, 179, 8),
-    "Pink": (244, 114, 182),
-    "Brown": (120, 53, 15),
-    "Teal": (13, 148, 136),
-    "Orange": (249, 115, 22),
-}
-
-def _closest_color_name(rgb: Tuple[int, int, int]) -> str:
-    r, g, b = rgb
-    best_color = "Black"
-    min_dist = float("inf")
-    for name, c_rgb in STANDARD_COLORS.items():
-        cr, cg, cb = c_rgb
-        dist = math.sqrt((r - cr) ** 2 + (g - cg) ** 2 + (b - cb) ** 2)
-        if dist < min_dist:
-            min_dist = dist
-            best_color = name
-    return best_color
 
 class VisionCandidateResult:
     def __init__(
@@ -83,6 +58,7 @@ class VisionCandidateResult:
         self.original_crop_bytes = original_crop_bytes
         self.uncertainty_notes = uncertainty_notes
 
+
 class GarmentVisionProvider(ABC):
     @property
     @abstractmethod
@@ -99,67 +75,21 @@ class GarmentVisionProvider(ABC):
         """Detect garments, segment instances, and extract attributes."""
         pass
 
-class DevelopmentVisionProvider(GarmentVisionProvider):
+
+class LocalNeuralVisionProvider(GarmentVisionProvider):
     """
-    Deterministic Computer Vision provider using Pillow (PIL).
-    Provides reliable, zero-dependency multi-garment detection, cropping,
-    studio white catalogue framing, and attribute extraction.
-    Explicitly labeled as DEVELOPMENT_LOCAL.
+    Offline neural vision provider combining U2-Net background removal,
+    CIELAB delta E 2000 color clustering, and silhouette geometry understanding.
+    Zero external API dependency. Never falsely splits full garments into top/bottom.
     """
+    def __init__(self):
+        self.seg_service = GarmentSegmentationService()
+        self.color_analyzer = GarmentColorAnalyzer()
+        self.catalogue_generator = CatalogueGenerator()
+
     @property
     def provider_name(self) -> str:
-        return "DEVELOPMENT_LOCAL"
-
-    def _create_studio_catalogue_image(self, cropped: Image.Image) -> bytes:
-        """
-        Places the cropped garment on a pristine #FAFAFA studio neutral background
-        with consistent catalogue margins while preserving the garment's exact original colors and features.
-        """
-        target_size = (600, 600)
-        # Pristine studio background #FAFAFA
-        studio_bg = Image.new("RGB", target_size, (250, 250, 250))
-
-        # Preserve aspect ratio with 10% padding
-        max_w = int(target_size[0] * 0.82)
-        max_h = int(target_size[1] * 0.82)
-        cropped_copy = cropped.copy()
-        resample_filter = getattr(getattr(Image, "Resampling", None), "LANCZOS", Image.LANCZOS)
-        cropped_copy.thumbnail((max_w, max_h), resample_filter)
-
-        # Center on studio card
-        offset_x = (target_size[0] - cropped_copy.width) // 2
-        offset_y = (target_size[1] - cropped_copy.height) // 2
-
-        if cropped_copy.mode == "RGBA":
-            studio_bg.paste(cropped_copy, (offset_x, offset_y), mask=cropped_copy.split()[3])
-        else:
-            studio_bg.paste(cropped_copy, (offset_x, offset_y))
-
-        out_buf = io.BytesIO()
-        studio_bg.save(out_buf, format="JPEG", quality=90)
-        return out_buf.getvalue()
-
-    def _get_dominant_color_and_stats(self, img: Image.Image) -> Tuple[str, List[str], str]:
-        """Calculates dominant color, secondary color, and pattern heuristic from PIL Image."""
-        rgb_img = img.convert("RGB")
-        stat = ImageStat.Stat(rgb_img)
-        mean_rgb = tuple(int(x) for x in stat.mean[:3])
-        primary = _closest_color_name(mean_rgb)
-
-        # Variance check for pattern heuristic
-        stddev = stat.stddev
-        is_patterned = any(s > 45 for s in stddev[:3])
-        pattern = "Printed / Textured" if is_patterned else "Solid"
-
-        # Check secondary color
-        secondary = []
-        if is_patterned:
-            diff_rgb = tuple(min(255, max(0, int(m + (40 if i % 2 == 0 else -40)))) for i, m in enumerate(mean_rgb))
-            sec_name = _closest_color_name(diff_rgb)
-            if sec_name != primary:
-                secondary.append(sec_name)
-
-        return primary, secondary, pattern
+        return "LOCAL_NEURAL_U2NET"
 
     async def detect_and_segment(
         self,
@@ -167,112 +97,81 @@ class DevelopmentVisionProvider(GarmentVisionProvider):
         filename: str,
     ) -> List[VisionCandidateResult]:
         try:
-            img = Image.open(io.BytesIO(image_bytes))
-            img.load()
+            raw_img = Image.open(io.BytesIO(image_bytes))
+            raw_img = ImageOps.exif_transpose(raw_img)
+            raw_img.load()
         except Exception as e:
-            raise ValueError(f"Unable to decode image: {e}")
+            raise ValueError(f"Unable to decode photograph: {e}")
 
-        w, h = img.size
-        if w < 100 or h < 100:
-            raise ValueError("Image resolution is too low for reliable garment detection.")
+        # Neural segmentation into instances
+        rgba_full, instances = self.seg_service.segment_image(raw_img)
 
         candidates: List[VisionCandidateResult] = []
-        aspect_ratio = h / float(w)
 
-        # Check for multi-garment indicators:
-        # If portrait oriented (e.g. full-body outfit / multiple garments)
-        is_multi_garment = aspect_ratio >= 1.25
+        for inst in instances:
+            # Color analysis in CIELAB
+            color_res = self.color_analyzer.analyze_garment_colors(inst.rgba_crop)
+            primary_col = color_res["primary_color"]
+            secondary_cols = color_res["secondary_colors"]
+            pattern = color_res["pattern"]
 
-        if is_multi_garment:
-            # 1. Top Garment Candidate (upper ~55% region)
-            top_box = (0, 0, w, int(h * 0.58))
-            top_crop = img.crop(top_box)
-            top_primary, top_sec, top_pattern = self._get_dominant_color_and_stats(top_crop)
-            top_processed = self._create_studio_catalogue_image(top_crop)
+            # Silhouette geometry analysis
+            w = inst.rgba_crop.width
+            h = inst.rgba_crop.height
+            aspect_ratio = float(h) / max(1.0, float(w))
 
-            top_buf = io.BytesIO()
-            top_crop.convert("RGB").save(top_buf, format="JPEG", quality=85)
+            # Vertical position relative to original photo
+            y_norm = inst.bounding_box.get("y", 0.0)
 
-            candidates.append(
-                VisionCandidateResult(
-                    suggested_name=f"{top_primary} Casual Top",
-                    main_category="Tops",
-                    subcategory="Shirt",
-                    primary_color=top_primary,
-                    secondary_colors=top_sec,
-                    pattern=top_pattern,
-                    fabric_material="Cotton appearance",
-                    sleeve_length="Short Sleeves",
-                    neckline="Crew Neck",
-                    fit="Regular Fit",
-                    confidence_scores={
-                        "category": "HIGH",
-                        "primary_color": "HIGH",
-                        "pattern": "HIGH",
-                        "sleeve_length": "MEDIUM",
-                        "fabric_material": "LOW",
-                    },
-                    bounding_box={"x": 0.0, "y": 0.0, "width": 1.0, "height": 0.58},
-                    processed_image_bytes=top_processed,
-                    original_crop_bytes=top_buf.getvalue(),
-                    uncertainty_notes="Fabric material estimated from visual texture. Verify sleeve length before saving.",
-                )
-            )
+            # Classify category from silhouette
+            if aspect_ratio >= 1.30:
+                main_category = "Ethnic Wear"
+                subcategory = "Kurta"
+                sleeve_length = "Full Sleeves"
+                neckline = "Mandarin Collar"
+                fit = "Regular Fit"
+                suggested_name = f"{primary_col} {pattern if pattern != 'Solid' else ''} Kurta".strip()
+            elif aspect_ratio >= 1.05 and y_norm > 0.40:
+                main_category = "Bottoms"
+                subcategory = "Trousers"
+                sleeve_length = None
+                neckline = None
+                fit = "Regular Fit"
+                suggested_name = f"{primary_col} Tailored Trousers"
+            elif aspect_ratio < 0.95:
+                main_category = "Tops"
+                subcategory = "Shirt"
+                sleeve_length = "Short Sleeves"
+                neckline = "Collared"
+                fit = "Regular Fit"
+                suggested_name = f"{primary_col} {pattern if pattern != 'Solid' else ''} Shirt".strip()
+            else:
+                main_category = "Tops"
+                subcategory = "Shirt"
+                sleeve_length = "Full Sleeves"
+                neckline = "Standard Collar"
+                fit = "Regular Fit"
+                suggested_name = f"{primary_col} Casual Top"
 
-            # 2. Bottom Garment Candidate (lower ~55% region)
-            bottom_box = (0, int(h * 0.45), w, h)
-            bottom_crop = img.crop(bottom_box)
-            bot_primary, bot_sec, bot_pattern = self._get_dominant_color_and_stats(bottom_crop)
-            bot_processed = self._create_studio_catalogue_image(bottom_crop)
+            # Create studio catalogue image
+            cat_bytes = self.catalogue_generator.create_catalogue_image(inst.rgba_crop)
 
-            bot_buf = io.BytesIO()
-            bottom_crop.convert("RGB").save(bot_buf, format="JPEG", quality=85)
-
-            candidates.append(
-                VisionCandidateResult(
-                    suggested_name=f"{bot_primary} Tailored Bottoms",
-                    main_category="Bottoms",
-                    subcategory="Trousers",
-                    primary_color=bot_primary,
-                    secondary_colors=bot_sec,
-                    pattern=bot_pattern,
-                    fabric_material="Cotton Blend appearance",
-                    sleeve_length=None,
-                    neckline=None,
-                    fit="Regular Fit",
-                    confidence_scores={
-                        "category": "HIGH",
-                        "primary_color": "HIGH",
-                        "pattern": "HIGH",
-                        "fabric_material": "LOW",
-                    },
-                    bounding_box={"x": 0.0, "y": 0.45, "width": 1.0, "height": 0.55},
-                    processed_image_bytes=bot_processed,
-                    original_crop_bytes=bot_buf.getvalue(),
-                    uncertainty_notes="Waistband details partially obscured. Inseam length should be verified.",
-                )
-            )
-
-        else:
-            # Single Garment in photo
-            primary_col, sec_cols, pattern = self._get_dominant_color_and_stats(img)
-            processed_bytes = self._create_studio_catalogue_image(img)
-
-            orig_buf = io.BytesIO()
-            img.convert("RGB").save(orig_buf, format="JPEG", quality=85)
+            # Create original crop bytes
+            crop_buf = io.BytesIO()
+            inst.original_crop.convert("RGB").save(crop_buf, format="JPEG", quality=88)
 
             candidates.append(
                 VisionCandidateResult(
-                    suggested_name=f"{primary_col} Detected Garment",
-                    main_category="Tops",
-                    subcategory="Shirt",
+                    suggested_name=suggested_name,
+                    main_category=main_category,
+                    subcategory=subcategory,
                     primary_color=primary_col,
-                    secondary_colors=sec_cols,
+                    secondary_colors=secondary_cols,
                     pattern=pattern,
                     fabric_material="Cotton appearance",
-                    sleeve_length="Full Sleeves",
-                    neckline="Standard Collar",
-                    fit="Regular Fit",
+                    sleeve_length=sleeve_length,
+                    neckline=neckline,
+                    fit=fit,
                     confidence_scores={
                         "category": "HIGH",
                         "primary_color": "HIGH",
@@ -280,10 +179,251 @@ class DevelopmentVisionProvider(GarmentVisionProvider):
                         "sleeve_length": "MEDIUM",
                         "fabric_material": "LOW",
                     },
-                    bounding_box={"x": 0.0, "y": 0.0, "width": 1.0, "height": 1.0},
-                    processed_image_bytes=processed_bytes,
-                    original_crop_bytes=orig_buf.getvalue(),
-                    uncertainty_notes="Single garment detected. Attributes inferred from visual silhouette.",
+                    bounding_box=inst.bounding_box,
+                    processed_image_bytes=cat_bytes,
+                    original_crop_bytes=crop_buf.getvalue(),
+                    uncertainty_notes="Processed with neural U2-Net segmentation & CIELAB color analysis. Please verify fabric details.",
+                )
+            )
+
+        return candidates
+
+
+class OllamaVisionProvider(GarmentVisionProvider):
+    """
+    Multimodal Vision provider running local vision models (e.g. moondream / llama3.2-vision)
+    via Ollama.
+    Combines neural background removal with deep visual-language attribute understanding.
+    """
+    def __init__(self, base_url: str = "http://localhost:11434", model_name: str = "moondream:latest"):
+        self.base_url = base_url.rstrip("/")
+        self.model_name = model_name
+        self.seg_service = GarmentSegmentationService()
+        self.color_analyzer = GarmentColorAnalyzer()
+        self.catalogue_generator = CatalogueGenerator()
+        self.fallback_provider = LocalNeuralVisionProvider()
+
+    @property
+    def provider_name(self) -> str:
+        return f"OLLAMA_VISION:{self.model_name}"
+
+    def _query_vlm(self, image_bytes: bytes, prompt: str) -> Optional[str]:
+        """Queries local Ollama vision endpoint."""
+        try:
+            b64_img = base64.b64encode(image_bytes).decode("utf-8")
+            payload = {
+                "model": self.model_name,
+                "prompt": prompt,
+                "images": [b64_img],
+                "stream": False,
+            }
+            resp = requests.post(f"{self.base_url}/api/generate", json=payload, timeout=45)
+            if resp.status_code == 200:
+                return resp.json().get("response", "")
+            logger.warning(f"[OllamaVision] Ollama returned status {resp.status_code}: {resp.text}")
+            return None
+        except Exception as e:
+            logger.warning(f"[OllamaVision] Failed to query Ollama ({e})")
+            return None
+
+    def _parse_vlm_attributes(self, description: str, primary_col: str, fallback_subcat: str) -> Dict[str, Any]:
+        """Extracts structured attributes from multimodal text output."""
+        desc_lower = description.lower()
+
+        # Category and Subcategory
+        main_cat = "Tops"
+        subcat = fallback_subcat
+
+        if any(w in desc_lower for w in ["kurta", "kurti", "tunic", "ethnic", "sherwani", "salwar", "kameez"]):
+            main_cat = "Ethnic Wear"
+            subcat = "Kurta"
+        elif any(w in desc_lower for w in ["dress", "gown", "frock", "maxi"]):
+            main_cat = "Dresses"
+            subcat = "Dress"
+        elif any(w in desc_lower for w in ["jean", "denim pant", "trousers", "pants", "chinos", "leggings", "shorts", "skirt"]):
+            main_cat = "Bottoms"
+            if "jean" in desc_lower:
+                subcat = "Jeans"
+            elif "skirt" in desc_lower:
+                subcat = "Skirt"
+            elif "shorts" in desc_lower:
+                subcat = "Shorts"
+            else:
+                subcat = "Trousers"
+        elif any(w in desc_lower for w in ["jacket", "coat", "blazer", "cardigan", "hoodie", "sweater"]):
+            main_cat = "Outerwear"
+            if "blazer" in desc_lower:
+                subcat = "Blazer"
+            elif "jacket" in desc_lower:
+                subcat = "Jacket"
+            else:
+                subcat = "Coat"
+        elif any(w in desc_lower for w in ["t-shirt", "tee", "polo"]):
+            main_cat = "Tops"
+            subcat = "T-Shirt"
+        elif any(w in desc_lower for w in ["shirt", "button-down", "blouse", "top"]):
+            main_cat = "Tops"
+            subcat = "Shirt"
+
+        # Sleeve Length
+        sleeve = "Full Sleeves"
+        if any(w in desc_lower for w in ["sleeveless", "no sleeves", "tank"]):
+            sleeve = "Sleeveless"
+        elif any(w in desc_lower for w in ["short sleeve", "short-sleeved", "half sleeve"]):
+            sleeve = "Short Sleeves"
+        elif any(w in desc_lower for w in ["3/4 sleeve", "three-quarter", "three quarter"]):
+            sleeve = "3/4 Sleeves"
+        elif any(w in desc_lower for w in ["long sleeve", "full sleeve", "long-sleeved"]):
+            sleeve = "Full Sleeves"
+
+        # Neckline / Collar
+        neckline = "Standard Collar"
+        if any(w in desc_lower for w in ["mandarin", "chinese collar", "band collar", "nehru"]):
+            neckline = "Mandarin Collar"
+        elif any(w in desc_lower for w in ["round neck", "crew neck", "circle neck"]):
+            neckline = "Crew Neck"
+        elif any(w in desc_lower for w in ["v-neck", "v neck"]):
+            neckline = "V-Neck"
+        elif any(w in desc_lower for w in ["collar", "button-down", "polo"]):
+            neckline = "Standard Collar"
+        elif any(w in desc_lower for w in ["square neck"]):
+            neckline = "Square Neck"
+
+        # Pattern
+        pattern = "Solid"
+        if any(w in desc_lower for w in ["floral", "flower"]):
+            pattern = "Floral"
+        elif any(w in desc_lower for w in ["strip"]):
+            pattern = "Striped"
+        elif any(w in desc_lower for w in ["check", "plaid", "tartan"]):
+            pattern = "Checked"
+        elif any(w in desc_lower for w in ["print", "pattern", "polka", "geometric"]):
+            pattern = "Printed / Patterned"
+        elif any(w in desc_lower for w in ["embroider"]):
+            pattern = "Embroidered"
+
+        # Fabric Material
+        fabric = "Cotton appearance"
+        if "linen" in desc_lower:
+            fabric = "Linen appearance"
+        elif "silk" in desc_lower:
+            fabric = "Silk appearance"
+        elif "denim" in desc_lower:
+            fabric = "Denim"
+        elif "wool" in desc_lower:
+            fabric = "Wool / Knit"
+        elif "cotton" in desc_lower:
+            fabric = "Cotton appearance"
+
+        # Fit
+        fit = "Regular Fit"
+        if any(w in desc_lower for w in ["slim", "tight", "fitted"]):
+            fit = "Slim Fit"
+        elif any(w in desc_lower for w in ["loose", "relaxed", "oversized"]):
+            fit = "Relaxed Fit"
+
+        # Suggested Name
+        pattern_prefix = f"{pattern} " if pattern not in ["Solid", None] else ""
+        suggested_name = f"{primary_col} {pattern_prefix}{subcat}".strip()
+
+        return {
+            "suggested_name": suggested_name,
+            "main_category": main_cat,
+            "subcategory": subcat,
+            "sleeve_length": sleeve if main_cat not in ["Bottoms"] else None,
+            "neckline": neckline if main_cat not in ["Bottoms"] else None,
+            "pattern": pattern,
+            "fabric_material": fabric,
+            "fit": fit,
+        }
+
+    async def detect_and_segment(
+        self,
+        image_bytes: bytes,
+        filename: str,
+    ) -> List[VisionCandidateResult]:
+        try:
+            raw_img = Image.open(io.BytesIO(image_bytes))
+            raw_img = ImageOps.exif_transpose(raw_img)
+            raw_img.load()
+        except Exception as e:
+            raise ValueError(f"Unable to decode photograph: {e}")
+
+        # Step 1: Neural segmentation into physical garment instances
+        rgba_full, instances = self.seg_service.segment_image(raw_img)
+
+        candidates: List[VisionCandidateResult] = []
+
+        for inst in instances:
+            # Step 2: Accurate CIELAB color analysis on masked foreground
+            color_res = self.color_analyzer.analyze_garment_colors(inst.rgba_crop)
+            primary_col = color_res["primary_color"]
+            secondary_cols = color_res["secondary_colors"]
+            detected_pattern = color_res["pattern"]
+
+            # Step 3: Studio catalogue framing
+            cat_bytes = self.catalogue_generator.create_catalogue_image(inst.rgba_crop)
+
+            # Step 4: Multimodal attribute extraction on the catalogue image
+            prompt = (
+                "Describe this clothing item in detail, including category (kurta/dress/shirt/trousers), "
+                "sleeve length, collar or neckline, fabric appearance, and pattern."
+            )
+            vlm_text = self._query_vlm(cat_bytes, prompt)
+
+            w = inst.rgba_crop.width
+            h = inst.rgba_crop.height
+            aspect_ratio = float(h) / max(1.0, float(w))
+            fallback_subcat = "Kurta" if aspect_ratio >= 1.30 else "Shirt"
+
+            if vlm_text:
+                attrs = self._parse_vlm_attributes(vlm_text, primary_col, fallback_subcat)
+                # If color analyzer detected a strong print and VLM agrees or says solid, refine pattern
+                if detected_pattern != "Solid" and attrs["pattern"] == "Solid":
+                    attrs["pattern"] = detected_pattern
+                confidence = "HIGH"
+                notes = f"Analyzed with {self.model_name}. Please verify fabric details."
+            else:
+                # Fallback to geometry
+                attrs = {
+                    "suggested_name": f"{primary_col} {detected_pattern if detected_pattern != 'Solid' else ''} {fallback_subcat}".strip(),
+                    "main_category": "Ethnic Wear" if aspect_ratio >= 1.30 else "Tops",
+                    "subcategory": fallback_subcat,
+                    "sleeve_length": "Full Sleeves" if aspect_ratio >= 1.30 else "Short Sleeves",
+                    "neckline": "Mandarin Collar" if aspect_ratio >= 1.30 else "Collared",
+                    "pattern": detected_pattern,
+                    "fabric_material": "Cotton appearance",
+                    "fit": "Regular Fit",
+                }
+                confidence = "MEDIUM"
+                notes = "Attributes inferred from neural segmentation and silhouette geometry. Please verify fabric details."
+
+            crop_buf = io.BytesIO()
+            inst.original_crop.convert("RGB").save(crop_buf, format="JPEG", quality=88)
+
+            candidates.append(
+                VisionCandidateResult(
+                    suggested_name=attrs["suggested_name"],
+                    main_category=attrs["main_category"],
+                    subcategory=attrs["subcategory"],
+                    primary_color=primary_col,
+                    secondary_colors=secondary_cols,
+                    pattern=attrs["pattern"],
+                    fabric_material=attrs["fabric_material"],
+                    sleeve_length=attrs["sleeve_length"],
+                    neckline=attrs["neckline"],
+                    fit=attrs["fit"],
+                    confidence_scores={
+                        "category": confidence,
+                        "primary_color": "HIGH",
+                        "pattern": "HIGH",
+                        "sleeve_length": confidence,
+                        "fabric_material": "LOW",
+                    },
+                    bounding_box=inst.bounding_box,
+                    processed_image_bytes=cat_bytes,
+                    original_crop_bytes=crop_buf.getvalue(),
+                    uncertainty_notes=notes,
                 )
             )
 
@@ -292,12 +432,16 @@ class DevelopmentVisionProvider(GarmentVisionProvider):
 
 class MultimodalVisionProvider(GarmentVisionProvider):
     """
-    Multimodal Vision-Language Provider using OpenRouter or Gemini Vision APIs.
-    Activated when OPENROUTER_API_KEY or GEMINI_API_KEY is configured.
+    Multimodal Vision-Language Provider using OpenRouter API.
+    Activated when OPENROUTER_API_KEY is configured.
     """
     def __init__(self, api_key: str, model_name: Optional[str] = None):
         self.api_key = api_key
         self.model_name = model_name or "google/gemini-2.0-flash-exp:free"
+        self.seg_service = GarmentSegmentationService()
+        self.color_analyzer = GarmentColorAnalyzer()
+        self.catalogue_generator = CatalogueGenerator()
+        self.fallback_provider = LocalNeuralVisionProvider()
 
     @property
     def provider_name(self) -> str:
@@ -316,28 +460,28 @@ class MultimodalVisionProvider(GarmentVisionProvider):
 
         system_prompt = (
             "You are TESS Wardrobe Computer Vision Intelligence. "
-            "Analyze the image and detect every individual garment visible (e.g., top, pants, jacket, dupatta). "
+            "Analyze the image and detect every individual garment visible (e.g. kurta, dress, shirt, trousers, jacket). "
             "Output strictly valid JSON with this structure:\n"
             "{\n"
             '  "garments": [\n'
             '    {\n'
-            '      "name": "Navy Blue Linen Shirt",\n'
-            '      "main_category": "Tops",\n'
-            '      "subcategory": "Shirt",\n'
-            '      "primary_color": "Navy Blue",\n'
-            '      "secondary_colors": ["White"],\n'
-            '      "pattern": "Solid",\n'
-            '      "fabric_material": "Linen",\n'
+            '      "name": "Wine Floral Kurta",\n'
+            '      "main_category": "Ethnic Wear",\n'
+            '      "subcategory": "Kurta",\n'
+            '      "primary_color": "Wine",\n'
+            '      "secondary_colors": ["Dusty Pink"],\n'
+            '      "pattern": "Floral",\n'
+            '      "fabric_material": "Cotton appearance",\n'
             '      "sleeve_length": "Full Sleeves",\n'
-            '      "neckline": "Button-down",\n'
+            '      "neckline": "Mandarin Collar",\n'
             '      "fit": "Regular Fit",\n'
             '      "confidence_scores": {"category": "HIGH", "primary_color": "HIGH", "pattern": "HIGH", "sleeve_length": "HIGH", "fabric_material": "LOW"},\n'
-            '      "bounding_box": {"x": 0.1, "y": 0.05, "width": 0.8, "height": 0.45},\n'
+            '      "bounding_box": {"x": 0.1, "y": 0.05, "width": 0.8, "height": 0.9},\n'
             '      "uncertainty_notes": "None"\n'
             "    }\n"
             "  ]\n"
             "}\n"
-            "Do NOT hallucinate missing garments. Output only garments actually visible."
+            "Do NOT split single garments like dresses, kurtas, or jumpsuits into top and bottom. Output each distinct clothing item as one garment."
         )
 
         headers = {
@@ -369,42 +513,43 @@ class MultimodalVisionProvider(GarmentVisionProvider):
 
                 garment_list = parsed.get("garments", [])
                 if not garment_list:
-                    # Fallback to dev provider if vision model detects no garments
-                    return await DevelopmentVisionProvider().detect_and_segment(image_bytes, filename)
+                    return await self.fallback_provider.detect_and_segment(image_bytes, filename)
 
-                # Process bounding boxes with PIL
-                img = Image.open(io.BytesIO(image_bytes))
-                w, h = img.size
+                # Segment image with U2-Net for high-quality catalogue output
+                raw_img = Image.open(io.BytesIO(image_bytes))
+                raw_img = ImageOps.exif_transpose(raw_img)
+                w, h = raw_img.size
+
+                rgba_full, instances = self.seg_service.segment_image(raw_img)
+
                 candidates: List[VisionCandidateResult] = []
+                for i, item in enumerate(garment_list):
+                    inst = instances[i] if i < len(instances) else instances[0]
+                    cat_bytes = self.catalogue_generator.create_catalogue_image(inst.rgba_crop)
 
-                for item in garment_list:
-                    bbox = item.get("bounding_box", {"x": 0.0, "y": 0.0, "width": 1.0, "height": 1.0})
-                    bx = int(bbox.get("x", 0.0) * w)
-                    by = int(bbox.get("y", 0.0) * h)
-                    bw = int(bbox.get("width", 1.0) * w)
-                    bh = int(bbox.get("height", 1.0) * h)
-                    crop_box = (max(0, bx), max(0, by), min(w, bx + bw), min(h, by + bh))
-                    crop_img = img.crop(crop_box)
-
-                    processed_bytes = DevelopmentVisionProvider()._create_studio_catalogue_image(crop_img)
                     crop_buf = io.BytesIO()
-                    crop_img.convert("RGB").save(crop_buf, format="JPEG", quality=85)
+                    inst.original_crop.convert("RGB").save(crop_buf, format="JPEG", quality=88)
+
+                    # Enhance colors with CIELAB analyzer
+                    color_res = self.color_analyzer.analyze_garment_colors(inst.rgba_crop)
+                    primary_col = item.get("primary_color") or color_res["primary_color"]
+                    sec_cols = item.get("secondary_colors") or color_res["secondary_colors"]
 
                     candidates.append(
                         VisionCandidateResult(
-                            suggested_name=item.get("name", "Detected Garment"),
+                            suggested_name=item.get("name", f"{primary_col} Detected Garment"),
                             main_category=item.get("main_category", "Tops"),
                             subcategory=item.get("subcategory"),
-                            primary_color=item.get("primary_color", "Navy Blue"),
-                            secondary_colors=item.get("secondary_colors", []),
-                            pattern=item.get("pattern", "Solid"),
-                            fabric_material=item.get("fabric_material"),
+                            primary_color=primary_col,
+                            secondary_colors=sec_cols,
+                            pattern=item.get("pattern", color_res["pattern"]),
+                            fabric_material=item.get("fabric_material", "Cotton appearance"),
                             sleeve_length=item.get("sleeve_length"),
                             neckline=item.get("neckline"),
                             fit=item.get("fit", "Regular Fit"),
-                            confidence_scores=item.get("confidence_scores", {"category": "HIGH"}),
-                            bounding_box=bbox,
-                            processed_image_bytes=processed_bytes,
+                            confidence_scores=item.get("confidence_scores", {"category": "HIGH", "primary_color": "HIGH"}),
+                            bounding_box=inst.bounding_box,
+                            processed_image_bytes=cat_bytes,
                             original_crop_bytes=crop_buf.getvalue(),
                             uncertainty_notes=item.get("uncertainty_notes"),
                         )
@@ -412,17 +557,31 @@ class MultimodalVisionProvider(GarmentVisionProvider):
 
                 return candidates
         except Exception as e:
-            logger.warning(f"Multimodal vision API failed or timed out: {e}. Falling back to DevelopmentVisionProvider.")
-            return await DevelopmentVisionProvider().detect_and_segment(image_bytes, filename)
+            logger.warning(f"[MultimodalVisionProvider] API call failed: {e}. Falling back to LocalNeuralVisionProvider.")
+            return await self.fallback_provider.detect_and_segment(image_bytes, filename)
 
 
 def get_vision_provider() -> GarmentVisionProvider:
-    """Returns production vision provider if credentials exist, else development provider."""
+    """
+    Returns production vision provider in order of capability:
+    1. OpenRouter (if API key is present)
+    2. Ollama Vision (if local Ollama is available)
+    3. Local Neural U2-Net (offline neural segmentation + CIELAB color + silhouette)
+    """
     from app.core.config import settings
 
     if settings.openrouter_api_key and settings.openrouter_api_key.strip():
         logger.info("[VisionProvider] Initializing MultimodalVisionProvider via OpenRouter.")
         return MultimodalVisionProvider(api_key=settings.openrouter_api_key, model_name=settings.openrouter_model)
 
-    logger.info("[VisionProvider] Initializing DevelopmentVisionProvider (local CV heuristics).")
-    return DevelopmentVisionProvider()
+    # Check if Ollama is accessible
+    try:
+        r = requests.get(f"{settings.ollama_base_url}/api/tags", timeout=1.5)
+        if r.status_code == 200:
+            logger.info(f"[VisionProvider] Initializing OllamaVisionProvider with {settings.ollama_vision_model}.")
+            return OllamaVisionProvider(base_url=settings.ollama_base_url, model_name=settings.ollama_vision_model)
+    except Exception:
+        pass
+
+    logger.info("[VisionProvider] Initializing LocalNeuralVisionProvider (U2-Net + CIELAB).")
+    return LocalNeuralVisionProvider()
