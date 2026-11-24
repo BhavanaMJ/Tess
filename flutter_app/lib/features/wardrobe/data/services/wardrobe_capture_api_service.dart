@@ -92,4 +92,17 @@ class WardrobeCaptureApiService {
         statusCode: 500,
         message: 'Invalid response confirming capture garments');
   }
+
+  /// GET /api/v1/wardrobe/capture/jobs/{id}/diagnostic
+  Future<Map<String, dynamic>> getJobDiagnostic(String jobId) async {
+    final response = await _apiClient.get(
+      '/api/v1/wardrobe/capture/jobs/$jobId/diagnostic',
+    );
+    if (response is Map<String, dynamic>) {
+      return response;
+    }
+    throw ApiException(
+        statusCode: 500,
+        message: 'Invalid response fetching capture job diagnostic');
+  }
 }

@@ -9,6 +9,13 @@ class ConfidenceLevelEnum(str, Enum):
     LOW = "LOW"
     UNCERTAIN = "UNCERTAIN"
 
+class CaptureJobQualityStateEnum(str, Enum):
+    FULL_AI_PROCESSING = "FULL_AI_PROCESSING"
+    LOCAL_NEURAL_PROCESSING = "LOCAL_NEURAL_PROCESSING"
+    LIMITED_PROCESSING = "LIMITED_PROCESSING"
+    NEEDS_MANUAL_REVIEW = "NEEDS_MANUAL_REVIEW"
+    PROCESSING_FAILED = "PROCESSING_FAILED"
+
 class CaptureJobStatusEnum(str, Enum):
     PENDING = "PENDING"
     UPLOADING = "UPLOADING"
@@ -81,11 +88,30 @@ class CaptureJobResponse(BaseModel):
     current_stage: str
     progress_percent: int = 0
     total_detected: int = 0
-    provider_type: str = "DEVELOPMENT_LOCAL"
+    provider_type: str = "LOCAL_NEURAL_U2NET"
+    quality_state: str = CaptureJobQualityStateEnum.LOCAL_NEURAL_PROCESSING.value
+    processing_time_ms: Optional[int] = None
+    diagnostic_info: Optional[Dict[str, Any]] = None
     error_message: Optional[str] = None
     candidates: List[GarmentCandidateResponse] = Field(default_factory=list)
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+
+class CaptureJobDiagnosticResponse(BaseModel):
+    job_id: str
+    user_id: str
+    original_image_ref: str
+    mask_image_ref: Optional[str] = None
+    cutout_image_ref: Optional[str] = None
+    catalogue_image_ref: Optional[str] = None
+    provider_type: str
+    model_name: Optional[str] = None
+    quality_state: str
+    processing_time_ms: int
+    vlm_status: str
+    warnings: List[str] = Field(default_factory=list)
+    extracted_attributes: Dict[str, Any] = Field(default_factory=dict)
+    bounding_box: Optional[Dict[str, Any]] = None
 
 class CaptureJobConfirmRequest(BaseModel):
     candidate_ids: Optional[List[str]] = None

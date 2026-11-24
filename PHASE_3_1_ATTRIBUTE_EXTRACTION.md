@@ -97,3 +97,4 @@ sleeve length, collar or neckline, fabric appearance, and pattern."
   - Pattern: `HIGH`
   - Sleeve Length: `HIGH`
   - Fabric Material: `LOW` (Prompted to user for verification)
+

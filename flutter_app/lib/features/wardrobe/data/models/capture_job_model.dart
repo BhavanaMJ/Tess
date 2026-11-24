@@ -10,6 +10,9 @@ class CaptureJobModel {
   final int progressPercent;
   final int totalDetected;
   final String providerType;
+  final String qualityState;
+  final int processingTimeMs;
+  final Map<String, dynamic>? diagnosticInfo;
   final String? errorMessage;
   final List<GarmentCandidateModel> candidates;
   final DateTime? createdAt;
@@ -24,6 +27,9 @@ class CaptureJobModel {
     this.progressPercent = 0,
     this.totalDetected = 0,
     this.providerType = 'DEVELOPMENT_LOCAL',
+    this.qualityState = 'LOCAL_NEURAL_PROCESSING',
+    this.processingTimeMs = 0,
+    this.diagnosticInfo,
     this.errorMessage,
     this.candidates = const [],
     this.createdAt,
@@ -49,6 +55,9 @@ class CaptureJobModel {
       progressPercent: (json['progress_percent'] as num?)?.toInt() ?? 0,
       totalDetected: (json['total_detected'] as num?)?.toInt() ?? cList.length,
       providerType: json['provider_type']?.toString() ?? 'DEVELOPMENT_LOCAL',
+      qualityState: json['quality_state']?.toString() ?? 'LOCAL_NEURAL_PROCESSING',
+      processingTimeMs: (json['processing_time_ms'] as num?)?.toInt() ?? 0,
+      diagnosticInfo: json['diagnostic_info'] as Map<String, dynamic>?,
       errorMessage: json['error_message']?.toString(),
       candidates: cList,
       createdAt: json['created_at'] != null
@@ -70,6 +79,9 @@ class CaptureJobModel {
       'progress_percent': progressPercent,
       'total_detected': totalDetected,
       'provider_type': providerType,
+      'quality_state': qualityState,
+      'processing_time_ms': processingTimeMs,
+      'diagnostic_info': diagnosticInfo,
       'error_message': errorMessage,
       'candidates': candidates.map((c) => c.toJson()).toList(),
       'created_at': createdAt?.toIso8601String(),
@@ -87,6 +99,9 @@ class CaptureJobModel {
       progressPercent: progressPercent,
       totalDetected: totalDetected,
       providerType: providerType,
+      qualityState: qualityState,
+      processingTimeMs: processingTimeMs,
+      diagnosticInfo: diagnosticInfo,
       errorMessage: errorMessage,
       candidates: candidates.map((c) => c.toDomain()).toList(),
       createdAt: createdAt,
@@ -104,6 +119,9 @@ class CaptureJobModel {
       progressPercent: entity.progressPercent,
       totalDetected: entity.totalDetected,
       providerType: entity.providerType,
+      qualityState: entity.qualityState,
+      processingTimeMs: entity.processingTimeMs,
+      diagnosticInfo: entity.diagnosticInfo,
       errorMessage: entity.errorMessage,
       candidates: entity.candidates
           .map((c) => GarmentCandidateModel.fromDomain(c))

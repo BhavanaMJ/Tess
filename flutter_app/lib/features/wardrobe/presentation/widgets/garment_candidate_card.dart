@@ -9,13 +9,77 @@ class GarmentCandidateCard extends StatelessWidget {
   final GarmentCandidate candidate;
   final VoidCallback onToggleInclude;
   final VoidCallback onEdit;
+  final String? qualityState;
 
   const GarmentCandidateCard({
     super.key,
     required this.candidate,
     required this.onToggleInclude,
     required this.onEdit,
+    this.qualityState,
   });
+
+  Widget _buildQualityBadge(String? state) {
+    if (state == null) return const SizedBox.shrink();
+
+    Color bg;
+    Color fg;
+    String label;
+    IconData icon;
+
+    switch (state.toUpperCase()) {
+      case 'FULL_AI_PROCESSING':
+        bg = WardrobeTheme.electricViolet.withValues(alpha: 0.2);
+        fg = WardrobeTheme.softViolet;
+        label = 'Multimodal AI';
+        icon = Icons.auto_awesome;
+        break;
+      case 'LOCAL_NEURAL_PROCESSING':
+        bg = WardrobeTheme.electricCyan.withValues(alpha: 0.15);
+        fg = WardrobeTheme.electricCyan;
+        label = 'Neural Matting & CIELAB';
+        icon = Icons.memory;
+        break;
+      case 'LIMITED_PROCESSING':
+        bg = WardrobeTheme.statusWarning.withValues(alpha: 0.15);
+        fg = WardrobeTheme.statusWarning;
+        label = 'Geometric & Color Analysis';
+        icon = Icons.tune;
+        break;
+      case 'NEEDS_MANUAL_REVIEW':
+        bg = WardrobeTheme.statusWarning.withValues(alpha: 0.2);
+        fg = WardrobeTheme.statusWarning;
+        label = 'Needs Review';
+        icon = Icons.warning_amber_rounded;
+        break;
+      default:
+        bg = WardrobeTheme.statusCritical.withValues(alpha: 0.15);
+        fg = WardrobeTheme.statusCritical;
+        label = 'Review Required';
+        icon = Icons.info_outline;
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      margin: const EdgeInsets.only(right: 6, bottom: 4),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 10, color: fg),
+          const SizedBox(width: 3),
+          Text(
+            label,
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: fg),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildConfidenceBadge(String label, String? confidence) {
     if (confidence == null) return const SizedBox.shrink();
@@ -199,6 +263,7 @@ class GarmentCandidateCard extends StatelessWidget {
                   // Confidence badges
                   Wrap(
                     children: [
+                      if (qualityState != null) _buildQualityBadge(qualityState),
                       _buildConfidenceBadge(
                           'Category', candidate.confidenceScores['category']),
                       _buildConfidenceBadge(

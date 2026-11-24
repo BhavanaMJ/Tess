@@ -4,6 +4,7 @@ import '../controllers/wardrobe_capture_controller.dart';
 import '../theme/wardrobe_theme.dart';
 import '../widgets/garment_attribute_editor.dart';
 import '../widgets/garment_candidate_card.dart';
+import 'capture_diagnostic_screen.dart';
 
 /// Screen displaying detected garment candidates for independent user review, editing, and batch approval.
 class CaptureReviewScreen extends StatefulWidget {
@@ -79,6 +80,22 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
             letterSpacing: -0.4,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.analytics_outlined, color: WardrobeTheme.electricCyan),
+            tooltip: 'AI Diagnostics',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => CaptureDiagnosticScreen(
+                    controller: widget.controller,
+                    jobId: widget.controller.activeJob?.id,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: AnimatedBuilder(
         animation: widget.controller,
@@ -101,51 +118,101 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
                   border: Border(
                       bottom: BorderSide(color: WardrobeTheme.borderSubtle)),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: WardrobeTheme.electricViolet
-                                .withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            '$total DETECTED',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w800,
-                              color: WardrobeTheme.softViolet,
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: WardrobeTheme.electricViolet
+                                    .withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                '$total DETECTED',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                  color: WardrobeTheme.softViolet,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '$included selected for wardrobe',
+                              style: TextStyle(
+                                  fontSize: 13, color: WardrobeTheme.textSecondary),
+                            ),
+                          ],
+                        ),
+                        if (total > 0 && included < total)
+                          TextButton(
+                            onPressed: () {
+                              for (final c in candidates) {
+                                if (!c.isIncluded) {
+                                  widget.controller.toggleCandidateInclusion(c.id);
+                                }
+                              }
+                            },
+                            child: Text(
+                              'Select All',
+                              style: TextStyle(
+                                  color: WardrobeTheme.electricCyan, fontSize: 12),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '$included selected for wardrobe',
-                          style: TextStyle(
-                              fontSize: 13, color: WardrobeTheme.textSecondary),
-                        ),
                       ],
                     ),
-                    if (total > 0 && included < total)
-                      TextButton(
-                        onPressed: () {
-                          for (final c in candidates) {
-                            if (!c.isIncluded) {
-                              widget.controller.toggleCandidateInclusion(c.id);
-                            }
-                          }
-                        },
-                        child: Text(
-                          'Select All',
-                          style: TextStyle(
-                              color: WardrobeTheme.electricCyan, fontSize: 12),
-                        ),
+                    if (widget.controller.activeJob != null) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => CaptureDiagnosticScreen(
+                                    controller: widget.controller,
+                                    jobId: widget.controller.activeJob?.id,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Row(
+                              children: [
+                                Icon(Icons.psychology_outlined,
+                                    size: 14, color: WardrobeTheme.softViolet),
+                                const SizedBox(width: 4),
+                                Text(
+                                  widget.controller.activeJob!.qualityState == 'FULL_AI_PROCESSING'
+                                      ? 'Multimodal AI Model'
+                                      : 'Neural Matting & CIELAB',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: WardrobeTheme.softViolet,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Icon(Icons.chevron_right_rounded,
+                                    size: 14, color: WardrobeTheme.textMuted),
+                              ],
+                            ),
+                          ),
+                          if (widget.controller.activeJob!.processingTimeMs > 0)
+                            Text(
+                              '${widget.controller.activeJob!.processingTimeMs}ms',
+                              style: TextStyle(
+                                  fontSize: 11, color: WardrobeTheme.textMuted),
+                            ),
+                        ],
                       ),
+                    ],
                   ],
                 ),
               ),
@@ -183,6 +250,7 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
                           final cand = candidates[i];
                           return GarmentCandidateCard(
                             candidate: cand,
+                            qualityState: widget.controller.activeJob?.qualityState,
                             onToggleInclude: () => widget.controller
                                 .toggleCandidateInclusion(cand.id),
                             onEdit: () => _openAttributeEditor(cand),

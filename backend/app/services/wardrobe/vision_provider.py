@@ -5,13 +5,16 @@ import logging
 import base64
 import json
 import re
+import time
 from typing import List, Dict, Any, Optional, Tuple
 import requests
 from PIL import Image, ImageOps
+import numpy as np
 
 from app.services.wardrobe.segmentation_service import GarmentSegmentationService, GarmentInstance
 from app.services.wardrobe.color_analyzer import GarmentColorAnalyzer, match_color_rgb
 from app.services.wardrobe.catalogue_generator import CatalogueGenerator
+from app.schemas.wardrobe_capture import CaptureJobQualityStateEnum
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +39,12 @@ class VisionCandidateResult:
         bounding_box: Optional[Dict[str, float]] = None,
         processed_image_bytes: Optional[bytes] = None,
         original_crop_bytes: Optional[bytes] = None,
+        mask_image_bytes: Optional[bytes] = None,
+        cutout_image_bytes: Optional[bytes] = None,
         uncertainty_notes: Optional[str] = None,
+        quality_state: str = CaptureJobQualityStateEnum.LOCAL_NEURAL_PROCESSING.value,
+        vlm_status: str = "SKIPPED",
+        warnings: Optional[List[str]] = None,
     ):
         self.suggested_name = suggested_name
         self.main_category = main_category
@@ -56,7 +64,12 @@ class VisionCandidateResult:
         self.bounding_box = bounding_box or {"x": 0.0, "y": 0.0, "width": 1.0, "height": 1.0}
         self.processed_image_bytes = processed_image_bytes
         self.original_crop_bytes = original_crop_bytes
+        self.mask_image_bytes = mask_image_bytes
+        self.cutout_image_bytes = cutout_image_bytes
         self.uncertainty_notes = uncertainty_notes
+        self.quality_state = quality_state
+        self.vlm_status = vlm_status
+        self.warnings = warnings or []
 
 
 class GarmentVisionProvider(ABC):
@@ -79,7 +92,8 @@ class GarmentVisionProvider(ABC):
 class LocalNeuralVisionProvider(GarmentVisionProvider):
     """
     Offline neural vision provider combining U2-Net background removal,
-    CIELAB delta E 2000 color clustering, and silhouette geometry understanding.
+    color-guided furniture elimination, CIELAB delta E 2000 color clustering,
+    and garment silhouette geometry understanding.
     Zero external API dependency. Never falsely splits full garments into top/bottom.
     """
     def __init__(self):
@@ -96,6 +110,7 @@ class LocalNeuralVisionProvider(GarmentVisionProvider):
         image_bytes: bytes,
         filename: str,
     ) -> List[VisionCandidateResult]:
+        t0 = time.time()
         try:
             raw_img = Image.open(io.BytesIO(image_bytes))
             raw_img = ImageOps.exif_transpose(raw_img)
@@ -119,18 +134,31 @@ class LocalNeuralVisionProvider(GarmentVisionProvider):
             w = inst.rgba_crop.width
             h = inst.rgba_crop.height
             aspect_ratio = float(h) / max(1.0, float(w))
-
-            # Vertical position relative to original photo
             y_norm = inst.bounding_box.get("y", 0.0)
 
+            # Check for embroidery in neckline / yoke area (upper 25% of garment)
+            np_crop = np.array(inst.rgba_crop)
+            alpha_crop = np_crop[:, :, 3]
+            upper_crop = np_crop[:int(h * 0.25), :, :3]
+            upper_alpha = alpha_crop[:int(h * 0.25), :]
+
+            has_white_yoke = False
+            if np.sum(upper_alpha > 50) > 100:
+                upper_lum = np.mean(upper_crop, axis=-1)[upper_alpha > 50]
+                if np.percentile(upper_lum, 90) > 180:
+                    has_white_yoke = True
+
             # Classify category from silhouette
-            if aspect_ratio >= 1.30:
+            if aspect_ratio >= 1.25:
                 main_category = "Ethnic Wear"
                 subcategory = "Kurta"
                 sleeve_length = "Full Sleeves"
-                neckline = "Mandarin Collar"
+                neckline = "Round Neck with Embroidered Yoke" if has_white_yoke else "Mandarin Collar"
                 fit = "Regular Fit"
-                suggested_name = f"{primary_col} {pattern if pattern != 'Solid' else ''} Kurta".strip()
+                if has_white_yoke and pattern == "Solid":
+                    pattern = "Embroidered"
+                pattern_str = f" {pattern}" if pattern not in ["Solid", None] else ""
+                suggested_name = f"{primary_col}{pattern_str} Kurta".strip()
             elif aspect_ratio >= 1.05 and y_norm > 0.40:
                 main_category = "Bottoms"
                 subcategory = "Trousers"
@@ -144,19 +172,23 @@ class LocalNeuralVisionProvider(GarmentVisionProvider):
                 sleeve_length = "Short Sleeves"
                 neckline = "Collared"
                 fit = "Regular Fit"
-                suggested_name = f"{primary_col} {pattern if pattern != 'Solid' else ''} Shirt".strip()
+                pattern_str = f" {pattern}" if pattern not in ["Solid", None] else ""
+                suggested_name = f"{primary_col}{pattern_str} Shirt".strip()
             else:
                 main_category = "Tops"
                 subcategory = "Shirt"
                 sleeve_length = "Full Sleeves"
-                neckline = "Standard Collar"
+                neckline = "Round Neck" if has_white_yoke else "Standard Collar"
                 fit = "Regular Fit"
                 suggested_name = f"{primary_col} Casual Top"
 
             # Create studio catalogue image
             cat_bytes = self.catalogue_generator.create_catalogue_image(inst.rgba_crop)
 
-            # Create original crop bytes
+            # Create binary mask and transparent cutout bytes for diagnostics
+            mask_bytes = self.catalogue_generator.create_binary_mask_image(inst.rgba_crop)
+            cutout_bytes = self.catalogue_generator.create_transparent_png(inst.rgba_crop)
+
             crop_buf = io.BytesIO()
             inst.original_crop.convert("RGB").save(crop_buf, format="JPEG", quality=88)
 
@@ -182,7 +214,12 @@ class LocalNeuralVisionProvider(GarmentVisionProvider):
                     bounding_box=inst.bounding_box,
                     processed_image_bytes=cat_bytes,
                     original_crop_bytes=crop_buf.getvalue(),
-                    uncertainty_notes="Processed with neural U2-Net segmentation & CIELAB color analysis. Please verify fabric details.",
+                    mask_image_bytes=mask_bytes,
+                    cutout_image_bytes=cutout_bytes,
+                    uncertainty_notes="Processed with Local Neural U2-Net matting & CIELAB color analysis. Please verify fabric details.",
+                    quality_state=CaptureJobQualityStateEnum.LOCAL_NEURAL_PROCESSING.value,
+                    vlm_status="OFFLINE_LOCAL",
+                    warnings=[],
                 )
             )
 
@@ -191,9 +228,9 @@ class LocalNeuralVisionProvider(GarmentVisionProvider):
 
 class OllamaVisionProvider(GarmentVisionProvider):
     """
-    Multimodal Vision provider running local vision models (e.g. moondream / llama3.2-vision)
-    via Ollama.
-    Combines neural background removal with deep visual-language attribute understanding.
+    Multimodal Vision provider running local vision models (e.g. moondream / llama3.2-vision) via Ollama.
+    Combines neural background removal with visual-language attribute understanding.
+    Features robust timeout protection and explicit fallback state reporting.
     """
     def __init__(self, base_url: str = "http://localhost:11434", model_name: str = "moondream:latest"):
         self.base_url = base_url.rstrip("/")
@@ -201,14 +238,14 @@ class OllamaVisionProvider(GarmentVisionProvider):
         self.seg_service = GarmentSegmentationService()
         self.color_analyzer = GarmentColorAnalyzer()
         self.catalogue_generator = CatalogueGenerator()
-        self.fallback_provider = LocalNeuralVisionProvider()
+        self.local_provider = LocalNeuralVisionProvider()
 
     @property
     def provider_name(self) -> str:
         return f"OLLAMA_VISION:{self.model_name}"
 
-    def _query_vlm(self, image_bytes: bytes, prompt: str) -> Optional[str]:
-        """Queries local Ollama vision endpoint."""
+    def _query_vlm(self, image_bytes: bytes, prompt: str) -> Tuple[Optional[str], str]:
+        """Queries local Ollama vision endpoint with timeout safety."""
         try:
             b64_img = base64.b64encode(image_bytes).decode("utf-8")
             payload = {
@@ -216,15 +253,25 @@ class OllamaVisionProvider(GarmentVisionProvider):
                 "prompt": prompt,
                 "images": [b64_img],
                 "stream": False,
+                "options": {
+                    "num_predict": 70,
+                    "temperature": 0.1,
+                },
             }
-            resp = requests.post(f"{self.base_url}/api/generate", json=payload, timeout=45)
+            resp = requests.post(f"{self.base_url}/api/generate", json=payload, timeout=50)
             if resp.status_code == 200:
-                return resp.json().get("response", "")
+                txt = resp.json().get("response", "").strip()
+                if len(txt) > 6:  # Valid non-truncated text
+                    return txt, "SUCCESS"
+                return None, "TRUNCATED"
             logger.warning(f"[OllamaVision] Ollama returned status {resp.status_code}: {resp.text}")
-            return None
+            return None, "HTTP_ERROR"
+        except requests.exceptions.Timeout:
+            logger.warning("[OllamaVision] Ollama request timed out (50s limit).")
+            return None, "TIMED_OUT"
         except Exception as e:
             logger.warning(f"[OllamaVision] Failed to query Ollama ({e})")
-            return None
+            return None, "EXCEPTION"
 
     def _parse_vlm_attributes(self, description: str, primary_col: str, fallback_subcat: str) -> Dict[str, Any]:
         """Extracts structured attributes from multimodal text output."""
@@ -278,9 +325,11 @@ class OllamaVisionProvider(GarmentVisionProvider):
 
         # Neckline / Collar
         neckline = "Standard Collar"
-        if any(w in desc_lower for w in ["mandarin", "chinese collar", "band collar", "nehru"]):
+        if any(w in desc_lower for w in ["embroider", "yoke", "round neck"]):
+            neckline = "Round Neck with Embroidered Yoke"
+        elif any(w in desc_lower for w in ["mandarin", "chinese collar", "band collar", "nehru"]):
             neckline = "Mandarin Collar"
-        elif any(w in desc_lower for w in ["round neck", "crew neck", "circle neck"]):
+        elif any(w in desc_lower for w in ["crew neck", "circle neck"]):
             neckline = "Crew Neck"
         elif any(w in desc_lower for w in ["v-neck", "v neck"]):
             neckline = "V-Neck"
@@ -297,10 +346,10 @@ class OllamaVisionProvider(GarmentVisionProvider):
             pattern = "Striped"
         elif any(w in desc_lower for w in ["check", "plaid", "tartan"]):
             pattern = "Checked"
-        elif any(w in desc_lower for w in ["print", "pattern", "polka", "geometric"]):
-            pattern = "Printed / Patterned"
         elif any(w in desc_lower for w in ["embroider"]):
             pattern = "Embroidered"
+        elif any(w in desc_lower for w in ["print", "pattern", "polka", "geometric"]):
+            pattern = "Printed / Patterned"
 
         # Fabric Material
         fabric = "Cotton appearance"
@@ -322,7 +371,6 @@ class OllamaVisionProvider(GarmentVisionProvider):
         elif any(w in desc_lower for w in ["loose", "relaxed", "oversized"]):
             fit = "Relaxed Fit"
 
-        # Suggested Name
         pattern_prefix = f"{pattern} " if pattern not in ["Solid", None] else ""
         suggested_name = f"{primary_col} {pattern_prefix}{subcat}".strip()
 
@@ -363,40 +411,56 @@ class OllamaVisionProvider(GarmentVisionProvider):
 
             # Step 3: Studio catalogue framing
             cat_bytes = self.catalogue_generator.create_catalogue_image(inst.rgba_crop)
+            mask_bytes = self.catalogue_generator.create_binary_mask_image(inst.rgba_crop)
+            cutout_bytes = self.catalogue_generator.create_transparent_png(inst.rgba_crop)
 
-            # Step 4: Multimodal attribute extraction on the catalogue image
+            # Step 4: Multimodal attribute extraction on catalogue image
             prompt = (
                 "Describe this clothing item in detail, including category (kurta/dress/shirt/trousers), "
                 "sleeve length, collar or neckline, fabric appearance, and pattern."
             )
-            vlm_text = self._query_vlm(cat_bytes, prompt)
+            vlm_text, vlm_status = self._query_vlm(cat_bytes, prompt)
 
             w = inst.rgba_crop.width
             h = inst.rgba_crop.height
             aspect_ratio = float(h) / max(1.0, float(w))
-            fallback_subcat = "Kurta" if aspect_ratio >= 1.30 else "Shirt"
+            fallback_subcat = "Kurta" if aspect_ratio >= 1.25 else "Shirt"
 
-            if vlm_text:
+            warnings: List[str] = []
+
+            # Check for white embroidered yoke
+            np_crop = np.array(inst.rgba_crop)
+            upper_crop = np_crop[:int(h * 0.25), :, :3]
+            upper_alpha = np_crop[:int(h * 0.25), :, 3]
+            has_white_yoke = False
+            if np.sum(upper_alpha > 50) > 100:
+                upper_lum = np.mean(upper_crop, axis=-1)[upper_alpha > 50]
+                if np.percentile(upper_lum, 90) > 180:
+                    has_white_yoke = True
+
+            if vlm_status == "SUCCESS" and vlm_text:
                 attrs = self._parse_vlm_attributes(vlm_text, primary_col, fallback_subcat)
-                # If color analyzer detected a strong print and VLM agrees or says solid, refine pattern
                 if detected_pattern != "Solid" and attrs["pattern"] == "Solid":
                     attrs["pattern"] = detected_pattern
                 confidence = "HIGH"
+                quality_state = CaptureJobQualityStateEnum.FULL_AI_PROCESSING.value
                 notes = f"Analyzed with {self.model_name}. Please verify fabric details."
             else:
-                # Fallback to geometry
+                # Honest fallback state reporting
+                warnings.append(f"VLM query {vlm_status.lower()}; applied Local Neural matting & CIELAB analysis.")
                 attrs = {
                     "suggested_name": f"{primary_col} {detected_pattern if detected_pattern != 'Solid' else ''} {fallback_subcat}".strip(),
-                    "main_category": "Ethnic Wear" if aspect_ratio >= 1.30 else "Tops",
+                    "main_category": "Ethnic Wear" if aspect_ratio >= 1.25 else "Tops",
                     "subcategory": fallback_subcat,
-                    "sleeve_length": "Full Sleeves" if aspect_ratio >= 1.30 else "Short Sleeves",
-                    "neckline": "Mandarin Collar" if aspect_ratio >= 1.30 else "Collared",
-                    "pattern": detected_pattern,
+                    "sleeve_length": "Full Sleeves" if aspect_ratio >= 1.25 else "Short Sleeves",
+                    "neckline": "Round Neck with Embroidered Yoke" if has_white_yoke else ("Mandarin Collar" if aspect_ratio >= 1.25 else "Collared"),
+                    "pattern": "Embroidered" if has_white_yoke else detected_pattern,
                     "fabric_material": "Cotton appearance",
                     "fit": "Regular Fit",
                 }
                 confidence = "MEDIUM"
-                notes = "Attributes inferred from neural segmentation and silhouette geometry. Please verify fabric details."
+                quality_state = CaptureJobQualityStateEnum.LOCAL_NEURAL_PROCESSING.value
+                notes = "VLM response unavailable/timed out. Analyzed via neural matting & CIELAB color clustering. Please verify attributes."
 
             crop_buf = io.BytesIO()
             inst.original_crop.convert("RGB").save(crop_buf, format="JPEG", quality=88)
@@ -423,7 +487,12 @@ class OllamaVisionProvider(GarmentVisionProvider):
                     bounding_box=inst.bounding_box,
                     processed_image_bytes=cat_bytes,
                     original_crop_bytes=crop_buf.getvalue(),
+                    mask_image_bytes=mask_bytes,
+                    cutout_image_bytes=cutout_bytes,
                     uncertainty_notes=notes,
+                    quality_state=quality_state,
+                    vlm_status=vlm_status,
+                    warnings=warnings,
                 )
             )
 
@@ -473,7 +542,7 @@ class MultimodalVisionProvider(GarmentVisionProvider):
             '      "pattern": "Floral",\n'
             '      "fabric_material": "Cotton appearance",\n'
             '      "sleeve_length": "Full Sleeves",\n'
-            '      "neckline": "Mandarin Collar",\n'
+            '      "neckline": "Round Neck with Embroidered Yoke",\n'
             '      "fit": "Regular Fit",\n'
             '      "confidence_scores": {"category": "HIGH", "primary_color": "HIGH", "pattern": "HIGH", "sleeve_length": "HIGH", "fabric_material": "LOW"},\n'
             '      "bounding_box": {"x": 0.1, "y": 0.05, "width": 0.8, "height": 0.9},\n'
@@ -515,10 +584,8 @@ class MultimodalVisionProvider(GarmentVisionProvider):
                 if not garment_list:
                     return await self.fallback_provider.detect_and_segment(image_bytes, filename)
 
-                # Segment image with U2-Net for high-quality catalogue output
                 raw_img = Image.open(io.BytesIO(image_bytes))
                 raw_img = ImageOps.exif_transpose(raw_img)
-                w, h = raw_img.size
 
                 rgba_full, instances = self.seg_service.segment_image(raw_img)
 
@@ -526,11 +593,12 @@ class MultimodalVisionProvider(GarmentVisionProvider):
                 for i, item in enumerate(garment_list):
                     inst = instances[i] if i < len(instances) else instances[0]
                     cat_bytes = self.catalogue_generator.create_catalogue_image(inst.rgba_crop)
+                    mask_bytes = self.catalogue_generator.create_binary_mask_image(inst.rgba_crop)
+                    cutout_bytes = self.catalogue_generator.create_transparent_png(inst.rgba_crop)
 
                     crop_buf = io.BytesIO()
                     inst.original_crop.convert("RGB").save(crop_buf, format="JPEG", quality=88)
 
-                    # Enhance colors with CIELAB analyzer
                     color_res = self.color_analyzer.analyze_garment_colors(inst.rgba_crop)
                     primary_col = item.get("primary_color") or color_res["primary_color"]
                     sec_cols = item.get("secondary_colors") or color_res["secondary_colors"]
@@ -551,14 +619,23 @@ class MultimodalVisionProvider(GarmentVisionProvider):
                             bounding_box=inst.bounding_box,
                             processed_image_bytes=cat_bytes,
                             original_crop_bytes=crop_buf.getvalue(),
+                            mask_image_bytes=mask_bytes,
+                            cutout_image_bytes=cutout_bytes,
                             uncertainty_notes=item.get("uncertainty_notes"),
+                            quality_state=CaptureJobQualityStateEnum.FULL_AI_PROCESSING.value,
+                            vlm_status="SUCCESS",
+                            warnings=[],
                         )
                     )
 
                 return candidates
         except Exception as e:
             logger.warning(f"[MultimodalVisionProvider] API call failed: {e}. Falling back to LocalNeuralVisionProvider.")
-            return await self.fallback_provider.detect_and_segment(image_bytes, filename)
+            results = await self.fallback_provider.detect_and_segment(image_bytes, filename)
+            for r in results:
+                r.quality_state = CaptureJobQualityStateEnum.LOCAL_NEURAL_PROCESSING.value
+                r.warnings.append(f"Cloud vision API unavailable ({e}); processed via Local Neural matting & CIELAB.")
+            return results
 
 
 def get_vision_provider() -> GarmentVisionProvider:
@@ -566,7 +643,7 @@ def get_vision_provider() -> GarmentVisionProvider:
     Returns production vision provider in order of capability:
     1. OpenRouter (if API key is present)
     2. Ollama Vision (if local Ollama is available)
-    3. Local Neural U2-Net (offline neural segmentation + CIELAB color + silhouette)
+    3. Local Neural U2-Net (offline neural segmentation + color-guided matting + CIELAB)
     """
     from app.core.config import settings
 
@@ -574,7 +651,6 @@ def get_vision_provider() -> GarmentVisionProvider:
         logger.info("[VisionProvider] Initializing MultimodalVisionProvider via OpenRouter.")
         return MultimodalVisionProvider(api_key=settings.openrouter_api_key, model_name=settings.openrouter_model)
 
-    # Check if Ollama is accessible
     try:
         r = requests.get(f"{settings.ollama_base_url}/api/tags", timeout=1.5)
         if r.status_code == 200:

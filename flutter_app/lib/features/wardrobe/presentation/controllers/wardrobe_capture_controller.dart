@@ -279,4 +279,15 @@ class WardrobeCaptureController extends ChangeNotifier {
       return null;
     }
   }
+
+  Future<Map<String, dynamic>?> getJobDiagnostic([String? jobId]) async {
+    final targetJobId = jobId ?? _activeJob?.id;
+    if (targetJobId == null) return null;
+    try {
+      return await _repository.getJobDiagnostic(targetJobId);
+    } catch (e) {
+      debugPrint('[WardrobeCaptureController] getJobDiagnostic failed: $e');
+      return null;
+    }
+  }
 }

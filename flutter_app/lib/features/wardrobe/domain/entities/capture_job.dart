@@ -10,6 +10,9 @@ class CaptureJob {
   final int progressPercent;
   final int totalDetected;
   final String providerType;
+  final String qualityState;
+  final int processingTimeMs;
+  final Map<String, dynamic>? diagnosticInfo;
   final String? errorMessage;
   final List<GarmentCandidate> candidates;
   final DateTime? createdAt;
@@ -24,6 +27,9 @@ class CaptureJob {
     this.progressPercent = 0,
     this.totalDetected = 0,
     this.providerType = 'DEVELOPMENT_LOCAL',
+    this.qualityState = 'LOCAL_NEURAL_PROCESSING',
+    this.processingTimeMs = 0,
+    this.diagnosticInfo,
     this.errorMessage,
     this.candidates = const [],
     this.createdAt,
@@ -44,6 +50,9 @@ class CaptureJob {
     int? progressPercent,
     int? totalDetected,
     String? providerType,
+    String? qualityState,
+    int? processingTimeMs,
+    Map<String, dynamic>? diagnosticInfo,
     String? errorMessage,
     List<GarmentCandidate>? candidates,
     DateTime? createdAt,
@@ -58,6 +67,9 @@ class CaptureJob {
       progressPercent: progressPercent ?? this.progressPercent,
       totalDetected: totalDetected ?? this.totalDetected,
       providerType: providerType ?? this.providerType,
+      qualityState: qualityState ?? this.qualityState,
+      processingTimeMs: processingTimeMs ?? this.processingTimeMs,
+      diagnosticInfo: diagnosticInfo ?? this.diagnosticInfo,
       errorMessage: errorMessage ?? this.errorMessage,
       candidates: candidates ?? this.candidates,
       createdAt: createdAt ?? this.createdAt,

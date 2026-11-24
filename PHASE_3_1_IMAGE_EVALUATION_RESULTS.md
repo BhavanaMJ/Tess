@@ -68,3 +68,4 @@ To ensure that solving the single-garment false split did not break legitimate m
   - Candidate 1: Main Category `Tops`, Subcategory `Shirt`, Primary Color `Navy Blue`.
   - Candidate 2: Main Category `Bottoms`, Subcategory `Trousers`, Primary Color `Khaki`.
   - Each item generated its own distinct studio catalogue card.
+

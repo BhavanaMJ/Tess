@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/config/app_config.dart';
 import '../theme/wardrobe_theme.dart';
 
 /// Renders garment photograph on a clean studio white/neutral background
@@ -46,8 +47,23 @@ class GarmentImagePlaceholder extends StatelessWidget {
     }
   }
 
+  String? _resolveImageUrl(String? url) {
+    if (url == null || url.trim().isEmpty) return null;
+    final trimmed = url.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return trimmed;
+    }
+    if (trimmed.startsWith('/')) {
+      final base = AppConfig.resolveDefaultBackendUrl().replaceAll(RegExp(r'/+$'), '');
+      return '$base$trimmed';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final resolved = _resolveImageUrl(imageUrl);
+
     return Container(
       width: width,
       height: height,
@@ -66,10 +82,23 @@ class GarmentImagePlaceholder extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius),
-        child: imageUrl != null && imageUrl!.startsWith('http')
+        child: resolved != null
             ? Image.network(
-                imageUrl!,
+                resolved,
                 fit: BoxFit.contain,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: WardrobeTheme.electricViolet,
+                      ),
+                    ),
+                  );
+                },
                 errorBuilder: (_, __, ___) => _buildFallback(),
               )
             : _buildFallback(),

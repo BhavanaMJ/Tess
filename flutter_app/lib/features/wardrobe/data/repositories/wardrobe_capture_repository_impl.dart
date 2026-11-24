@@ -210,4 +210,38 @@ class WardrobeCaptureRepositoryImpl implements WardrobeCaptureRepository {
       };
     }
   }
+
+  @override
+  Future<Map<String, dynamic>> getJobDiagnostic(String jobId) async {
+    try {
+      return await _apiService.getJobDiagnostic(jobId);
+    } catch (e) {
+      final job = _jobsCache[jobId];
+      final candidates = _candidatesCache[jobId] ?? [];
+      final first = candidates.isNotEmpty ? candidates.first : null;
+      return {
+        'job_id': jobId,
+        'user_id': job?.userId ?? 'dev_user',
+        'original_image_ref': job?.originalImageRef ?? '',
+        'mask_image_ref': null,
+        'cutout_image_ref': null,
+        'catalogue_image_ref': first?.processedImageRef,
+        'provider_type': job?.providerType ?? 'DEVELOPMENT_LOCAL_OFFLINE',
+        'quality_state': job?.qualityState ?? 'LOCAL_NEURAL_PROCESSING',
+        'processing_time_ms': job?.processingTimeMs ?? 0,
+        'vlm_status': 'OFFLINE_LOCAL',
+        'warnings': <String>[],
+        'extracted_attributes': first != null
+            ? {
+                'suggested_name': first.suggestedName,
+                'main_category': first.mainCategory,
+                'subcategory': first.subcategory,
+                'primary_color': first.primaryColor,
+                'pattern': first.pattern,
+                'sleeve_length': first.sleeveLength,
+              }
+            : {},
+      };
+    }
+  }
 }

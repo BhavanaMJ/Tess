@@ -48,3 +48,4 @@ To achieve optimal, studio-grade results in TESS Smart Capture:
 2. **Use Natural or Neutral Lighting:** Daylight near a window or balanced room lighting produces the most accurate CIELAB color clustering.
 3. **Contrasting Background:** While U2-Net handles arbitrary backgrounds, photographing a dark garment against a lighter floor/bed (or vice versa) yields the sharpest textile edge isolation.
 4. **Separate Multiple Items:** If capturing an outfit in a single shot, leave visible space between the top, pants, and accessories.
+

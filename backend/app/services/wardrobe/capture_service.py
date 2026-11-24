@@ -8,12 +8,15 @@ from PIL import Image, ImageStat, ImageOps
 from supabase import Client
 
 from app.schemas.wardrobe import GarmentCreate
+import time
 from app.schemas.wardrobe_capture import (
     CaptureJobResponse,
     GarmentCandidateResponse,
     GarmentCandidateUpdate,
     CaptureJobConfirmResponse,
     CaptureJobStatusEnum,
+    CaptureJobQualityStateEnum,
+    CaptureJobDiagnosticResponse,
 )
 from app.services.wardrobe.vision_provider import get_vision_provider, GarmentVisionProvider
 from app.services.wardrobe.service import WardrobeService
@@ -102,6 +105,7 @@ class WardrobeCaptureService:
         # Securely store original image
         orig_ref = self._save_image_file("originals", job_id, image_bytes, "jpg")
 
+        start_time = time.time()
         job_record = {
             "id": job_id,
             "user_id": self.user_id,
@@ -111,6 +115,9 @@ class WardrobeCaptureService:
             "progress_percent": 30,
             "total_detected": 0,
             "provider_type": self.vision_provider.provider_name,
+            "quality_state": CaptureJobQualityStateEnum.LOCAL_NEURAL_PROCESSING.value,
+            "processing_time_ms": 0,
+            "diagnostic_info": None,
             "error_message": None,
             "created_at": now.isoformat(),
             "updated_at": now.isoformat(),
@@ -130,9 +137,14 @@ class WardrobeCaptureService:
             job_record["progress_percent"] = 65
 
             detection_results = await self.vision_provider.detect_and_segment(image_bytes, filename)
+            processing_time_ms = int((time.time() - start_time) * 1000)
 
             if not detection_results:
                 raise ValueError("No identifiable garments could be detected in this photograph. Try another angle or lighting.")
+
+            diag_mask_ref = None
+            diag_cutout_ref = None
+            diag_cat_ref = None
 
             for res in detection_results:
                 cand_id = f"cand_{uuid.uuid4().hex[:12]}"
@@ -141,11 +153,23 @@ class WardrobeCaptureService:
                 processed_ref = None
                 if res.processed_image_bytes:
                     processed_ref = self._save_image_file("processed", f"{job_id}_{cand_id}", res.processed_image_bytes, "jpg")
+                    diag_cat_ref = processed_ref
 
                 # Save original crop image
                 crop_ref = None
                 if res.original_crop_bytes:
                     crop_ref = self._save_image_file("crops", f"{job_id}_{cand_id}_crop", res.original_crop_bytes, "jpg")
+
+                # Save diagnostic binary mask and transparent cutout
+                mask_ref = None
+                if res.mask_image_bytes:
+                    mask_ref = self._save_image_file("masks", f"{job_id}_{cand_id}_mask", res.mask_image_bytes, "jpg")
+                    diag_mask_ref = mask_ref
+
+                cutout_ref = None
+                if res.cutout_image_bytes:
+                    cutout_ref = self._save_image_file("cutouts", f"{job_id}_{cand_id}_cutout", res.cutout_image_bytes, "png")
+                    diag_cutout_ref = cutout_ref
 
                 cand_record = {
                     "id": cand_id,
@@ -185,10 +209,20 @@ class WardrobeCaptureService:
 
                 candidate_responses.append(GarmentCandidateResponse(**cand_record))
 
+            first_res = detection_results[0]
             job_record["status"] = CaptureJobStatusEnum.AWAITING_APPROVAL.value
             job_record["current_stage"] = "Awaiting user approval"
             job_record["progress_percent"] = 100
             job_record["total_detected"] = len(candidate_responses)
+            job_record["quality_state"] = first_res.quality_state
+            job_record["processing_time_ms"] = processing_time_ms
+            job_record["diagnostic_info"] = {
+                "vlm_status": first_res.vlm_status,
+                "warnings": first_res.warnings,
+                "mask_ref": diag_mask_ref,
+                "cutout_ref": diag_cutout_ref,
+                "catalogue_ref": diag_cat_ref,
+            }
             job_record["updated_at"] = datetime.now(timezone.utc).isoformat()
             self._user_jobs_store()[job_id] = job_record
 
@@ -246,6 +280,59 @@ class WardrobeCaptureService:
             cands = [c for c in self._user_candidates_store().values() if c.get("job_id") == job_id and str(c.get("user_id")) == self.user_id]
 
         return [GarmentCandidateResponse(**c) for c in cands]
+
+    def get_job_diagnostic(self, job_id: str) -> CaptureJobDiagnosticResponse:
+        """
+        Retrieves diagnostic execution information for a capture job, exposing
+        the original photograph, binary mask, transparent cutout, catalogue image,
+        VLM latency, quality state, and extracted attributes.
+        """
+        job = self.get_capture_job(job_id)
+        candidates = self.get_job_candidates(job_id)
+
+        diag_info = job.diagnostic_info or {}
+        first_cand = candidates[0] if candidates else None
+
+        extracted: Dict[str, Any] = {}
+        bbox = None
+        if first_cand:
+            extracted = {
+                "suggested_name": first_cand.suggested_name,
+                "main_category": first_cand.main_category,
+                "subcategory": first_cand.subcategory,
+                "primary_color": first_cand.primary_color,
+                "secondary_colors": first_cand.secondary_colors,
+                "pattern": first_cand.pattern,
+                "fabric_material": first_cand.fabric_material,
+                "sleeve_length": first_cand.sleeve_length,
+                "neckline": first_cand.neckline,
+                "fit": first_cand.fit,
+                "silhouette": first_cand.silhouette,
+                "garment_length": first_cand.garment_length,
+                "confidence_scores": first_cand.confidence_scores,
+            }
+            bbox = first_cand.bounding_box
+
+        mask_ref = diag_info.get("mask_ref")
+        cutout_ref = diag_info.get("cutout_ref")
+        catalogue_ref = diag_info.get("catalogue_ref") or (first_cand.processed_image_ref if first_cand else None)
+
+        return CaptureJobDiagnosticResponse(
+            job_id=job.id,
+            user_id=job.user_id,
+            original_image_ref=job.original_image_ref,
+            mask_image_ref=mask_ref,
+            cutout_image_ref=cutout_ref,
+            catalogue_image_ref=catalogue_ref,
+            provider_type=job.provider_type,
+            model_name=getattr(self.vision_provider, "model_name", None),
+            quality_state=job.quality_state or CaptureJobQualityStateEnum.LOCAL_NEURAL_PROCESSING.value,
+            processing_time_ms=job.processing_time_ms or 0,
+            vlm_status=diag_info.get("vlm_status", "OFFLINE_LOCAL"),
+            warnings=diag_info.get("warnings", []),
+            extracted_attributes=extracted,
+            bounding_box=bbox,
+        )
 
     def update_candidate(self, candidate_id: str, update: GarmentCandidateUpdate) -> GarmentCandidateResponse:
         """Updates attributes, inclusion flag, or approval state of an individual garment candidate."""

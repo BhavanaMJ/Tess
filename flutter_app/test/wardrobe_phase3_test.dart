@@ -93,6 +93,27 @@ class MockWardrobeCaptureRepository implements WardrobeCaptureRepository {
       'registered_garments': confirmed.map((c) => {'id': 'CLO-019', 'name': c.suggestedName}).toList(),
     };
   }
+
+  @override
+  Future<Map<String, dynamic>> getJobDiagnostic(String jobId) async {
+    return {
+      'job_id': jobId,
+      'user_id': 'test-user',
+      'original_image_ref': 'test.jpg',
+      'mask_image_ref': null,
+      'cutout_image_ref': null,
+      'catalogue_image_ref': null,
+      'provider_type': 'DEVELOPMENT_LOCAL',
+      'quality_state': 'FULL_AI_PROCESSING',
+      'processing_time_ms': 120,
+      'vlm_status': 'SUCCESS',
+      'warnings': <String>[],
+      'extracted_attributes': {
+        'suggested_name': 'Test Garment',
+        'main_category': 'Tops',
+      },
+    };
+  }
 }
 
 void main() {

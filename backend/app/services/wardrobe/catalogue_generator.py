@@ -2,6 +2,7 @@ import io
 import logging
 from typing import Tuple, Optional
 import numpy as np
+import cv2
 from PIL import Image
 
 logger = logging.getLogger(__name__)
@@ -10,9 +11,10 @@ class CatalogueGenerator:
     """
     Transforms segmented garments into clean, professional, catalogue-style studio photographs.
     - Preserves garment proportions, colors, and full design details (sleeves, neckline, hem).
-    - Removes all original background noise and clutter.
+    - Removes all original background noise, furniture, and clutter.
     - Centers the garment on a pristine neutral studio canvas (#FAFAFA).
     - Uses Lanczos anti-aliasing resampling for crisp fabric textures.
+    - Exports binary masks and transparent cutouts for developer diagnostic views.
     """
 
     DEFAULT_CANVAS_SIZE = (800, 800)
@@ -26,6 +28,7 @@ class CatalogueGenerator:
         padding_ratio: float = 0.14,  # 14% padding keeps margins clean and details fully visible
         output_format: str = "JPEG",
         quality: int = 92,
+        auto_level: bool = True,
     ) -> bytes:
         """
         Creates a studio catalogue image from a transparent RGBA garment.
@@ -41,7 +44,6 @@ class CatalogueGenerator:
             ymin, ymax = int(np.min(pos[0])), int(np.max(pos[0]))
             xmin, xmax = int(np.min(pos[1])), int(np.max(pos[1]))
 
-            # Add 6px breathing room if possible
             h, w = alpha.shape
             ymin = max(0, ymin - 6)
             ymax = min(h, ymax + 6)
@@ -51,6 +53,18 @@ class CatalogueGenerator:
             cropped = rgba_img.crop((xmin, ymin, xmax, ymax))
         else:
             cropped = rgba_img
+
+        # Subtle auto-leveling if garment is tilted draped on chair or bed
+        if auto_level and cropped.height > 100:
+            cropped_alpha = np.array(cropped)[:, :, 3]
+            ch, cw = cropped_alpha.shape
+            upper_alpha = cropped_alpha[:int(ch * 0.4), :]
+            M = cv2.moments(upper_alpha)
+            if M['mu20'] != M['mu02'] and M['m00'] > 100:
+                theta = 0.5 * np.arctan2(2 * M['mu11'], M['mu20'] - M['mu02'])
+                angle_deg = float(np.degrees(theta))
+                if 2.0 < abs(angle_deg) < 25.0:
+                    cropped = cropped.rotate(-angle_deg * 0.45, resample=Image.Resampling.BICUBIC, expand=True)
 
         # Create studio background canvas
         studio_canvas = Image.new("RGB", canvas_size, bg_color)
@@ -81,6 +95,16 @@ class CatalogueGenerator:
 
         return out_buf.getvalue()
 
+    def create_binary_mask_image(self, rgba_img: Image.Image) -> bytes:
+        """Exports the binary segmentation mask as a JPEG for diagnostic views."""
+        if rgba_img.mode != "RGBA":
+            rgba_img = rgba_img.convert("RGBA")
+        alpha = np.array(rgba_img)[:, :, 3]
+        mask_img = Image.fromarray(alpha, mode="L")
+        out_buf = io.BytesIO()
+        mask_img.save(out_buf, format="JPEG", quality=90)
+        return out_buf.getvalue()
+
     def create_transparent_png(
         self,
         rgba_img: Image.Image,
@@ -106,4 +130,3 @@ class CatalogueGenerator:
         out_buf = io.BytesIO()
         cropped.save(out_buf, format="PNG", optimize=True)
         return out_buf.getvalue()
-

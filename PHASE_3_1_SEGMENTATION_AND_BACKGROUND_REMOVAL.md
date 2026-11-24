@@ -111,3 +111,4 @@ Running `GarmentSegmentationService` on the user's uploaded Kurta photograph (`j
 - **Connected Components:** Exactly 1 primary component.
 - **Total Detected Instances:** **1** (Zero false splits).
 - **Studio Catalogue Card:** $800 \times 800$ JPEG, size 96,572 bytes. Centered, sleeves and collar fully preserved, background 100% replaced with `#FAFAFA`.
+

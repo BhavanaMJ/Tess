@@ -101,3 +101,4 @@ def get_vision_provider() -> GarmentVisionProvider:
 | **Attribute Derivation** | Aspect-ratio heuristics & hardcoded values | Genuine multimodal VLM vision analysis (`moondream` / Gemini) |
 | **Catalogue Quality** | Raw noisy camera crop | 800x800 studio white canvas `#FAFAFA`, centered, with full hems and sleeves |
 | **Failover Reliability** | Silent fallback to fake attributes | Layered failover with explicit confidence scores and uncertainty notes |
+
