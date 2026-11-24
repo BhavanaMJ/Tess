@@ -12,6 +12,7 @@ import '../widgets/wardrobe_section_header.dart';
 import '../widgets/wardrobe_summary_card.dart';
 import 'garment_form_screen.dart';
 import 'smart_capture_screen.dart';
+import 'garment_import_wizard_screen.dart';
 import 'wardrobe_inventory_screen.dart';
 import '../../data/repositories/wardrobe_capture_repository_impl.dart';
 import '../controllers/wardrobe_capture_controller.dart';
@@ -99,6 +100,19 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
             repository: WardrobeCaptureRepositoryImpl(),
           ),
         ),
+      ),
+    )
+        .then((_) {
+      _controller.loadInitialData();
+    });
+  }
+
+  void _navigateToImportWizard() {
+    final uid = _authService.currentUser?.id ?? 'tess_user';
+    Navigator.of(context)
+        .push(
+      MaterialPageRoute(
+        builder: (_) => GarmentImportWizardScreen(userId: uid),
       ),
     )
         .then((_) {
@@ -213,6 +227,37 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.psychology_rounded,
+                      color: WardrobeTheme.electricCyan),
+                  title: Text('AI Garment Catalogue Import',
+                      style: TextStyle(
+                          color: WardrobeTheme.textPrimary,
+                          fontWeight: FontWeight.w600)),
+                  subtitle: Text(
+                      'Import studio photo & Schema 1.1 JSON from ChatGPT Project',
+                      style: TextStyle(
+                          color: WardrobeTheme.textMuted, fontSize: 12)),
+                  trailing: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color:
+                          WardrobeTheme.electricCyan.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text('CHATGPT IMPORT',
+                        style: TextStyle(
+                            fontSize: 10,
+                            color: WardrobeTheme.electricCyan,
+                            fontWeight: FontWeight.w700)),
+                  ),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _navigateToImportWizard();
+                  },
+                ),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: Icon(Icons.auto_awesome_rounded,

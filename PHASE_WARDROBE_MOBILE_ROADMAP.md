@@ -68,7 +68,27 @@
 
 ---
 
-## Phase 4 — Laundry Manager (COMPLETED)
+## Phase 3.4 — Smart Capture: ChatGPT-Assisted Garment Import Workflow (COMPLETED)
+**Focus**: Manual transfer workflow enabling external AI studio catalogue image generation and Schema Version 1.1 structured metadata import via dedicated ChatGPT Project (*"TESS — AI GARMENT CATALOGUE & METADATA GENERATOR"*).
+- [x] Four-stage wizard mobile interface (`Prepare Garment` -> `Import Catalogue Image` -> `Import Metadata JSON` -> `Review & Register`).
+- [x] Typed domain entity (`GarmentMetadataV1_1`) and Pydantic V2 schemas covering all 12 sections with full attribute preservation.
+- [x] PostgreSQL database migration `008_garment_metadata_import.sql` with `metadata_payload JSONB`, GIN index, and `import_provenance`.
+- [x] Atomic sequential `CLO-xxx` garment ID generation with strict row-locking protection (rejection of ChatGPT IDs).
+- [x] Mandatory studio catalogue image validation with separate retention of optional original phone captures.
+- [x] Strict initial `laundry_status = null` policy (unassigned) and non-fraudulent provenance tracking (`User Imported (ChatGPT Project)`).
+- [x] Client-side auto-save draft persistence using `SharedPreferences` to prevent data loss on app switching.
+- [x] Zero regressions to existing baseline garments `CLO-001` through `CLO-018`, laundry, studio, calendar, insights, or wishlist modules.
+- [x] Automated test suites: 19 new Flutter unit & widget tests (225 total app passing), 10 new backend tests (75 total wardrobe passing).
+- [x] Comprehensive documentation:
+  - `PHASE_3_4_ARCHITECTURE_AUDIT.md`
+  - `PHASE_3_4_IMPLEMENTATION.md`
+  - `PHASE_3_4_API_DOCUMENTATION.md`
+  - `PHASE_3_4_DATABASE_CHANGES.md`
+  - `PHASE_3_4_TEST_RESULTS.md`
+  - `PHASE_3_4_KNOWN_LIMITATIONS.md`
+  - `PHASE_3_4_USER_GUIDE.md`
+
+---
 **Focus**: Operational lifecycle tracking, batch management, and garment lifecycle history.
 - [x] 5-Status visual workflow: CLEAN → WORN → WASHING → DRYING → STORED + Unassigned safety.
 - [x] Dedicated Laundry Manager dashboard with real-time status metrics and active batches.

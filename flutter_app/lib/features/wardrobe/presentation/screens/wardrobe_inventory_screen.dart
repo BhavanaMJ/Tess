@@ -9,6 +9,7 @@ import '../widgets/category_chip.dart';
 import '../widgets/garment_image_placeholder.dart';
 import '../widgets/garment_status_indicator.dart';
 import 'garment_form_screen.dart';
+import 'garment_import_wizard_screen.dart';
 import 'wardrobe_detail_screen.dart';
 
 /// WardrobeInventoryScreen: Digital Wardrobe Inventory.
@@ -409,6 +410,19 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                   ),
                 ),
             ],
+          ),
+          IconButton(
+            icon: Icon(Icons.psychology_rounded,
+                color: WardrobeTheme.electricViolet, size: 24),
+            tooltip: 'AI Catalogue Import (ChatGPT)',
+            onPressed: () {
+              final uid = widget.authService?.currentUser?.id ?? 'tess_user';
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => GarmentImportWizardScreen(userId: uid),
+                ),
+              ).then((_) => widget.controller.loadInitialData());
+            },
           ),
           IconButton(
             icon: Icon(Icons.add_rounded,
