@@ -71,7 +71,7 @@ class ExistingGarmentMatchCard extends StatelessWidget {
                     const SizedBox(width: 6),
                     Text(
                       match.primaryColor,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
                         color: WardrobeTheme.textMuted,
                       ),
@@ -81,7 +81,7 @@ class ExistingGarmentMatchCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   match.garmentName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: WardrobeTheme.textPrimary,
@@ -92,7 +92,7 @@ class ExistingGarmentMatchCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   match.similarityReason,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
                     color: WardrobeTheme.textMuted,
                   ),
@@ -108,7 +108,7 @@ class ExistingGarmentMatchCard extends StatelessWidget {
   }
 
   Widget _buildFallbackIcon() {
-    return const Center(
+    return Center(
       child: Icon(Icons.checkroom, size: 24, color: WardrobeTheme.softViolet),
     );
   }

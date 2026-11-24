@@ -58,9 +58,9 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
   Future<void> _handleCreate() async {
     if (_selectedGarments.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           backgroundColor: WardrobeTheme.elevatedSurface,
-          content: Text(
+          content: const Text(
               'Please select at least one garment for this laundry batch.'),
         ),
       );
@@ -107,10 +107,10 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: WardrobeTheme.textPrimary),
+          icon: Icon(Icons.close, color: WardrobeTheme.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'New Laundry Batch',
           style: TextStyle(
             fontSize: 17,
@@ -120,7 +120,7 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
         ),
       ),
       body: _isLoadingItems
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(
                   color: WardrobeTheme.electricViolet))
           : SingleChildScrollView(
@@ -131,26 +131,26 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
                   // Batch Name Input
                   TextFormField(
                     controller: _nameController,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: WardrobeTheme.textPrimary, fontSize: 14),
                     decoration: InputDecoration(
                       labelText: 'Batch Name (Optional)',
                       hintText: 'e.g. Regular Wash, Delicates, Workout Gear',
-                      hintStyle: const TextStyle(
+                      hintStyle: TextStyle(
                           color: WardrobeTheme.textMuted, fontSize: 13),
-                      labelStyle: const TextStyle(
+                      labelStyle: TextStyle(
                           color: WardrobeTheme.textSecondary, fontSize: 13),
                       filled: true,
                       fillColor: WardrobeTheme.spatialSurface,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide:
-                            const BorderSide(color: WardrobeTheme.border),
+                            BorderSide(color: WardrobeTheme.border),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide:
-                            const BorderSide(color: WardrobeTheme.border),
+                            BorderSide(color: WardrobeTheme.border),
                       ),
                     ),
                   ),
@@ -160,26 +160,26 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
                   // Optional Notes
                   TextFormField(
                     controller: _notesController,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: WardrobeTheme.textPrimary, fontSize: 14),
                     decoration: InputDecoration(
                       labelText: 'Batch Notes (Optional)',
                       hintText: 'e.g. Cold water 30°C, hang dry wool items',
-                      hintStyle: const TextStyle(
+                      hintStyle: TextStyle(
                           color: WardrobeTheme.textMuted, fontSize: 13),
-                      labelStyle: const TextStyle(
+                      labelStyle: TextStyle(
                           color: WardrobeTheme.textSecondary, fontSize: 13),
                       filled: true,
                       fillColor: WardrobeTheme.spatialSurface,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide:
-                            const BorderSide(color: WardrobeTheme.border),
+                            BorderSide(color: WardrobeTheme.border),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide:
-                            const BorderSide(color: WardrobeTheme.border),
+                            BorderSide(color: WardrobeTheme.border),
                       ),
                     ),
                   ),
@@ -190,7 +190,7 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'GARMENTS IN BATCH',
                         style: TextStyle(
                           fontSize: 12,
@@ -209,7 +209,7 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
                         ),
                         child: Text(
                           '${_selectedGarments.length} SELECTED',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
                             color: WardrobeTheme.softViolet,
@@ -229,7 +229,7 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: WardrobeTheme.borderSubtle),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Text(
                           'No garments selected. Go to Worn clothes to select items.',
                           style: TextStyle(
@@ -278,7 +278,7 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
                                       g.name,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w700,
                                         color: WardrobeTheme.textPrimary,
@@ -286,7 +286,7 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
                                     ),
                                     Text(
                                       '${g.id} • ${g.mainCategory}',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                           fontSize: 11,
                                           color: WardrobeTheme.textMuted),
                                     ),
@@ -294,7 +294,7 @@ class _LaundryBatchCreateScreenState extends State<LaundryBatchCreateScreen> {
                                 ),
                               ),
                               IconButton(
-                                icon: const Icon(
+                                icon: Icon(
                                     Icons.remove_circle_outline_rounded,
                                     color: WardrobeTheme.statusCritical,
                                     size: 20),

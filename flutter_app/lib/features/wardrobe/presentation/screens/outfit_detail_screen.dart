@@ -41,7 +41,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (context, setDlgState) => AlertDialog(
           backgroundColor: WardrobeTheme.elevatedSurface,
-          title: const Text('Edit Outfit',
+          title: Text('Edit Outfit',
               style: TextStyle(color: WardrobeTheme.textPrimary)),
           content: SingleChildScrollView(
             child: Column(
@@ -50,14 +50,14 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Name',
                     labelStyle: TextStyle(color: WardrobeTheme.textMuted),
                   ),
-                  style: const TextStyle(color: WardrobeTheme.textPrimary),
+                  style: TextStyle(color: WardrobeTheme.textPrimary),
                 ),
                 const SizedBox(height: 12),
-                const Text('Occasion',
+                Text('Occasion',
                     style: TextStyle(
                         color: WardrobeTheme.textSecondary, fontSize: 12)),
                 const SizedBox(height: 6),
@@ -68,20 +68,20 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                 const SizedBox(height: 12),
                 TextField(
                   controller: descController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Description',
                     labelStyle: TextStyle(color: WardrobeTheme.textMuted),
                   ),
-                  style: const TextStyle(color: WardrobeTheme.textPrimary),
+                  style: TextStyle(color: WardrobeTheme.textPrimary),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: notesController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Notes',
                     labelStyle: TextStyle(color: WardrobeTheme.textMuted),
                   ),
-                  style: const TextStyle(color: WardrobeTheme.textPrimary),
+                  style: TextStyle(color: WardrobeTheme.textPrimary),
                 ),
               ],
             ),
@@ -89,7 +89,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel',
+              child: Text('Cancel',
                   style: TextStyle(color: WardrobeTheme.textMuted)),
             ),
             ElevatedButton(
@@ -122,16 +122,16 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: WardrobeTheme.elevatedSurface,
-        title: const Text('Delete Outfit?',
+        title: Text('Delete Outfit?',
             style: TextStyle(color: WardrobeTheme.textPrimary)),
-        content: const Text(
+        content: Text(
           'This will remove the look from your saved lookbook. Your physical garments will remain in your wardrobe.',
           style: TextStyle(color: WardrobeTheme.textSecondary, fontSize: 13),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel',
+            child: Text('Cancel',
                 style: TextStyle(color: WardrobeTheme.textMuted)),
           ),
           ElevatedButton(
@@ -160,17 +160,17 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: WardrobeTheme.elevatedSurface,
-        title: const Text('Wear this Outfit today?',
+        title: Text('Wear this Outfit today?',
             style: TextStyle(color: WardrobeTheme.textPrimary)),
         content: Text(
           'Wearing "${_outfit.name}" will update all constituent garments to WORN in Laundry Manager and increment their wear counts.',
           style:
-              const TextStyle(color: WardrobeTheme.textSecondary, fontSize: 13),
+              TextStyle(color: WardrobeTheme.textSecondary, fontSize: 13),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel',
+            child: Text('Cancel',
                 style: TextStyle(color: WardrobeTheme.textMuted)),
           ),
           ElevatedButton(
@@ -219,12 +219,12 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           _outfit.name,
-          style: const TextStyle(
+          style: TextStyle(
             color: WardrobeTheme.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -234,13 +234,13 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit_outlined,
+            icon: Icon(Icons.edit_outlined,
                 color: WardrobeTheme.textPrimary),
             tooltip: 'Edit Outfit',
             onPressed: _showEditDialog,
           ),
           IconButton(
-            icon: const Icon(Icons.delete_outline,
+            icon: Icon(Icons.delete_outline,
                 color: WardrobeTheme.statusCritical),
             tooltip: 'Delete Outfit',
             onPressed: _confirmDelete,
@@ -275,7 +275,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                         ),
                         child: Text(
                           _outfit.occasion.toUpperCase(),
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
                               color: WardrobeTheme.softViolet),
@@ -291,7 +291,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                         ),
                         child: Text(
                           _outfit.creationSource.value,
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
                               color: WardrobeTheme.textMuted),
@@ -309,7 +309,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                           ),
                           child: Text(
                             'Worn ${_outfit.wearCount}x',
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
                                 color: WardrobeTheme.electricCyan),
@@ -322,7 +322,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                     const SizedBox(height: 12),
                     Text(
                       _outfit.description!,
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 13,
                           color: WardrobeTheme.textSecondary,
                           height: 1.4),
@@ -340,13 +340,13 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(Icons.auto_awesome,
+                          Icon(Icons.auto_awesome,
                               size: 14, color: WardrobeTheme.electricCyan),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               _outfit.stylingExplanation!,
-                              style: const TextStyle(
+                              style: TextStyle(
                                   fontSize: 12,
                                   color: WardrobeTheme.textSecondary,
                                   height: 1.35),
@@ -376,13 +376,13 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.warning_amber_rounded,
+                    Icon(Icons.warning_amber_rounded,
                         color: WardrobeTheme.statusWarning, size: 20),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         'Some garments are in laundry. Wash and dry them before wearing this look.\n${_outfit.unavailableReasons.join(', ')}',
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: WardrobeTheme.statusWarning,
                             fontSize: 11,
                             height: 1.3),
@@ -393,7 +393,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
               ),
 
             // Constituent Garments List
-            const Text(
+            Text(
               'CONSTITUENT GARMENTS',
               style: TextStyle(
                 fontSize: 12,
@@ -477,7 +477,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
               children: [
                 Text(
                   item.name,
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                       color: WardrobeTheme.textPrimary),
@@ -486,7 +486,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                 ),
                 Text(
                   '${item.mainCategory} • ${item.primaryColor}${item.pattern != null ? ' • ${item.pattern}' : ''}',
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 11, color: WardrobeTheme.textMuted),
                 ),
               ],

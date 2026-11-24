@@ -123,3 +123,4 @@ When operating in an offline environment:
 3. **Immediate Post-Conversion Routing**:
    - Option A: "View in My Wardrobe" (opens Garment Inspector for the newly created `CLO-xxx`).
    - Option B: "Return to Wishlist" (updates list view with converted badge).
+

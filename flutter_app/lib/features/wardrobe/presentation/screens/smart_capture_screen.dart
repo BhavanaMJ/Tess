@@ -28,10 +28,10 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'Smart Capture',
           style: TextStyle(
             fontSize: 18,
@@ -69,11 +69,11 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
                               .withValues(alpha: 0.15),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.auto_awesome_rounded,
+                        child: Icon(Icons.auto_awesome_rounded,
                             color: WardrobeTheme.softViolet, size: 20),
                       ),
                       const SizedBox(width: 12),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -84,7 +84,7 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
                                   fontWeight: FontWeight.w700,
                                   color: WardrobeTheme.textPrimary),
                             ),
-                            SizedBox(height: 2),
+                            const SizedBox(height: 2),
                             Text(
                               'Capture single garments or complete outfits. TESS will separate each item cleanly into your wardrobe.',
                               style: TextStyle(
@@ -115,13 +115,13 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.warning_amber_rounded,
+                        Icon(Icons.warning_amber_rounded,
                             color: WardrobeTheme.statusCritical, size: 20),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             widget.controller.errorMessage!,
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 12,
                                 color: WardrobeTheme.statusCritical),
                           ),
@@ -182,7 +182,7 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
                           label: const Text('Retake'),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: WardrobeTheme.textSecondary,
-                            side: const BorderSide(color: WardrobeTheme.border),
+                            side: BorderSide(color: WardrobeTheme.border),
                             padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
                         ),
@@ -232,7 +232,7 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
                                 .withValues(alpha: 0.6),
                           ),
                           const SizedBox(height: 12),
-                          const Text(
+                          Text(
                             'Add a Photograph',
                             style: TextStyle(
                               fontSize: 16,
@@ -241,7 +241,7 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          const Text(
+                          Text(
                             'Select from gallery or snap a photo with your camera',
                             textAlign: TextAlign.center,
                             style: TextStyle(
@@ -279,7 +279,7 @@ class _SmartCaptureScreenState extends State<SmartCaptureScreen> {
                         style: TextStyle(fontWeight: FontWeight.w600)),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: WardrobeTheme.electricCyan,
-                      side: const BorderSide(color: WardrobeTheme.borderCyan),
+                      side: BorderSide(color: WardrobeTheme.borderCyan),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),

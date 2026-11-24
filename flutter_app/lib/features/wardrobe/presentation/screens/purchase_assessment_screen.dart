@@ -32,7 +32,7 @@ class _PurchaseAssessmentScreenState extends State<PurchaseAssessmentScreen> {
       backgroundColor: WardrobeTheme.voidBlack,
       appBar: AppBar(
         backgroundColor: WardrobeTheme.voidBlack,
-        title: const Text(
+        title: Text(
           'Purchase Assessment',
           style: TextStyle(
             fontWeight: FontWeight.w800,
@@ -46,7 +46,7 @@ class _PurchaseAssessmentScreenState extends State<PurchaseAssessmentScreen> {
           final assessment = widget.controller.currentAssessment;
 
           if (widget.controller.isLoading && assessment == null) {
-            return const Center(
+            return Center(
               child: CircularProgressIndicator(color: WardrobeTheme.electricViolet),
             );
           }
@@ -56,7 +56,7 @@ class _PurchaseAssessmentScreenState extends State<PurchaseAssessmentScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     'Unable to load assessment',
                     style: TextStyle(color: WardrobeTheme.textMuted),
                   ),
@@ -113,7 +113,7 @@ class _PurchaseAssessmentScreenState extends State<PurchaseAssessmentScreen> {
 
               // Similar owned items section
               if (assessment.hasSimilarOwned) ...[
-                const Text(
+                Text(
                   'EXISTING SIMILAR GARMENTS IN YOUR WARDROBE',
                   style: TextStyle(
                     fontSize: 11,
@@ -123,7 +123,7 @@ class _PurchaseAssessmentScreenState extends State<PurchaseAssessmentScreen> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
+                Text(
                   'You already own pieces that serve a similar purpose or share the same palette.',
                   style: TextStyle(fontSize: 12, color: WardrobeTheme.textMuted),
                 ),
@@ -144,12 +144,12 @@ class _PurchaseAssessmentScreenState extends State<PurchaseAssessmentScreen> {
                   color: WardrobeTheme.elevatedSurface,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Row(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(Icons.info_outline_rounded,
                         size: 16, color: WardrobeTheme.softViolet),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         'TESS assessments are decision-support insights, not absolute directives. Prioritize purchases that bring lasting joy and versatile utility.',
@@ -186,7 +186,7 @@ class _PurchaseAssessmentScreenState extends State<PurchaseAssessmentScreen> {
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
               color: WardrobeTheme.textMuted,
               fontWeight: FontWeight.w500,

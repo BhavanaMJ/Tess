@@ -57,14 +57,14 @@ class WeatherContextCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: WardrobeTheme.border),
         ),
-        child: const Row(
+        child: Row(
           children: [
             Icon(
               Icons.cloud_sync_rounded,
               color: WardrobeTheme.softViolet,
               size: 20,
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Text(
               'Loading weather context...',
               style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
@@ -116,7 +116,7 @@ class WeatherContextCard extends StatelessWidget {
                       children: [
                         Text(
                           isAvailable ? w.conditionText : 'Weather Forecast Unavailable',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: WardrobeTheme.textPrimary,
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
@@ -132,11 +132,11 @@ class WeatherContextCard extends StatelessWidget {
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.umbrella_rounded, size: 10, color: WardrobeTheme.electricCyan),
+                                Icon(Icons.umbrella_rounded, size: 10, color: WardrobeTheme.electricCyan),
                                 const SizedBox(width: 4),
                                 Text(
                                   '${w.rainProbability}%',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: WardrobeTheme.electricCyan,
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
@@ -151,7 +151,7 @@ class WeatherContextCard extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       isAvailable ? '${w.temperatureDisplay} • ${w.location}' : w.date,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: WardrobeTheme.textMuted,
                         fontSize: 12,
                       ),
@@ -162,7 +162,7 @@ class WeatherContextCard extends StatelessWidget {
               if (isAvailable && w.feelsLikeC != null)
                 Text(
                   'Feels ${w.feelsLikeC!.toStringAsFixed(0)}°',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: WardrobeTheme.textSecondary,
                     fontSize: 12,
                   ),
@@ -180,7 +180,7 @@ class WeatherContextCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(
+                Icon(
                   Icons.auto_awesome_rounded,
                   size: 14,
                   color: WardrobeTheme.softViolet,
@@ -189,7 +189,7 @@ class WeatherContextCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     w.stylingSuggestion,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: WardrobeTheme.textSecondary,
                       fontSize: 12,
                       height: 1.4,

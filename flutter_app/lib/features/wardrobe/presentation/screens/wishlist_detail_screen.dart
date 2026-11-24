@@ -80,15 +80,15 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: WardrobeTheme.elevatedSurface,
-        title: const Text('Delete Wishlist Item?', style: TextStyle(color: WardrobeTheme.textPrimary)),
-        content: const Text(
+        title: Text('Delete Wishlist Item?', style: TextStyle(color: WardrobeTheme.textPrimary)),
+        content: Text(
           'Are you sure you want to remove this item from your wishlist?',
           style: TextStyle(color: WardrobeTheme.textMuted),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel', style: TextStyle(color: WardrobeTheme.textMuted)),
+            child: Text('Cancel', style: TextStyle(color: WardrobeTheme.textMuted)),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -113,7 +113,7 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
       backgroundColor: WardrobeTheme.voidBlack,
       appBar: AppBar(
         backgroundColor: WardrobeTheme.voidBlack,
-        title: const Text(
+        title: Text(
           'Wishlist Item Detail',
           style: TextStyle(
             fontWeight: FontWeight.w800,
@@ -122,11 +122,11 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit_outlined, color: WardrobeTheme.electricViolet),
+            icon: Icon(Icons.edit_outlined, color: WardrobeTheme.electricViolet),
             onPressed: _navigateToEdit,
           ),
           IconButton(
-            icon: const Icon(Icons.delete_outline_rounded, color: WardrobeTheme.warningRose),
+            icon: Icon(Icons.delete_outline_rounded, color: WardrobeTheme.warningRose),
             onPressed: _delete,
           ),
         ],
@@ -176,7 +176,7 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
                     color: WardrobeTheme.electricViolet.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: const Text(
+                  child: Text(
                     'CONVERTED TO WARDROBE',
                     style: TextStyle(
                       fontSize: 10,
@@ -190,7 +190,7 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
           const SizedBox(height: 10),
           Text(
             _item.name,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w800,
               color: WardrobeTheme.textPrimary,
@@ -199,7 +199,7 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
           const SizedBox(height: 4),
           Text(
             '${_item.category}${_item.subcategory != null ? ' • ${_item.subcategory}' : ''}',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               color: WardrobeTheme.textMuted,
             ),
@@ -223,20 +223,20 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
                       : 'Unrecorded',
                 ),
                 if (_item.actualPurchasePrice != null) ...[
-                  const Divider(color: WardrobeTheme.subtleBorder, height: 16),
+                  Divider(color: WardrobeTheme.subtleBorder, height: 16),
                   _buildSpecRow(
                     'Actual Purchase Price',
                     '${_item.actualPurchaseCurrency ?? currencySymbol}${_item.actualPurchasePrice!.toStringAsFixed(0)}',
                   ),
                 ],
-                const Divider(color: WardrobeTheme.subtleBorder, height: 16),
+                Divider(color: WardrobeTheme.subtleBorder, height: 16),
                 _buildSpecRow('Target Color', _item.desiredColour ?? 'Any'),
                 if (_item.desiredPattern != null) ...[
-                  const Divider(color: WardrobeTheme.subtleBorder, height: 16),
+                  Divider(color: WardrobeTheme.subtleBorder, height: 16),
                   _buildSpecRow('Pattern', _item.desiredPattern!),
                 ],
                 if (_item.occasion != null) ...[
-                  const Divider(color: WardrobeTheme.subtleBorder, height: 16),
+                  Divider(color: WardrobeTheme.subtleBorder, height: 16),
                   _buildSpecRow('Occasion', _item.occasion!),
                 ],
               ],
@@ -255,7 +255,7 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'NOTES & REASONING',
                     style: TextStyle(
                       fontSize: 11,
@@ -266,7 +266,7 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
                   const SizedBox(height: 6),
                   Text(
                     _item.notes!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       color: WardrobeTheme.textPrimary,
                       height: 1.4,
@@ -306,14 +306,14 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
                       color: WardrobeTheme.electricCyan.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.auto_awesome_rounded,
                       color: WardrobeTheme.electricCyan,
                       size: 22,
                     ),
                   ),
                   const SizedBox(width: 14),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -325,7 +325,7 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
                             color: WardrobeTheme.textPrimary,
                           ),
                         ),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         Text(
                           'Evaluate similar items owned, category gaps & versatile combinations.',
                           style: TextStyle(
@@ -336,7 +336,7 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
                       ],
                     ),
                   ),
-                  const Icon(Icons.arrow_forward_ios_rounded,
+                  Icon(Icons.arrow_forward_ios_rounded,
                       size: 14, color: WardrobeTheme.electricCyan),
                 ],
               ),
@@ -381,12 +381,12 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
   }
 
   Widget _buildFallbackHero() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.checkroom_outlined, size: 48, color: WardrobeTheme.softViolet),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             'Wishlist Reference Image',
             style: TextStyle(fontSize: 12, color: WardrobeTheme.textMuted),
@@ -402,11 +402,11 @@ class _WishlistDetailScreenState extends State<WishlistDetailScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 13, color: WardrobeTheme.textMuted),
+          style: TextStyle(fontSize: 13, color: WardrobeTheme.textMuted),
         ),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
             color: WardrobeTheme.textPrimary,

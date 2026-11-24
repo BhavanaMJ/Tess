@@ -66,12 +66,12 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Row(
           children: [
-            const Text(
+            Text(
               'Laundry Manager',
               style: TextStyle(
                 fontSize: 18,
@@ -91,7 +91,7 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
                   width: 1.0,
                 ),
               ),
-              child: const Text(
+              child: Text(
                 'PHASE 4',
                 style: TextStyle(
                   fontSize: 9,
@@ -106,7 +106,7 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded,
+            icon: Icon(Icons.refresh_rounded,
                 color: WardrobeTheme.textSecondary, size: 20),
             tooltip: 'Refresh Metrics',
             onPressed: () => widget.controller.loadDashboardData(),
@@ -118,7 +118,7 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
         builder: (context, _) {
           if (widget.controller.isLoading &&
               widget.controller.stats.totalGarments == 0) {
-            return const Center(
+            return Center(
               child: CircularProgressIndicator(
                   color: WardrobeTheme.electricViolet),
             );
@@ -157,14 +157,14 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
                             border: Border.all(
                                 color: WardrobeTheme.borderCyan, width: 1.0),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.local_laundry_service_outlined,
                             color: WardrobeTheme.electricCyan,
                             size: 22,
                           ),
                         ),
                         const SizedBox(width: 14),
-                        const Expanded(
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -176,7 +176,7 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
                                   color: WardrobeTheme.textPrimary,
                                 ),
                               ),
-                              SizedBox(height: 2),
+                              const SizedBox(height: 2),
                               Text(
                                 'Track clean, worn, and wash cycles. Create batches and preserve individual overrides.',
                                 style: TextStyle(
@@ -198,7 +198,7 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'GARMENTS BY LAUNDRY STATUS',
                         style: TextStyle(
                           fontSize: 12,
@@ -209,7 +209,7 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
                       ),
                       Text(
                         '${stats.totalGarments} TOTAL',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                           color: WardrobeTheme.softViolet,
@@ -307,7 +307,7 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'ACTIVE LAUNDRY BATCHES',
                         style: TextStyle(
                           fontSize: 12,
@@ -326,7 +326,7 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
                         ),
                         child: Text(
                           '${activeBatches.length} ACTIVE',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
                             color: WardrobeTheme.electricCyan,
@@ -346,7 +346,7 @@ class _LaundryDashboardScreenState extends State<LaundryDashboardScreen> {
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(color: WardrobeTheme.borderSubtle),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Text(
                           'No active wash batches right now. Group worn clothes into a batch when doing laundry.',
                           textAlign: TextAlign.center,

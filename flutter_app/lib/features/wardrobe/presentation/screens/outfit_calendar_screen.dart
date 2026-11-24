@@ -58,13 +58,13 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
                       color: WardrobeTheme.electricViolet.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.add_rounded, color: WardrobeTheme.softViolet),
+                    child: Icon(Icons.add_rounded, color: WardrobeTheme.softViolet),
                   ),
-                  title: const Text(
+                  title: Text(
                     'Plan an Outfit',
                     style: TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.bold),
                   ),
-                  subtitle: const Text(
+                  subtitle: Text(
                     'Schedule a look for this date without modifying laundry state',
                     style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
                   ),
@@ -82,7 +82,7 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
                     );
                   },
                 ),
-                const Divider(color: WardrobeTheme.border),
+                Divider(color: WardrobeTheme.border),
                 ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(8),
@@ -90,13 +90,13 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
                       color: WardrobeTheme.electricCyan.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.check_rounded, color: WardrobeTheme.electricCyan),
+                    child: Icon(Icons.check_rounded, color: WardrobeTheme.electricCyan),
                   ),
-                  title: const Text(
+                  title: Text(
                     'Record What I Wore',
                     style: TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.bold),
                   ),
-                  subtitle: const Text(
+                  subtitle: Text(
                     'Confirm wear, transition garments to Worn, increment wear counts',
                     style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
                   ),
@@ -136,7 +136,7 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
           appBar: AppBar(
             backgroundColor: WardrobeTheme.voidBg,
             elevation: 0,
-            title: const Row(
+            title: Row(
               children: [
                 Text(
                   'Outfit Calendar',
@@ -146,7 +146,7 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
                   'PHASE 6',
                   style: TextStyle(
@@ -160,7 +160,7 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.history_rounded, color: WardrobeTheme.softViolet),
+                icon: Icon(Icons.history_rounded, color: WardrobeTheme.softViolet),
                 tooltip: 'Wear History',
                 onPressed: () {
                   Navigator.push(
@@ -182,7 +182,7 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.chevron_left_rounded, color: WardrobeTheme.textSecondary),
+                      icon: Icon(Icons.chevron_left_rounded, color: WardrobeTheme.textSecondary),
                       onPressed: ctrl.previousPeriod,
                     ),
                     Expanded(
@@ -191,7 +191,7 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
                         child: Text(
                           _formatMonthYear(selectedDate),
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: WardrobeTheme.textPrimary,
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
@@ -200,7 +200,7 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.chevron_right_rounded, color: WardrobeTheme.textSecondary),
+                      icon: Icon(Icons.chevron_right_rounded, color: WardrobeTheme.textSecondary),
                       onPressed: ctrl.nextPeriod,
                     ),
                     const SizedBox(width: 8),
@@ -241,7 +241,7 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
               // 2. View Content
               Expanded(
                 child: ctrl.isLoading && ctrl.currentRangeDays.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: CircularProgressIndicator(color: WardrobeTheme.electricViolet),
                       )
                     : _buildViewContent(ctrl),
@@ -303,7 +303,7 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
                   children: [
                     Text(
                       _weekdays[dt.weekday - 1],
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: WardrobeTheme.softViolet,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
@@ -312,7 +312,7 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
                     const SizedBox(width: 8),
                     Text(
                       '${dt.month}/${dt.day}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: WardrobeTheme.textPrimary,
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -333,7 +333,7 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
                     if (day.weather != null && day.weather!.isForecastAvailable) ...[
                       Text(
                         day.weather!.temperatureDisplay,
-                        style: const TextStyle(color: WardrobeTheme.textSecondary, fontSize: 12),
+                        style: TextStyle(color: WardrobeTheme.textSecondary, fontSize: 12),
                       ),
                       const SizedBox(width: 6),
                       Icon(
@@ -351,12 +351,12 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
                       padding: const EdgeInsets.only(top: 4),
                       child: Row(
                         children: [
-                          const Icon(Icons.bookmark_rounded, size: 12, color: WardrobeTheme.softViolet),
+                          Icon(Icons.bookmark_rounded, size: 12, color: WardrobeTheme.softViolet),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
                               'Planned: ${p.outfitName} (${p.occasion})',
-                              style: const TextStyle(color: WardrobeTheme.textSecondary, fontSize: 12),
+                              style: TextStyle(color: WardrobeTheme.textSecondary, fontSize: 12),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -370,12 +370,12 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
                       padding: const EdgeInsets.only(top: 4),
                       child: Row(
                         children: [
-                          const Icon(Icons.check_circle_rounded, size: 12, color: WardrobeTheme.electricCyan),
+                          Icon(Icons.check_circle_rounded, size: 12, color: WardrobeTheme.electricCyan),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
                               'Wore: ${w.outfitName}',
-                              style: const TextStyle(color: WardrobeTheme.electricCyan, fontSize: 12, fontWeight: FontWeight.w500),
+                              style: TextStyle(color: WardrobeTheme.electricCyan, fontSize: 12, fontWeight: FontWeight.w500),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -384,7 +384,7 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
                     ),
                   ),
                 if (day.plans.isEmpty && day.actualWears.isEmpty)
-                  const Text('No outfit planned or worn', style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 11)),
+                  Text('No outfit planned or worn', style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 11)),
               ],
             ),
           ),
@@ -417,7 +417,7 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
                 child: Center(
                   child: Text(
                     w,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: WardrobeTheme.textMuted,
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
@@ -466,7 +466,7 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
           const SizedBox(height: 16),
 
           // Selected Day Detail Panel
-          const Divider(color: WardrobeTheme.border),
+          Divider(color: WardrobeTheme.border),
           const SizedBox(height: 8),
 
           // Weather Context Card for selected day
@@ -479,7 +479,7 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
             children: [
               Text(
                 '${ctrl.selectedDate.month}/${ctrl.selectedDate.day} Details',
-                style: const TextStyle(
+                style: TextStyle(
                   color: WardrobeTheme.textPrimary,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -487,15 +487,15 @@ class _OutfitCalendarScreenState extends State<OutfitCalendarScreen> {
               ),
               TextButton(
                 onPressed: () => ctrl.setViewMode(CalendarViewMode.day),
-                child: const Text('Open Day View', style: TextStyle(color: WardrobeTheme.softViolet, fontSize: 12)),
+                child: Text('Open Day View', style: TextStyle(color: WardrobeTheme.softViolet, fontSize: 12)),
               ),
             ],
           ),
           const SizedBox(height: 8),
 
           if (ctrl.selectedDayDetail?.plans.isEmpty ?? true)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
                 'No outfit planned for this date.',
                 style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),

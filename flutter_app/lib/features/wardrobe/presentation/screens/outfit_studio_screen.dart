@@ -69,10 +69,10 @@ class _OutfitStudioScreenState extends State<OutfitStudioScreen> {
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'Outfit Studio',
           style: TextStyle(
             color: WardrobeTheme.textPrimary,
@@ -82,7 +82,7 @@ class _OutfitStudioScreenState extends State<OutfitStudioScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.bookmarks_rounded,
+            icon: Icon(Icons.bookmarks_rounded,
                 color: WardrobeTheme.softViolet),
             tooltip: 'Saved Outfits',
             onPressed: _navigateToSaved,
@@ -125,14 +125,14 @@ class _OutfitStudioScreenState extends State<OutfitStudioScreen> {
                               .withValues(alpha: 0.25),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.auto_awesome_rounded,
                           size: 28,
                           color: WardrobeTheme.softViolet,
                         ),
                       ),
                       const SizedBox(width: 16),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -144,7 +144,7 @@ class _OutfitStudioScreenState extends State<OutfitStudioScreen> {
                                 color: WardrobeTheme.textPrimary,
                               ),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
                               'Create combinations using only verified, clean garments in your wardrobe.',
                               style: TextStyle(

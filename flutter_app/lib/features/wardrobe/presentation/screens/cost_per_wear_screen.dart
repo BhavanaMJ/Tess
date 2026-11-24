@@ -60,7 +60,7 @@ class _CostPerWearScreenState extends State<CostPerWearScreen> {
               color: WardrobeTheme.textPrimary,
               onPressed: () => Navigator.of(context).pop(),
             ),
-            title: const Text(
+            title: Text(
               'Cost-Per-Wear Analytics',
               style: TextStyle(
                 fontSize: 18,
@@ -70,7 +70,7 @@ class _CostPerWearScreenState extends State<CostPerWearScreen> {
             ),
           ),
           body: ctrl.isLoading && summary == null
-              ? const Center(
+              ? Center(
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(WardrobeTheme.electricCyan),
                   ),
@@ -98,7 +98,7 @@ class _CostPerWearScreenState extends State<CostPerWearScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'TOTAL WARDROBE INVESTMENT',
                               style: TextStyle(
                                 fontSize: 11,
@@ -110,7 +110,7 @@ class _CostPerWearScreenState extends State<CostPerWearScreen> {
                             const SizedBox(height: 8),
                             Text(
                               '₹${summary.totalInvestment.toStringAsFixed(0)}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
                                 color: WardrobeTheme.electricCyan,
@@ -168,7 +168,7 @@ class _CostPerWearScreenState extends State<CostPerWearScreen> {
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(color: WardrobeTheme.border),
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Text(
                             'No items match the selected filter',
                             style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
@@ -227,7 +227,7 @@ class _CostPerWearScreenState extends State<CostPerWearScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 11,
             color: WardrobeTheme.textMuted,
           ),

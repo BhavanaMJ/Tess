@@ -125,3 +125,4 @@ erDiagram
 3. **Safe Deletion & Archival**:
    - `ON DELETE SET NULL` ensures deleting a wardrobe garment does not delete wishlist history.
    - Cascading user deletion (`ON DELETE CASCADE`) ensures clean tenant isolation.
+

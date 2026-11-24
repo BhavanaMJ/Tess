@@ -32,7 +32,7 @@ class WishlistSummaryCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'WISHLIST OVERVIEW',
                 style: TextStyle(
                   fontSize: 11,
@@ -49,7 +49,7 @@ class WishlistSummaryCard extends StatelessWidget {
                 ),
                 child: Text(
                   '${summary.totalItems} ITEMS',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
                     color: WardrobeTheme.electricViolet,
@@ -65,7 +65,7 @@ class WishlistSummaryCard extends StatelessWidget {
             children: [
               Text(
                 '$currencySymbol${estimatedAmount.toStringAsFixed(0)}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
                   color: WardrobeTheme.textPrimary,
@@ -73,7 +73,7 @@ class WishlistSummaryCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'planned budget',
                 style: TextStyle(
                   fontSize: 13,
@@ -87,7 +87,7 @@ class WishlistSummaryCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               '${summary.unpricedItemsCount} item(s) without estimated price',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 color: WardrobeTheme.textMuted,
                 fontStyle: FontStyle.italic,
@@ -95,7 +95,7 @@ class WishlistSummaryCard extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 14),
-          const Divider(color: WardrobeTheme.subtleBorder, height: 1),
+          Divider(color: WardrobeTheme.subtleBorder, height: 1),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -124,7 +124,7 @@ class WishlistSummaryCard extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 10,
             color: WardrobeTheme.textMuted,
             fontWeight: FontWeight.w500,

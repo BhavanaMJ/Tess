@@ -63,7 +63,7 @@ class WardrobeGapCard extends StatelessWidget {
                 ),
                 child: Text(
                   gap.category.toUpperCase(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                     color: WardrobeTheme.softViolet,
@@ -73,7 +73,7 @@ class WardrobeGapCard extends StatelessWidget {
               const Spacer(),
               Text(
                 '${(gap.confidenceScore * 100).toStringAsFixed(0)}% confidence',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
                   color: WardrobeTheme.textMuted,
                   fontWeight: FontWeight.w500,
@@ -84,7 +84,7 @@ class WardrobeGapCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             gap.title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: WardrobeTheme.textPrimary,
@@ -93,7 +93,7 @@ class WardrobeGapCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             gap.supportingEvidence,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               color: WardrobeTheme.textMuted,
               height: 1.4,
@@ -108,7 +108,7 @@ class WardrobeGapCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.auto_awesome,
                   size: 16,
                   color: WardrobeTheme.electricCyan,
@@ -117,7 +117,7 @@ class WardrobeGapCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     '+${gap.potentialOutfitCombinationsGained} new outfit combinations possible',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: WardrobeTheme.textPrimary,
@@ -129,7 +129,7 @@ class WardrobeGapCard extends StatelessWidget {
           ),
           if (gap.compatibleExistingGarmentNames.isNotEmpty) ...[
             const SizedBox(height: 10),
-            const Text(
+            Text(
               'Compatible items you already own:',
               style: TextStyle(
                 fontSize: 11,
@@ -151,7 +151,7 @@ class WardrobeGapCard extends StatelessWidget {
                   ),
                   child: Text(
                     name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       color: WardrobeTheme.textPrimary,
                     ),

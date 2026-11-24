@@ -88,7 +88,7 @@ class CalendarDayCell extends StatelessWidget {
                     width: 5,
                     height: 5,
                     margin: const EdgeInsets.symmetric(horizontal: 1),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: WardrobeTheme.softViolet,
                       shape: BoxShape.circle,
                     ),
@@ -98,7 +98,7 @@ class CalendarDayCell extends StatelessWidget {
                     width: 5,
                     height: 5,
                     margin: const EdgeInsets.symmetric(horizontal: 1),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: WardrobeTheme.electricCyan,
                       shape: BoxShape.circle,
                     ),

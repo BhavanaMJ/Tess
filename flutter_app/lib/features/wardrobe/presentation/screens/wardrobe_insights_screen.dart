@@ -83,7 +83,7 @@ class _WardrobeInsightsScreenState extends State<WardrobeInsightsScreen> {
             ),
             title: Row(
               children: [
-                const Text(
+                Text(
                   'Wardrobe Insights',
                   style: TextStyle(
                     fontSize: 18,
@@ -99,7 +99,7 @@ class _WardrobeInsightsScreenState extends State<WardrobeInsightsScreen> {
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(color: WardrobeTheme.borderViolet),
                   ),
-                  child: const Text(
+                  child: Text(
                     'PHASE 7',
                     style: TextStyle(
                       fontSize: 10,
@@ -120,7 +120,7 @@ class _WardrobeInsightsScreenState extends State<WardrobeInsightsScreen> {
             ],
           ),
           body: ctrl.isLoading && ctrl.overview == null
-              ? const Center(
+              ? Center(
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(WardrobeTheme.electricCyan),
                   ),
@@ -344,7 +344,7 @@ class _WardrobeInsightsScreenState extends State<WardrobeInsightsScreen> {
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.2,
@@ -353,7 +353,7 @@ class _WardrobeInsightsScreenState extends State<WardrobeInsightsScreen> {
           ),
           Text(
             badge,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
               color: WardrobeTheme.textMuted,
@@ -375,7 +375,7 @@ class _WardrobeInsightsScreenState extends State<WardrobeInsightsScreen> {
       child: Center(
         child: Text(
           text,
-          style: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
+          style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
           textAlign: TextAlign.center,
         ),
       ),

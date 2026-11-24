@@ -73,7 +73,7 @@ class LaundryStatusCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
                       color: WardrobeTheme.textPrimary,
@@ -82,7 +82,7 @@ class LaundryStatusCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       color: WardrobeTheme.textSecondary,
                     ),

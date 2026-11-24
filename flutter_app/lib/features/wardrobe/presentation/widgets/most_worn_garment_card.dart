@@ -60,7 +60,7 @@ class MostWornGarmentCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: WardrobeTheme.border),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.checkroom_rounded,
                 color: WardrobeTheme.electricCyan,
                 size: 24,
@@ -74,7 +74,7 @@ class MostWornGarmentCard extends StatelessWidget {
                 children: [
                   Text(
                     usage.garmentName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: WardrobeTheme.textPrimary,
@@ -85,7 +85,7 @@ class MostWornGarmentCard extends StatelessWidget {
                   const SizedBox(height: 3),
                   Text(
                     '${usage.mainCategory} • ${usage.primaryColor}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       color: WardrobeTheme.textMuted,
                     ),
@@ -106,7 +106,7 @@ class MostWornGarmentCard extends StatelessWidget {
                   ),
                   child: Text(
                     '${usage.wearCount} Wears',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                       color: WardrobeTheme.electricCyan,
@@ -117,7 +117,7 @@ class MostWornGarmentCard extends StatelessWidget {
                   const SizedBox(height: 3),
                   Text(
                     '₹${usage.costPerWear!.toStringAsFixed(0)} / wear',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: WardrobeTheme.statusSuccess,

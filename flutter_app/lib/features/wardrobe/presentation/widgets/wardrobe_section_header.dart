@@ -29,7 +29,7 @@ class WardrobeSectionHeader extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.2,
@@ -52,7 +52,7 @@ class WardrobeSectionHeader extends StatelessWidget {
                   ),
                   child: Text(
                     badgeText!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
                       color: WardrobeTheme.softViolet,
@@ -68,7 +68,7 @@ class WardrobeSectionHeader extends StatelessWidget {
               onTap: onAction,
               child: Text(
                 actionLabel!,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: WardrobeTheme.electricCyan,

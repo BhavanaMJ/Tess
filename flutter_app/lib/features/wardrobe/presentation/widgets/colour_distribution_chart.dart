@@ -54,7 +54,7 @@ class ColourDistributionChart extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'COLOUR PALETTE DISTRIBUTION',
                 style: TextStyle(
                   fontSize: 11,
@@ -65,7 +65,7 @@ class ColourDistributionChart extends StatelessWidget {
               ),
               Text(
                 'Top: ${distribution.first.colorGroup}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: WardrobeTheme.electricCyan,
@@ -120,7 +120,7 @@ class ColourDistributionChart extends StatelessWidget {
                     const SizedBox(width: 6),
                     Text(
                       '${item.colorGroup} (${item.percentage}%)',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
                         color: WardrobeTheme.textSecondary,

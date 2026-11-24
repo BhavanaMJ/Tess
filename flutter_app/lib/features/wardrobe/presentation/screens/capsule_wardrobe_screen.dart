@@ -27,7 +27,7 @@ class CapsuleWardrobeScreen extends StatelessWidget {
               color: WardrobeTheme.textPrimary,
               onPressed: () => Navigator.of(context).pop(),
             ),
-            title: const Text(
+            title: Text(
               'Capsule Wardrobe Intelligence',
               style: TextStyle(
                 fontSize: 18,
@@ -37,7 +37,7 @@ class CapsuleWardrobeScreen extends StatelessWidget {
             ),
           ),
           body: summary == null
-              ? const Center(
+              ? Center(
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(WardrobeTheme.electricViolet),
                   ),
@@ -72,14 +72,14 @@ class CapsuleWardrobeScreen extends StatelessWidget {
                                   color: WardrobeTheme.electricViolet.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.all_inclusive_rounded,
                                   color: WardrobeTheme.electricViolet,
                                   size: 22,
                                 ),
                               ),
                               const SizedBox(width: 12),
-                              const Expanded(
+                              Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -91,7 +91,7 @@ class CapsuleWardrobeScreen extends StatelessWidget {
                                         color: WardrobeTheme.textPrimary,
                                       ),
                                     ),
-                                    SizedBox(height: 2),
+                                    const SizedBox(height: 2),
                                     Text(
                                       'Maximizing outfit variety with minimal pieces',
                                       style: TextStyle(
@@ -135,7 +135,7 @@ class CapsuleWardrobeScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'CAPSULE ANCHOR PIECES',
                           style: TextStyle(
                             fontSize: 11,
@@ -146,7 +146,7 @@ class CapsuleWardrobeScreen extends StatelessWidget {
                         ),
                         Text(
                           '${summary.anchorGarments.length} Anchors',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: WardrobeTheme.electricViolet,
@@ -164,7 +164,7 @@ class CapsuleWardrobeScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(color: WardrobeTheme.border),
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Text(
                             'Add more versatile neutral basics to create capsule anchors.',
                             style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
@@ -193,7 +193,7 @@ class CapsuleWardrobeScreen extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(color: WardrobeTheme.border),
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.shield_rounded,
                                     color: WardrobeTheme.electricViolet,
                                     size: 22,
@@ -206,7 +206,7 @@ class CapsuleWardrobeScreen extends StatelessWidget {
                                     children: [
                                       Text(
                                         anchor.garmentName,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w700,
                                           color: WardrobeTheme.textPrimary,
@@ -215,7 +215,7 @@ class CapsuleWardrobeScreen extends StatelessWidget {
                                       const SizedBox(height: 3),
                                       Text(
                                         'Pairs with ${anchor.compatiblePairingsCount} garments (${anchor.mainCategory})',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 12,
                                           color: WardrobeTheme.textMuted,
                                         ),
@@ -228,13 +228,13 @@ class CapsuleWardrobeScreen extends StatelessWidget {
                                   children: [
                                     Text(
                                       '${anchor.versatilityScore}%',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w800,
                                         color: WardrobeTheme.electricCyan,
                                       ),
                                     ),
-                                    const Text(
+                                    Text(
                                       'Versatility',
                                       style: TextStyle(
                                         fontSize: 10,
@@ -265,7 +265,7 @@ class CapsuleWardrobeScreen extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 11, color: WardrobeTheme.textMuted),
+          style: TextStyle(fontSize: 11, color: WardrobeTheme.textMuted),
         ),
         const SizedBox(height: 2),
         Text(

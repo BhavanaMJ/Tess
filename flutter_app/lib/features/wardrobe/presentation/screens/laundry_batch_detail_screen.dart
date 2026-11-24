@@ -158,12 +158,12 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           b?.batchNumber ?? 'Batch Detail',
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.w800,
             color: WardrobeTheme.textPrimary,
@@ -171,7 +171,7 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
         ),
       ),
       body: _isLoading || b == null
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(
                   color: WardrobeTheme.electricViolet))
           : SingleChildScrollView(
@@ -195,7 +195,7 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                           children: [
                             Text(
                               b.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
                                 color: WardrobeTheme.textPrimary,
@@ -211,7 +211,7 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                               ),
                               child: Text(
                                 b.status,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w800,
                                   color: WardrobeTheme.softViolet,
@@ -224,7 +224,7 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                           const SizedBox(height: 6),
                           Text(
                             b.notes!,
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 12,
                                 color: WardrobeTheme.textSecondary),
                           ),
@@ -257,7 +257,7 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'MEMBER GARMENTS',
                         style: TextStyle(
                           fontSize: 12,
@@ -268,7 +268,7 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                       ),
                       Text(
                         '${b.items.length} GARMENTS',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                           color: WardrobeTheme.softViolet,
@@ -320,7 +320,7 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                                         'Garment ${item.garmentId}',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
                                       color: WardrobeTheme.textPrimary,
@@ -331,7 +331,7 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                                     children: [
                                       Text(
                                         item.garmentId,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 10,
                                           color: WardrobeTheme.textMuted,
                                           fontFamily: 'monospace',
@@ -349,7 +349,7 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                                         ),
                                         child: Text(
                                           item.currentLaundryStatus ?? 'UNSET',
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 9,
                                             fontWeight: FontWeight.w700,
                                             color: WardrobeTheme.softViolet,
@@ -363,7 +363,7 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                             ),
                             // Override Status Button
                             IconButton(
-                              icon: const Icon(Icons.edit_outlined,
+                              icon: Icon(Icons.edit_outlined,
                                   color: WardrobeTheme.electricCyan, size: 20),
                               tooltip: 'Override Individual Status',
                               onPressed: () => _overrideGarmentStatus(
@@ -431,12 +431,12 @@ class _LaundryBatchDetailScreenState extends State<LaundryBatchDetailScreen> {
                             color: WardrobeTheme.statusSuccess
                                 .withValues(alpha: 0.3)),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.verified_rounded,
                               color: WardrobeTheme.statusSuccess, size: 18),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(
                             'Laundry Lifecycle Completed',
                             style: TextStyle(

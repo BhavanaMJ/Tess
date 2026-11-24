@@ -1,18 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tess/core/theme/app_colors.dart';
 import 'package:tess/core/theme/app_theme.dart';
+import 'package:tess/core/theme/theme_controller.dart';
 import 'package:tess/features/wardrobe/data/repositories/wardrobe_repository_impl.dart';
 import 'package:tess/features/wardrobe/domain/entities/garment.dart';
 import 'package:tess/features/wardrobe/domain/entities/laundry_status.dart';
 import 'package:tess/features/wardrobe/presentation/controllers/wardrobe_controller.dart';
 import 'package:tess/features/wardrobe/presentation/screens/wardrobe_inventory_screen.dart';
 import 'package:tess/features/wardrobe/presentation/screens/wardrobe_overview_screen.dart';
+import 'package:tess/features/wardrobe/presentation/theme/wardrobe_theme.dart';
 
 void main() {
   Widget buildTestableWidget(Widget child) {
-    return MaterialApp(
-      theme: AppTheme.darkTheme,
-      home: child,
+    return AnimatedBuilder(
+      animation: ThemeController.instance,
+      builder: (context, _) {
+        return MaterialApp(
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: ThemeController.instance.themeMode,
+          home: child,
+        );
+      },
     );
   }
 
@@ -209,6 +220,85 @@ void main() {
 
       // Should now be filled heart
       expect(find.byIcon(Icons.favorite_rounded), findsOneWidget);
+    });
+  });
+
+  group('Wardrobe Brand Kit & Dynamic Theme Adaptation Tests', () {
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({});
+      await ThemeController.instance.setThemeMode(ThemeMode.light);
+    });
+
+    tearDown(() async {
+      SharedPreferences.setMockInitialValues({});
+      await ThemeController.instance.setThemeMode(ThemeMode.light);
+    });
+
+    test('WardrobeTheme defaults to Light Theme brand kit when user has not chosen dark', () {
+      expect(ThemeController.instance.themeMode, equals(ThemeMode.light));
+      expect(WardrobeTheme.isDark, isFalse);
+
+      // Verify TESS Brand Kit light theme tokens
+      expect(WardrobeTheme.voidBg, equals(AppColors.lightBg));
+      expect(WardrobeTheme.spatialSurface, equals(AppColors.lightSurface));
+      expect(WardrobeTheme.textPrimary, equals(AppColors.lightTextPrimary));
+      expect(WardrobeTheme.textSecondary, equals(AppColors.lightTextSecondary));
+      expect(WardrobeTheme.textMuted, equals(AppColors.lightTextMuted));
+      expect(WardrobeTheme.border, equals(AppColors.lightBorder));
+      expect(WardrobeTheme.borderSubtle, equals(AppColors.lightBorderSubtle));
+
+      // Primary brand kit accents (Teal & Vibrant Mint)
+      expect(WardrobeTheme.electricViolet, equals(AppColors.tessTeal));
+      expect(WardrobeTheme.electricCyan, equals(AppColors.vibrantMint));
+      expect(WardrobeTheme.softViolet, equals(AppColors.deepTeal));
+    });
+
+    test('WardrobeTheme switches to Dark Theme only when user chooses dark in settings', () async {
+      await ThemeController.instance.setThemeMode(ThemeMode.dark);
+      expect(ThemeController.instance.themeMode, equals(ThemeMode.dark));
+      expect(WardrobeTheme.isDark, isTrue);
+
+      // Verify Dark Theme spatial tokens
+      expect(WardrobeTheme.voidBg, equals(const Color(0xFF0B100F)));
+      expect(WardrobeTheme.spatialSurface, equals(const Color(0xFF131A19)));
+      expect(WardrobeTheme.textPrimary, equals(AppColors.darkTextPrimary));
+      expect(WardrobeTheme.textSecondary, equals(AppColors.darkTextSecondary));
+      expect(WardrobeTheme.textMuted, equals(AppColors.darkTextMuted));
+      expect(WardrobeTheme.border, equals(const Color(0xFF22302D)));
+
+      // Dark accents
+      expect(WardrobeTheme.electricViolet, equals(const Color(0xFF8B5CF6)));
+      expect(WardrobeTheme.electricCyan, equals(const Color(0xFF22D3EE)));
+    });
+
+    testWidgets('WardrobeOverviewScreen renders seamlessly in light theme', (tester) async {
+      await ThemeController.instance.setThemeMode(ThemeMode.light);
+      final repo = WardrobeRepositoryImpl();
+
+      await tester.pumpWidget(
+        buildTestableWidget(
+          WardrobeOverviewScreen(repository: repo),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Wardrobe Intelligence'), findsOneWidget);
+      expect(find.text('Personal Clothes Organizer'), findsOneWidget);
+    });
+
+    testWidgets('WardrobeOverviewScreen renders seamlessly in dark theme', (tester) async {
+      await ThemeController.instance.setThemeMode(ThemeMode.dark);
+      final repo = WardrobeRepositoryImpl();
+
+      await tester.pumpWidget(
+        buildTestableWidget(
+          WardrobeOverviewScreen(repository: repo),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Wardrobe Intelligence'), findsOneWidget);
+      expect(find.text('Personal Clothes Organizer'), findsOneWidget);
     });
   });
 }

@@ -86,7 +86,7 @@ class WishlistItemCard extends StatelessWidget {
                             color: WardrobeTheme.electricViolet.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: const Text(
+                          child: Text(
                             'IN WARDROBE',
                             style: TextStyle(
                               fontSize: 9,
@@ -100,7 +100,7 @@ class WishlistItemCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     item.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: WardrobeTheme.textPrimary,
@@ -111,7 +111,7 @@ class WishlistItemCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     '${item.category}${item.subcategory != null ? ' • ${item.subcategory}' : ''}${item.desiredColour != null ? ' • ${item.desiredColour}' : ''}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       color: WardrobeTheme.textMuted,
                     ),
@@ -145,12 +145,12 @@ class WishlistItemCard extends StatelessWidget {
                               color: WardrobeTheme.electricCyan.withValues(alpha: 0.3),
                             ),
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(Icons.auto_awesome_rounded,
                                   size: 12, color: WardrobeTheme.electricCyan),
-                              SizedBox(width: 4),
+                              const SizedBox(width: 4),
                               Text(
                                 'Assess',
                                 style: TextStyle(

@@ -204,7 +204,7 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Add Clothes to Wardrobe',
                   style: TextStyle(
                     fontSize: 16,
@@ -215,13 +215,13 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                 const SizedBox(height: 12),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.auto_awesome_rounded,
+                  leading: Icon(Icons.auto_awesome_rounded,
                       color: WardrobeTheme.electricViolet),
-                  title: const Text('Smart Capture (Camera & AI)',
+                  title: Text('Smart Capture (Camera & AI)',
                       style: TextStyle(
                           color: WardrobeTheme.textPrimary,
                           fontWeight: FontWeight.w600)),
-                  subtitle: const Text(
+                  subtitle: Text(
                       'Detect multiple garments, studio cutout & auto-attributes',
                       style: TextStyle(
                           color: WardrobeTheme.textMuted, fontSize: 12)),
@@ -233,7 +233,7 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                           WardrobeTheme.electricViolet.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: const Text('AI ACTIVE',
+                    child: Text('AI ACTIVE',
                         style: TextStyle(
                             fontSize: 10,
                             color: WardrobeTheme.softViolet,
@@ -246,17 +246,17 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                 ),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.edit_note_rounded,
+                  leading: Icon(Icons.edit_note_rounded,
                       color: WardrobeTheme.electricCyan),
-                  title: const Text('Add Garment Manually',
+                  title: Text('Add Garment Manually',
                       style: TextStyle(
                           color: WardrobeTheme.textPrimary,
                           fontWeight: FontWeight.w600)),
-                  subtitle: const Text(
+                  subtitle: Text(
                       'Enter garment attributes, color, category and specs',
                       style: TextStyle(
                           color: WardrobeTheme.textMuted, fontSize: 12)),
-                  trailing: const Icon(Icons.arrow_forward_ios_rounded,
+                  trailing: Icon(Icons.arrow_forward_ios_rounded,
                       size: 14, color: WardrobeTheme.textMuted),
                   onTap: () {
                     Navigator.pop(ctx);
@@ -281,12 +281,12 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Row(
           children: [
-            const Text(
+            Text(
               'Wardrobe Intelligence',
               style: TextStyle(
                 fontSize: 18,
@@ -306,7 +306,7 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                   width: 1.0,
                 ),
               ),
-              child: const Text(
+              child: Text(
                 'PHASE 8',
                 style: TextStyle(
                   fontSize: 9,
@@ -321,7 +321,7 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded,
+            icon: Icon(Icons.refresh_rounded,
                 color: WardrobeTheme.textSecondary, size: 20),
             tooltip: 'Refresh Wardrobe',
             onPressed: () => _controller.loadInitialData(),
@@ -332,7 +332,7 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
         animation: _controller,
         builder: (context, _) {
           if (_controller.isLoading && _controller.garments.isEmpty) {
-            return const Center(
+            return Center(
               child: CircularProgressIndicator(
                   color: WardrobeTheme.electricViolet),
             );
@@ -365,14 +365,14 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                             border: Border.all(
                                 color: WardrobeTheme.borderViolet, width: 1.0),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.auto_awesome_rounded,
                             color: WardrobeTheme.softViolet,
                             size: 22,
                           ),
                         ),
                         const SizedBox(width: 14),
-                        const Expanded(
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -384,7 +384,7 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                                   color: WardrobeTheme.textPrimary,
                                 ),
                               ),
-                              SizedBox(height: 2),
+                              const SizedBox(height: 2),
                               Text(
                                 'Catalogued garments with clean studio backgrounds, lifecycle tracking & AI styling.',
                                 style: TextStyle(

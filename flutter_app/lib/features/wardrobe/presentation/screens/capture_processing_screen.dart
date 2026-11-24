@@ -51,10 +51,10 @@ class _CaptureProcessingScreenState extends State<CaptureProcessingScreen> {
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: WardrobeTheme.textPrimary),
+          icon: Icon(Icons.close, color: WardrobeTheme.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'Processing Photograph',
           style: TextStyle(
             fontSize: 17,
@@ -94,11 +94,11 @@ class _CaptureProcessingScreenState extends State<CaptureProcessingScreen> {
                             .withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.error_outline_rounded,
+                      child: Icon(Icons.error_outline_rounded,
                           color: WardrobeTheme.statusCritical, size: 48),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'Analysis Interrupted',
                       style: TextStyle(
                           fontSize: 18,
@@ -109,13 +109,13 @@ class _CaptureProcessingScreenState extends State<CaptureProcessingScreen> {
                     Text(
                       error,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 13,
                           color: WardrobeTheme.textSecondary,
                           height: 1.4),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'Your original photograph is safely preserved.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -165,12 +165,12 @@ class _CaptureProcessingScreenState extends State<CaptureProcessingScreen> {
                         child: CircularProgressIndicator(
                           value: progress,
                           strokeWidth: 4,
-                          valueColor: const AlwaysStoppedAnimation<Color>(
+                          valueColor: AlwaysStoppedAnimation<Color>(
                               WardrobeTheme.electricViolet),
                           backgroundColor: WardrobeTheme.spatialSurface,
                         ),
                       ),
-                      const Icon(
+                      Icon(
                         Icons.auto_awesome_rounded,
                         color: WardrobeTheme.electricCyan,
                         size: 36,
@@ -181,14 +181,14 @@ class _CaptureProcessingScreenState extends State<CaptureProcessingScreen> {
                   Text(
                     stage,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: WardrobeTheme.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Detecting garments, separating catalogue cards & extracting attributes.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -205,12 +205,12 @@ class _CaptureProcessingScreenState extends State<CaptureProcessingScreen> {
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: WardrobeTheme.borderSubtle),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.verified_outlined,
                             color: WardrobeTheme.softViolet, size: 16),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Flexible(
                           child: Text(
                             'TESS preserves your actual garments without AI redesigns.',

@@ -32,7 +32,7 @@ class WardrobeGapAnalysisScreen extends StatelessWidget {
       backgroundColor: WardrobeTheme.voidBlack,
       appBar: AppBar(
         backgroundColor: WardrobeTheme.voidBlack,
-        title: const Text(
+        title: Text(
           'Wardrobe Gap Analysis',
           style: TextStyle(
             fontWeight: FontWeight.w800,
@@ -58,14 +58,14 @@ class WardrobeGapAnalysisScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: WardrobeTheme.subtleBorder),
             ),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Icon(Icons.insights_rounded,
                         color: WardrobeTheme.electricViolet, size: 20),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Text(
                       'EMPIRICAL WARDROBE GAPS',
                       style: TextStyle(
@@ -77,7 +77,7 @@ class WardrobeGapAnalysisScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   'Before buying something new, understand whether your existing wardrobe already meets that need.',
                   style: TextStyle(
@@ -99,12 +99,12 @@ class WardrobeGapAnalysisScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: WardrobeTheme.subtleBorder),
               ),
-              child: const Center(
+              child: Center(
                 child: Column(
                   children: [
                     Icon(Icons.check_circle_outline,
                         size: 40, color: WardrobeTheme.successEmerald),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     Text(
                       'No Major Wardrobe Gaps Detected',
                       style: TextStyle(
@@ -113,7 +113,7 @@ class WardrobeGapAnalysisScreen extends StatelessWidget {
                         color: WardrobeTheme.textPrimary,
                       ),
                     ),
-                    SizedBox(height: 6),
+                    const SizedBox(height: 6),
                     Text(
                       'Your wardrobe has healthy category and color balance across your active pieces.',
                       textAlign: TextAlign.center,

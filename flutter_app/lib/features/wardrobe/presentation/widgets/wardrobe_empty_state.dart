@@ -33,14 +33,14 @@ class WardrobeEmptyState extends StatelessWidget {
               color: WardrobeTheme.electricViolet.withValues(alpha: 0.12),
               border: Border.all(color: WardrobeTheme.borderViolet, width: 1.5),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.checkroom_rounded,
               color: WardrobeTheme.electricViolet,
               size: 32,
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Your Wardrobe is Ready to Populate',
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -51,7 +51,7 @@ class WardrobeEmptyState extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Digitize garments, track laundry cycles, and unlock TESS AI daily outfit recommendations.',
             textAlign: TextAlign.center,
             style: TextStyle(

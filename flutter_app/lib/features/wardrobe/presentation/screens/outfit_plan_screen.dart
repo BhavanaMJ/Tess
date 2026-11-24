@@ -96,7 +96,7 @@ class _OutfitPlanScreenState extends State<OutfitPlanScreen> {
       builder: (context, child) {
         return Theme(
           data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(
+            colorScheme: ColorScheme.dark(
               primary: WardrobeTheme.electricViolet,
               surface: WardrobeTheme.spatialSurface,
             ),
@@ -151,7 +151,7 @@ class _OutfitPlanScreenState extends State<OutfitPlanScreen> {
         elevation: 0,
         title: Text(
           widget.existingPlan != null ? 'Edit Outfit Plan' : 'Plan an Outfit',
-          style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 18),
+          style: TextStyle(color: WardrobeTheme.textPrimary, fontSize: 18),
         ),
       ),
       body: SingleChildScrollView(
@@ -160,7 +160,7 @@ class _OutfitPlanScreenState extends State<OutfitPlanScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Date Picker Card
-            const Text(
+            Text(
               'Planned Date',
               style: TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600, fontSize: 14),
             ),
@@ -176,14 +176,14 @@ class _OutfitPlanScreenState extends State<OutfitPlanScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.calendar_month_rounded, color: WardrobeTheme.softViolet, size: 20),
+                    Icon(Icons.calendar_month_rounded, color: WardrobeTheme.softViolet, size: 20),
                     const SizedBox(width: 12),
                     Text(
                       '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}',
-                      style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 15, fontWeight: FontWeight.w500),
+                      style: TextStyle(color: WardrobeTheme.textPrimary, fontSize: 15, fontWeight: FontWeight.w500),
                     ),
                     const Spacer(),
-                    const Icon(Icons.arrow_drop_down_rounded, color: WardrobeTheme.textMuted),
+                    Icon(Icons.arrow_drop_down_rounded, color: WardrobeTheme.textMuted),
                   ],
                 ),
               ),
@@ -191,7 +191,7 @@ class _OutfitPlanScreenState extends State<OutfitPlanScreen> {
             const SizedBox(height: 20),
 
             // Outfit Selection
-            const Text(
+            Text(
               'Select Outfit',
               style: TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600, fontSize: 14),
             ),
@@ -210,10 +210,10 @@ class _OutfitPlanScreenState extends State<OutfitPlanScreen> {
                   children: [
                     Text(
                       _selectedOutfitName ?? 'Custom Outfit',
-                      style: const TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       'Saved looks from Outfit Studio will appear here for 1-tap selection.',
                       style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
                     ),
@@ -241,10 +241,10 @@ class _OutfitPlanScreenState extends State<OutfitPlanScreen> {
                       ),
                       subtitle: Text(
                         '${outfit.occasion} • ${outfit.items.length} garments',
-                        style: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
+                        style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
                       ),
                       trailing: isSelected
-                          ? const Icon(Icons.check_circle_rounded, color: WardrobeTheme.electricViolet)
+                          ? Icon(Icons.check_circle_rounded, color: WardrobeTheme.electricViolet)
                           : null,
                       onTap: () {
                         setState(() {
@@ -270,7 +270,7 @@ class _OutfitPlanScreenState extends State<OutfitPlanScreen> {
             const SizedBox(height: 20),
 
             // Occasion Chips
-            const Text(
+            Text(
               'Occasion',
               style: TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600, fontSize: 14),
             ),
@@ -299,7 +299,7 @@ class _OutfitPlanScreenState extends State<OutfitPlanScreen> {
             const SizedBox(height: 20),
 
             // Notes field
-            const Text(
+            Text(
               'Notes (Optional)',
               style: TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600, fontSize: 14),
             ),
@@ -307,23 +307,23 @@ class _OutfitPlanScreenState extends State<OutfitPlanScreen> {
             TextField(
               controller: _notesController,
               maxLines: 3,
-              style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
+              style: TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'e.g. Morning team sync, umbrella needed if cloudy',
-                hintStyle: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
+                hintStyle: TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
                 filled: true,
                 fillColor: WardrobeTheme.spatialSurface,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: WardrobeTheme.border),
+                  borderSide: BorderSide(color: WardrobeTheme.border),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: WardrobeTheme.border),
+                  borderSide: BorderSide(color: WardrobeTheme.border),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: WardrobeTheme.borderViolet),
+                  borderSide: BorderSide(color: WardrobeTheme.borderViolet),
                 ),
               ),
             ),
@@ -338,10 +338,10 @@ class _OutfitPlanScreenState extends State<OutfitPlanScreen> {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: WardrobeTheme.borderSubtle),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Icon(Icons.info_outline_rounded, size: 16, color: WardrobeTheme.textMuted),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       'Saving a plan represents intent only. Laundry status and wear counts will only update when you explicitly confirm wear.',

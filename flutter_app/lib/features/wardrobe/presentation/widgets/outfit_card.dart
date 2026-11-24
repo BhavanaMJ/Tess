@@ -76,7 +76,7 @@ class OutfitCard extends StatelessWidget {
                   ),
                   child: Text(
                     occasion.toUpperCase(),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
                       color: WardrobeTheme.softViolet,
@@ -123,7 +123,7 @@ class OutfitCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     'Worn $wearCount${wearCount == 1 ? 'x' : 'x'}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       color: WardrobeTheme.textMuted,
                       fontWeight: FontWeight.w500,
@@ -153,7 +153,7 @@ class OutfitCard extends StatelessWidget {
             // Title
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
                 color: WardrobeTheme.textPrimary,
@@ -181,7 +181,7 @@ class OutfitCard extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.auto_awesome_rounded,
                       size: 14,
                       color: WardrobeTheme.electricCyan,
@@ -190,7 +190,7 @@ class OutfitCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         explanation!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
                           color: WardrobeTheme.textSecondary,
                           height: 1.35,
@@ -214,7 +214,7 @@ class OutfitCard extends StatelessWidget {
                           style: TextStyle(fontSize: 12)),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: WardrobeTheme.softViolet,
-                        side: const BorderSide(
+                        side: BorderSide(
                             color: WardrobeTheme.electricViolet),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8)),

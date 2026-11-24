@@ -68,7 +68,7 @@ class InsightRecommendationCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   recommendation.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: WardrobeTheme.textPrimary,
@@ -83,7 +83,7 @@ class InsightRecommendationCard extends StatelessWidget {
                 ),
                 child: Text(
                   '${(recommendation.confidenceScore * 100).toInt()}% Match',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
                     color: WardrobeTheme.textSecondary,
@@ -95,7 +95,7 @@ class InsightRecommendationCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             recommendation.description,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               color: WardrobeTheme.textSecondary,
               height: 1.4,

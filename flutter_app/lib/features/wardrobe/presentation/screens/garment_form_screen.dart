@@ -239,7 +239,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
               _isEditing
                   ? 'Garment updated successfully'
                   : 'Garment added to wardrobe',
-              style: const TextStyle(color: WardrobeTheme.textPrimary),
+              style: TextStyle(color: WardrobeTheme.textPrimary),
             ),
           ),
         );
@@ -260,26 +260,26 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
       labelText: label,
       hintText: hint,
       labelStyle:
-          const TextStyle(color: WardrobeTheme.textSecondary, fontSize: 13),
-      hintStyle: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
+          TextStyle(color: WardrobeTheme.textSecondary, fontSize: 13),
+      hintStyle: TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
       filled: true,
       fillColor: WardrobeTheme.spatialSurface,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: WardrobeTheme.border),
+        borderSide: BorderSide(color: WardrobeTheme.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: WardrobeTheme.border),
+        borderSide: BorderSide(color: WardrobeTheme.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide:
-            const BorderSide(color: WardrobeTheme.electricViolet, width: 1.5),
+            BorderSide(color: WardrobeTheme.electricViolet, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: WardrobeTheme.statusCritical),
+        borderSide: BorderSide(color: WardrobeTheme.statusCritical),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     );
@@ -293,12 +293,12 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           _isEditing ? 'Edit Garment' : 'Add New Garment',
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w800,
             color: WardrobeTheme.textPrimary,
@@ -323,13 +323,13 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
             child: TextButton(
               onPressed: _isSubmitting ? null : _handleSave,
               child: _isSubmitting
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 16,
                       height: 16,
                       child: CircularProgressIndicator(
                           strokeWidth: 2, color: WardrobeTheme.electricCyan),
                     )
-                  : const Text(
+                  : Text(
                       'Save',
                       style: TextStyle(
                         color: WardrobeTheme.electricCyan,
@@ -360,7 +360,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                   ),
                   child: Text(
                     _errorMessage!,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: WardrobeTheme.statusCritical, fontSize: 13),
                   ),
                 ),
@@ -368,7 +368,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
               ],
 
               // 1. Core Identification
-              const Text(
+              Text(
                 'GARMENT IDENTIFICATION',
                 style: TextStyle(
                   fontSize: 11,
@@ -381,7 +381,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
 
               TextFormField(
                 controller: _nameController,
-                style: const TextStyle(
+                style: TextStyle(
                     color: WardrobeTheme.textPrimary, fontSize: 14),
                 decoration: _inputDecoration('Garment Name *',
                     hint: 'e.g. Navy Oxford Cotton Shirt'),
@@ -398,7 +398,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
                 dropdownColor: WardrobeTheme.elevatedSurface,
-                style: const TextStyle(
+                style: TextStyle(
                     color: WardrobeTheme.textPrimary, fontSize: 14),
                 decoration: _inputDecoration('Main Category *'),
                 items: _commonCategories.map((cat) {
@@ -417,7 +417,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
 
               TextFormField(
                 controller: _subcategoryController,
-                style: const TextStyle(
+                style: TextStyle(
                     color: WardrobeTheme.textPrimary, fontSize: 14),
                 decoration: _inputDecoration('Subcategory',
                     hint: 'e.g. Button-down, Chino, Kurta'),
@@ -425,7 +425,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
               const SizedBox(height: 20),
 
               // 2. Visual & Material Attributes
-              const Text(
+              Text(
                 'VISUAL & MATERIAL ATTRIBUTES',
                 style: TextStyle(
                   fontSize: 11,
@@ -455,7 +455,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                         return TextFormField(
                           controller: controller,
                           focusNode: focusNode,
-                          style: const TextStyle(
+                          style: TextStyle(
                               color: WardrobeTheme.textPrimary, fontSize: 14),
                           decoration: _inputDecoration('Primary Color *'),
                           onChanged: (val) =>
@@ -471,7 +471,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _patternController,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: WardrobeTheme.textPrimary, fontSize: 14),
                       decoration: _inputDecoration('Pattern',
                           hint: 'e.g. Solid, Striped'),
@@ -486,7 +486,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _fabricController,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: WardrobeTheme.textPrimary, fontSize: 14),
                       decoration: _inputDecoration('Fabric',
                           hint: 'e.g. 100% Cotton, Linen'),
@@ -496,7 +496,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _secondaryColorsController,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: WardrobeTheme.textPrimary, fontSize: 14),
                       decoration: _inputDecoration('Secondary Colors',
                           hint: 'White, Grey'),
@@ -525,7 +525,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                           return TextFormField(
                             controller: controller,
                             focusNode: focusNode,
-                            style: const TextStyle(
+                            style: TextStyle(
                                 color: WardrobeTheme.textPrimary, fontSize: 14),
                             decoration: _inputDecoration('Sleeve Length',
                                 hint: 'e.g. 3/4 Sleeves'),
@@ -539,7 +539,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                     Expanded(
                       child: TextFormField(
                         controller: _necklineController,
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: WardrobeTheme.textPrimary, fontSize: 14),
                         decoration: _inputDecoration('Neckline',
                             hint: 'e.g. Crew, Mandarin'),
@@ -564,7 +564,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                         return TextFormField(
                           controller: controller,
                           focusNode: focusNode,
-                          style: const TextStyle(
+                          style: TextStyle(
                               color: WardrobeTheme.textPrimary, fontSize: 14),
                           decoration:
                               _inputDecoration('Fit', hint: 'e.g. Slim Fit'),
@@ -577,7 +577,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _sizeController,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: WardrobeTheme.textPrimary, fontSize: 14),
                       decoration:
                           _inputDecoration('Size', hint: 'e.g. M, 32, 40'),
@@ -588,7 +588,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
               const SizedBox(height: 20),
 
               // 3. Brand & Economics
-              const Text(
+              Text(
                 'BRAND & PURCHASE DETAILS',
                 style: TextStyle(
                   fontSize: 11,
@@ -604,7 +604,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _brandController,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: WardrobeTheme.textPrimary, fontSize: 14),
                       decoration: _inputDecoration('Brand / Retailer',
                           hint: 'e.g. Uniqlo, Zara'),
@@ -616,7 +616,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
                       controller: _priceController,
                       keyboardType:
                           const TextInputType.numberWithOptions(decimal: true),
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: WardrobeTheme.textPrimary, fontSize: 14),
                       decoration: _inputDecoration('Price', hint: 'e.g. 49.99'),
                     ),
@@ -626,7 +626,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
               const SizedBox(height: 20),
 
               // 4. Initial Laundry Status
-              const Text(
+              Text(
                 'LAUNDRY STATUS',
                 style: TextStyle(
                   fontSize: 11,
@@ -640,7 +640,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
               DropdownButtonFormField<LaundryStatus?>(
                 value: _selectedLaundryStatus,
                 dropdownColor: WardrobeTheme.elevatedSurface,
-                style: const TextStyle(
+                style: TextStyle(
                     color: WardrobeTheme.textPrimary, fontSize: 14),
                 decoration: _inputDecoration('Current Laundry Status'),
                 items: [
@@ -662,7 +662,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
               const SizedBox(height: 20),
 
               // 5. Notes
-              const Text(
+              Text(
                 'NOTES & STYLING TIPS',
                 style: TextStyle(
                   fontSize: 11,
@@ -676,7 +676,7 @@ class _GarmentFormScreenState extends State<GarmentFormScreen> {
               TextFormField(
                 controller: _notesController,
                 maxLines: 3,
-                style: const TextStyle(
+                style: TextStyle(
                     color: WardrobeTheme.textPrimary, fontSize: 14),
                 decoration: _inputDecoration('Garment Notes',
                     hint: 'Special care instructions, styling notes...'),

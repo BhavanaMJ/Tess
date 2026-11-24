@@ -43,7 +43,7 @@ class PlannedOutfitCard extends StatelessWidget {
                   color: WardrobeTheme.electricViolet.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Text(
+                child: Text(
                   'PLANNED',
                   style: TextStyle(
                     color: WardrobeTheme.softViolet,
@@ -62,7 +62,7 @@ class PlannedOutfitCard extends StatelessWidget {
                 ),
                 child: Text(
                   plan.occasion,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: WardrobeTheme.textSecondary,
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
@@ -72,7 +72,7 @@ class PlannedOutfitCard extends StatelessWidget {
               const Spacer(),
               if (onEdit != null)
                 IconButton(
-                  icon: const Icon(Icons.edit_outlined, size: 16, color: WardrobeTheme.textMuted),
+                  icon: Icon(Icons.edit_outlined, size: 16, color: WardrobeTheme.textMuted),
                   onPressed: onEdit,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
@@ -80,7 +80,7 @@ class PlannedOutfitCard extends StatelessWidget {
               if (onDelete != null) ...[
                 const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline_rounded, size: 16, color: WardrobeTheme.textMuted),
+                  icon: Icon(Icons.delete_outline_rounded, size: 16, color: WardrobeTheme.textMuted),
                   onPressed: onDelete,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
@@ -91,7 +91,7 @@ class PlannedOutfitCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             plan.outfitName,
-            style: const TextStyle(
+            style: TextStyle(
               color: WardrobeTheme.textPrimary,
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -101,7 +101,7 @@ class PlannedOutfitCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               plan.notes!,
-              style: const TextStyle(
+              style: TextStyle(
                 color: WardrobeTheme.textMuted,
                 fontSize: 12,
               ),
@@ -137,7 +137,7 @@ class PlannedOutfitCard extends StatelessWidget {
                       const SizedBox(width: 6),
                       Text(
                         item.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: WardrobeTheme.textSecondary,
                           fontSize: 11,
                         ),
@@ -186,10 +186,10 @@ class PlannedOutfitCard extends StatelessWidget {
                     color: WardrobeTheme.electricCyan.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Icon(Icons.check_rounded, size: 14, color: WardrobeTheme.electricCyan),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 4),
                       Text(
                         'Confirmed Worn',
                         style: TextStyle(

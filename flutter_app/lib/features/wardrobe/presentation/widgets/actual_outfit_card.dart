@@ -33,7 +33,7 @@ class ActualOutfitCard extends StatelessWidget {
                   color: WardrobeTheme.electricCyan.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Text(
+                child: Text(
                   'ACTUALLY WORN',
                   style: TextStyle(
                     color: WardrobeTheme.electricCyan,
@@ -52,11 +52,11 @@ class ActualOutfitCard extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.repeat_rounded, size: 10, color: WardrobeTheme.textMuted),
+                    Icon(Icons.repeat_rounded, size: 10, color: WardrobeTheme.textMuted),
                     const SizedBox(width: 4),
                     Text(
                       'Worn ${wear.wearCount}x',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: WardrobeTheme.textSecondary,
                         fontSize: 10,
                       ),
@@ -69,7 +69,7 @@ class ActualOutfitCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             wear.outfitName,
-            style: const TextStyle(
+            style: TextStyle(
               color: WardrobeTheme.textPrimary,
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -79,7 +79,7 @@ class ActualOutfitCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               wear.notes!,
-              style: const TextStyle(
+              style: TextStyle(
                 color: WardrobeTheme.textMuted,
                 fontSize: 12,
               ),
@@ -105,7 +105,7 @@ class ActualOutfitCard extends StatelessWidget {
                       Container(
                         width: 6,
                         height: 6,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           color: WardrobeTheme.electricCyan,
                           shape: BoxShape.circle,
                         ),
@@ -113,7 +113,7 @@ class ActualOutfitCard extends StatelessWidget {
                       const SizedBox(width: 6),
                       Text(
                         item.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: WardrobeTheme.textSecondary,
                           fontSize: 11,
                         ),
@@ -126,7 +126,7 @@ class ActualOutfitCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'Recorded: ${wear.actualWornDate}',
-            style: const TextStyle(
+            style: TextStyle(
               color: WardrobeTheme.textMuted,
               fontSize: 11,
             ),

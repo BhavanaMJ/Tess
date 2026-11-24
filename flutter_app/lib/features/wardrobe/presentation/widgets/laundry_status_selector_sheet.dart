@@ -33,7 +33,7 @@ class LaundryStatusSelectorSheet extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Update Laundry Status',
                         style: TextStyle(
                           fontSize: 16,
@@ -46,14 +46,14 @@ class LaundryStatusSelectorSheet extends StatelessWidget {
                         garmentName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 12, color: WardrobeTheme.textSecondary),
                       ),
                     ],
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, color: WardrobeTheme.textMuted),
+                  icon: Icon(Icons.close, color: WardrobeTheme.textMuted),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -77,7 +77,7 @@ class LaundryStatusSelectorSheet extends StatelessWidget {
                   ),
                 ),
                 trailing: isSelected
-                    ? const Icon(Icons.check_circle_rounded,
+                    ? Icon(Icons.check_circle_rounded,
                         color: WardrobeTheme.electricViolet, size: 20)
                     : null,
                 onTap: () {
@@ -87,7 +87,7 @@ class LaundryStatusSelectorSheet extends StatelessWidget {
               );
             }),
 
-            const Divider(color: WardrobeTheme.borderSubtle, height: 24),
+            Divider(color: WardrobeTheme.borderSubtle, height: 24),
 
             // Reset to unassigned
             ListTile(
@@ -100,7 +100,7 @@ class LaundryStatusSelectorSheet extends StatelessWidget {
                   border: Border.all(color: WardrobeTheme.textMuted, width: 2),
                 ),
               ),
-              title: const Text(
+              title: Text(
                 'Status Not Assigned (Unset)',
                 style: TextStyle(
                     fontSize: 13,
@@ -108,7 +108,7 @@ class LaundryStatusSelectorSheet extends StatelessWidget {
                     fontWeight: FontWeight.w500),
               ),
               trailing: currentStatus == null
-                  ? const Icon(Icons.check_circle_rounded,
+                  ? Icon(Icons.check_circle_rounded,
                       color: WardrobeTheme.textMuted, size: 20)
                   : null,
               onTap: () {

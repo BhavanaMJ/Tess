@@ -53,34 +53,34 @@ class _AutomaticOutfitsScreenState extends State<AutomaticOutfitsScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: WardrobeTheme.elevatedSurface,
-        title: const Text('Save Look to Lookbook',
+        title: Text('Save Look to Lookbook',
             style: TextStyle(color: WardrobeTheme.textPrimary)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: nameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Outfit Name',
                 labelStyle: TextStyle(color: WardrobeTheme.textMuted),
               ),
-              style: const TextStyle(color: WardrobeTheme.textPrimary),
+              style: TextStyle(color: WardrobeTheme.textPrimary),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: notesController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Notes (optional)',
                 labelStyle: TextStyle(color: WardrobeTheme.textMuted),
               ),
-              style: const TextStyle(color: WardrobeTheme.textPrimary),
+              style: TextStyle(color: WardrobeTheme.textPrimary),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel',
+            child: Text('Cancel',
                 style: TextStyle(color: WardrobeTheme.textMuted)),
           ),
           ElevatedButton(
@@ -120,17 +120,17 @@ class _AutomaticOutfitsScreenState extends State<AutomaticOutfitsScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: WardrobeTheme.elevatedSurface,
-        title: const Text('Wear this Outfit today?',
+        title: Text('Wear this Outfit today?',
             style: TextStyle(color: WardrobeTheme.textPrimary)),
         content: Text(
           'Wearing "${rec.name}" will update ${rec.garmentIds.length} garments to WORN in Laundry Manager and increment their wear count.',
           style:
-              const TextStyle(color: WardrobeTheme.textSecondary, fontSize: 13),
+              TextStyle(color: WardrobeTheme.textSecondary, fontSize: 13),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel',
+            child: Text('Cancel',
                 style: TextStyle(color: WardrobeTheme.textMuted)),
           ),
           ElevatedButton(
@@ -183,10 +183,10 @@ class _AutomaticOutfitsScreenState extends State<AutomaticOutfitsScreen> {
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'Automatic Suggestions',
           style: TextStyle(
             color: WardrobeTheme.textPrimary,
@@ -196,13 +196,13 @@ class _AutomaticOutfitsScreenState extends State<AutomaticOutfitsScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.tune_rounded,
+            icon: Icon(Icons.tune_rounded,
                 color: WardrobeTheme.textPrimary),
             tooltip: 'Filter Options',
             onPressed: _showFilterSheet,
           ),
           IconButton(
-            icon: const Icon(Icons.refresh_rounded,
+            icon: Icon(Icons.refresh_rounded,
                 color: WardrobeTheme.electricCyan),
             tooltip: 'Regenerate Suggestions',
             onPressed: () => controller.generateRecommendations(),
@@ -226,13 +226,13 @@ class _AutomaticOutfitsScreenState extends State<AutomaticOutfitsScreen> {
               const SizedBox(height: 12),
               Expanded(
                 child: controller.isLoading
-                    ? const Center(
+                    ? Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             CircularProgressIndicator(
                                 color: WardrobeTheme.electricViolet),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             Text(
                               'Styling clean combinations...',
                               style: TextStyle(
@@ -248,16 +248,16 @@ class _AutomaticOutfitsScreenState extends State<AutomaticOutfitsScreen> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.checkroom_rounded,
+                                  Icon(Icons.checkroom_rounded,
                                       size: 48, color: WardrobeTheme.textMuted),
                                   const SizedBox(height: 12),
-                                  const Text('No combinations found',
+                                  Text('No combinations found',
                                       style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700,
                                           color: WardrobeTheme.textPrimary)),
                                   const SizedBox(height: 6),
-                                  const Text(
+                                  Text(
                                       'Ensure you have clean tops and bottoms or dresses in your wardrobe.',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(

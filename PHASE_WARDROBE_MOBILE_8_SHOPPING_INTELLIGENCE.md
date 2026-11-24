@@ -61,3 +61,4 @@ $$\text{Score} = \text{Base}(50) + \Delta_{\text{Gap}} + \Delta_{\text{Color}} +
 - $40.0 \le \text{Score} < 70.0$: `POTENTIALLY_USEFUL` ("Potentially Useful Addition")
 - $\text{Score} < 40.0$ or Exact Duplicate: `CONSIDER_ALTERNATIVES` ("Consider Existing Wardrobe Alternatives")
 - Missing Essential Attributes: `INSUFFICIENT_INFO` ("Insufficient Information to Assess")
+

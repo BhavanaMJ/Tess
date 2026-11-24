@@ -68,9 +68,9 @@ class _WishlistConversionScreenState extends State<WishlistConversionScreen> {
       setState(() => _isSubmitting = false);
       if (res != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: WardrobeTheme.successEmerald,
-            content: Text('Item successfully registered in My Wardrobe!'),
+            content: const Text('Item successfully registered in My Wardrobe!'),
           ),
         );
         Navigator.pop(context, true);
@@ -91,7 +91,7 @@ class _WishlistConversionScreenState extends State<WishlistConversionScreen> {
       backgroundColor: WardrobeTheme.voidBlack,
       appBar: AppBar(
         backgroundColor: WardrobeTheme.voidBlack,
-        title: const Text(
+        title: Text(
           'Confirm Purchase & Register',
           style: TextStyle(
             fontWeight: FontWeight.w800,
@@ -123,12 +123,12 @@ class _WishlistConversionScreenState extends State<WishlistConversionScreen> {
                         ? Image.asset(
                             widget.item.referenceImagePath!,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const Icon(
+                            errorBuilder: (_, __, ___) => Icon(
                               Icons.checkroom,
                               color: WardrobeTheme.softViolet,
                             ),
                           )
-                        : const Icon(
+                        : Icon(
                             Icons.checkroom,
                             color: WardrobeTheme.softViolet,
                           ),
@@ -139,7 +139,7 @@ class _WishlistConversionScreenState extends State<WishlistConversionScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'CONVERTING FROM WISHLIST',
                         style: TextStyle(
                           fontSize: 10,
@@ -150,7 +150,7 @@ class _WishlistConversionScreenState extends State<WishlistConversionScreen> {
                       const SizedBox(height: 2),
                       Text(
                         widget.item.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: WardrobeTheme.textPrimary,
@@ -158,7 +158,7 @@ class _WishlistConversionScreenState extends State<WishlistConversionScreen> {
                       ),
                       Text(
                         widget.item.category,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: WardrobeTheme.textMuted,
                         ),
@@ -181,12 +181,12 @@ class _WishlistConversionScreenState extends State<WishlistConversionScreen> {
                 color: WardrobeTheme.electricViolet.withValues(alpha: 0.3),
               ),
             ),
-            child: const Row(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(Icons.shield_outlined,
                     size: 18, color: WardrobeTheme.softViolet),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,7 +199,7 @@ class _WishlistConversionScreenState extends State<WishlistConversionScreen> {
                           color: WardrobeTheme.textPrimary,
                         ),
                       ),
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
                       Text(
                         'The garment laundry status remains unassigned until you physically wash or verify it. We never assume a newly acquired piece is clean.',
                         style: TextStyle(
@@ -217,7 +217,7 @@ class _WishlistConversionScreenState extends State<WishlistConversionScreen> {
           const SizedBox(height: 16),
 
           // Financial details
-          const Text(
+          Text(
             'ACTUAL PURCHASE DETAILS',
             style: TextStyle(
               fontSize: 11,
@@ -231,17 +231,17 @@ class _WishlistConversionScreenState extends State<WishlistConversionScreen> {
           TextFormField(
             controller: _priceController,
             keyboardType: TextInputType.number,
-            style: const TextStyle(color: WardrobeTheme.textPrimary),
+            style: TextStyle(color: WardrobeTheme.textPrimary),
             decoration: InputDecoration(
               labelText: 'Actual Purchase Price',
               prefixText: '$_currency ',
-              prefixStyle: const TextStyle(color: WardrobeTheme.electricCyan),
-              labelStyle: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
+              prefixStyle: TextStyle(color: WardrobeTheme.electricCyan),
+              labelStyle: TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
               filled: true,
               fillColor: WardrobeTheme.spatialSurface,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: WardrobeTheme.subtleBorder),
+                borderSide: BorderSide(color: WardrobeTheme.subtleBorder),
               ),
             ),
           ),
@@ -249,15 +249,15 @@ class _WishlistConversionScreenState extends State<WishlistConversionScreen> {
 
           TextFormField(
             controller: _nameController,
-            style: const TextStyle(color: WardrobeTheme.textPrimary),
+            style: TextStyle(color: WardrobeTheme.textPrimary),
             decoration: InputDecoration(
               labelText: 'Garment Name',
-              labelStyle: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
+              labelStyle: TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
               filled: true,
               fillColor: WardrobeTheme.spatialSurface,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: WardrobeTheme.subtleBorder),
+                borderSide: BorderSide(color: WardrobeTheme.subtleBorder),
               ),
             ),
           ),
@@ -265,15 +265,15 @@ class _WishlistConversionScreenState extends State<WishlistConversionScreen> {
 
           TextFormField(
             controller: _colorController,
-            style: const TextStyle(color: WardrobeTheme.textPrimary),
+            style: TextStyle(color: WardrobeTheme.textPrimary),
             decoration: InputDecoration(
               labelText: 'Primary Color',
-              labelStyle: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
+              labelStyle: TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
               filled: true,
               fillColor: WardrobeTheme.spatialSurface,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: WardrobeTheme.subtleBorder),
+                borderSide: BorderSide(color: WardrobeTheme.subtleBorder),
               ),
             ),
           ),

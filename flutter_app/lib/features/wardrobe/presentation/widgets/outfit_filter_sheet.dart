@@ -37,9 +37,9 @@ class _OutfitFilterSheetState extends State<OutfitFilterSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: WardrobeTheme.elevatedSurface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: SafeArea(
@@ -52,7 +52,7 @@ class _OutfitFilterSheetState extends State<OutfitFilterSheet> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Stylist Preferences',
                     style: TextStyle(
                       fontSize: 16,
@@ -61,7 +61,7 @@ class _OutfitFilterSheetState extends State<OutfitFilterSheet> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close,
+                    icon: Icon(Icons.close,
                         color: WardrobeTheme.textMuted, size: 20),
                     onPressed: () => Navigator.pop(context),
                   ),
@@ -70,7 +70,7 @@ class _OutfitFilterSheetState extends State<OutfitFilterSheet> {
               const SizedBox(height: 16),
 
               // Occasion Section
-              const Text(
+              Text(
                 'Target Occasion',
                 style: TextStyle(
                   fontSize: 13,
@@ -90,14 +90,14 @@ class _OutfitFilterSheetState extends State<OutfitFilterSheet> {
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 activeColor: WardrobeTheme.electricViolet,
-                title: const Text(
+                title: Text(
                   'Only Suggest Clean & Ready Clothes',
                   style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: WardrobeTheme.textPrimary),
                 ),
-                subtitle: const Text(
+                subtitle: Text(
                   'Strictly excludes garments in laundry or marked worn',
                   style:
                       TextStyle(fontSize: 11, color: WardrobeTheme.textMuted),
@@ -110,14 +110,14 @@ class _OutfitFilterSheetState extends State<OutfitFilterSheet> {
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 activeColor: WardrobeTheme.electricViolet,
-                title: const Text(
+                title: Text(
                   'Prioritize Favorite Clothes',
                   style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: WardrobeTheme.textPrimary),
                 ),
-                subtitle: const Text(
+                subtitle: Text(
                   'Focus recommendations on your starred wardrobe items',
                   style:
                       TextStyle(fontSize: 11, color: WardrobeTheme.textMuted),

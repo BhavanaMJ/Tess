@@ -23,7 +23,7 @@ class RepeatedOutfitWarning extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
+          Icon(
             Icons.history_edu_rounded,
             color: WardrobeTheme.statusWarning,
             size: 18,
@@ -32,7 +32,7 @@ class RepeatedOutfitWarning extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(
+              style: TextStyle(
                 color: WardrobeTheme.textSecondary,
                 fontSize: 12,
                 height: 1.4,
@@ -42,7 +42,7 @@ class RepeatedOutfitWarning extends StatelessWidget {
           if (onDismiss != null)
             GestureDetector(
               onTap: onDismiss,
-              child: const Icon(
+              child: Icon(
                 Icons.close_rounded,
                 color: WardrobeTheme.textMuted,
                 size: 16,

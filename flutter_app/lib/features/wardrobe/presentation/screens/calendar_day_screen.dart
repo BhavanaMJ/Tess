@@ -42,7 +42,7 @@ class CalendarDayScreen extends StatelessWidget {
             children: [
               Text(
                 _formatDate(date),
-                style: const TextStyle(
+                style: TextStyle(
                   color: WardrobeTheme.textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -57,7 +57,7 @@ class CalendarDayScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: WardrobeTheme.electricViolet),
                   ),
-                  child: const Text(
+                  child: Text(
                     'TODAY',
                     style: TextStyle(
                       color: WardrobeTheme.softViolet,
@@ -78,7 +78,7 @@ class CalendarDayScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Planned Look',
                 style: TextStyle(
                   color: WardrobeTheme.textPrimary,
@@ -99,8 +99,8 @@ class CalendarDayScreen extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.add_rounded, size: 16, color: WardrobeTheme.softViolet),
-                  label: const Text(
+                  icon: Icon(Icons.add_rounded, size: 16, color: WardrobeTheme.softViolet),
+                  label: Text(
                     'Plan Outfit',
                     style: TextStyle(color: WardrobeTheme.softViolet, fontSize: 13),
                   ),
@@ -120,13 +120,13 @@ class CalendarDayScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.calendar_today_rounded,
                     size: 32,
                     color: WardrobeTheme.textMuted,
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'No outfit planned for this date',
                     style: TextStyle(
                       color: WardrobeTheme.textSecondary,
@@ -150,7 +150,7 @@ class CalendarDayScreen extends StatelessWidget {
                     label: const Text('Add Plan'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: WardrobeTheme.softViolet,
-                      side: const BorderSide(color: WardrobeTheme.borderViolet),
+                      side: BorderSide(color: WardrobeTheme.borderViolet),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -185,7 +185,7 @@ class CalendarDayScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Actually Worn',
                 style: TextStyle(
                   color: WardrobeTheme.textPrimary,
@@ -206,8 +206,8 @@ class CalendarDayScreen extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.check_rounded, size: 16, color: WardrobeTheme.electricCyan),
-                  label: const Text(
+                  icon: Icon(Icons.check_rounded, size: 16, color: WardrobeTheme.electricCyan),
+                  label: Text(
                     'Record Wear',
                     style: TextStyle(color: WardrobeTheme.electricCyan, fontSize: 13),
                   ),
@@ -225,14 +225,14 @@ class CalendarDayScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: WardrobeTheme.border),
               ),
-              child: const Column(
+              child: Column(
                 children: [
                   Icon(
                     Icons.check_circle_outline_rounded,
                     size: 32,
                     color: WardrobeTheme.textMuted,
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'No wear confirmed yet for this date',
                     style: TextStyle(

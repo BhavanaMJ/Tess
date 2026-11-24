@@ -31,14 +31,14 @@ class WardrobeSummaryCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
+              Row(
                 children: [
                   Icon(
                     Icons.inventory_2_outlined,
                     size: 16,
                     color: WardrobeTheme.softViolet,
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Text(
                     'WARDROBE TELEMETRY',
                     style: TextStyle(
@@ -54,7 +54,7 @@ class WardrobeSummaryCard extends StatelessWidget {
               if (onExplore != null)
                 GestureDetector(
                   onTap: onExplore,
-                  child: const Text(
+                  child: Text(
                     'Explore All →',
                     style: TextStyle(
                       fontSize: 11,
@@ -123,7 +123,7 @@ class WardrobeSummaryCard extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 9,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.5,

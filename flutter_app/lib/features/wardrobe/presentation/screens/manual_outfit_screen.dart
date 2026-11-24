@@ -92,7 +92,7 @@ class _ManualOutfitScreenState extends State<ManualOutfitScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (context, setDlgState) => AlertDialog(
           backgroundColor: WardrobeTheme.elevatedSurface,
-          title: const Text('Save Custom Outfit',
+          title: Text('Save Custom Outfit',
               style: TextStyle(color: WardrobeTheme.textPrimary)),
           content: SingleChildScrollView(
             child: Column(
@@ -101,14 +101,14 @@ class _ManualOutfitScreenState extends State<ManualOutfitScreen> {
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Outfit Name',
                     labelStyle: TextStyle(color: WardrobeTheme.textMuted),
                   ),
-                  style: const TextStyle(color: WardrobeTheme.textPrimary),
+                  style: TextStyle(color: WardrobeTheme.textPrimary),
                 ),
                 const SizedBox(height: 12),
-                const Text('Occasion',
+                Text('Occasion',
                     style: TextStyle(
                         color: WardrobeTheme.textSecondary, fontSize: 12)),
                 const SizedBox(height: 6),
@@ -119,11 +119,11 @@ class _ManualOutfitScreenState extends State<ManualOutfitScreen> {
                 const SizedBox(height: 12),
                 TextField(
                   controller: notesController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Notes (optional)',
                     labelStyle: TextStyle(color: WardrobeTheme.textMuted),
                   ),
-                  style: const TextStyle(color: WardrobeTheme.textPrimary),
+                  style: TextStyle(color: WardrobeTheme.textPrimary),
                 ),
               ],
             ),
@@ -131,7 +131,7 @@ class _ManualOutfitScreenState extends State<ManualOutfitScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel',
+              child: Text('Cancel',
                   style: TextStyle(color: WardrobeTheme.textMuted)),
             ),
             ElevatedButton(
@@ -161,10 +161,10 @@ class _ManualOutfitScreenState extends State<ManualOutfitScreen> {
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'Manual Outfit Builder',
           style: TextStyle(
             color: WardrobeTheme.textPrimary,
@@ -176,13 +176,13 @@ class _ManualOutfitScreenState extends State<ManualOutfitScreen> {
           if (controller.manualSelectedGarmentIds.isNotEmpty)
             TextButton(
               onPressed: () => controller.clearManualSelection(),
-              child: const Text('Clear',
+              child: Text('Clear',
                   style: TextStyle(color: WardrobeTheme.statusCritical)),
             ),
         ],
       ),
       body: _isLoading
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(
                   color: WardrobeTheme.electricViolet))
           : Column(
@@ -267,7 +267,7 @@ class _ManualOutfitScreenState extends State<ManualOutfitScreen> {
                                   const SizedBox(width: 8),
                                   Text(
                                     '${controller.manualSelectedGarmentIds.length} garments selected',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontWeight: FontWeight.w700,
                                       color: WardrobeTheme.textPrimary,
                                       fontSize: 13,
@@ -292,7 +292,7 @@ class _ManualOutfitScreenState extends State<ManualOutfitScreen> {
                                 const SizedBox(height: 6),
                                 Text(
                                   conflicts.join('\n'),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontSize: 11,
                                       color: WardrobeTheme.statusWarning),
                                   maxLines: 2,

@@ -21,9 +21,9 @@ class GarmentSelectionGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (garments.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(32.0),
+          padding: const EdgeInsets.all(32.0),
           child: Text(
             'No matching garments in this category',
             style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
@@ -103,7 +103,7 @@ class GarmentSelectionGrid extends StatelessWidget {
                           children: [
                             Text(
                               g.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 color: WardrobeTheme.textPrimary,
@@ -114,7 +114,7 @@ class GarmentSelectionGrid extends StatelessWidget {
                             const SizedBox(height: 2),
                             Text(
                               '${g.mainCategory} • ${g.primaryColor}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 10,
                                 color: WardrobeTheme.textMuted,
                               ),

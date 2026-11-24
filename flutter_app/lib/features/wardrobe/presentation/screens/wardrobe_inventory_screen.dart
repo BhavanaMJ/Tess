@@ -68,7 +68,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                         'Update Status: ${garment.name}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: WardrobeTheme.textPrimary,
@@ -76,7 +76,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close,
+                      icon: Icon(Icons.close,
                           color: WardrobeTheme.textMuted, size: 20),
                       onPressed: () => Navigator.pop(ctx),
                     ),
@@ -101,7 +101,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                       ),
                     ),
                     trailing: isSelected
-                        ? const Icon(Icons.check_circle,
+                        ? Icon(Icons.check_circle,
                             color: WardrobeTheme.electricViolet, size: 20)
                         : null,
                     onTap: () {
@@ -142,7 +142,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Filter Wardrobe',
                           style: TextStyle(
                             fontSize: 16,
@@ -156,7 +156,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                               widget.controller.clearAllFilters();
                               setModalState(() {});
                             },
-                            child: const Text(
+                            child: Text(
                               'Reset All',
                               style: TextStyle(
                                   color: WardrobeTheme.electricCyan,
@@ -170,7 +170,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                     // Favorites Only Switch
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text(
+                      title: Text(
                         'Favorites Only',
                         style: TextStyle(
                             color: WardrobeTheme.textPrimary, fontSize: 14),
@@ -185,7 +185,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                     const SizedBox(height: 12),
 
                     // Laundry Status Filter
-                    const Text(
+                    Text(
                       'LAUNDRY STATUS',
                       style: TextStyle(
                         fontSize: 11,
@@ -265,7 +265,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Sort Wardrobe',
                   style: TextStyle(
                     fontSize: 16,
@@ -276,11 +276,11 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                 const SizedBox(height: 12),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Recently Added',
+                  title: Text('Recently Added',
                       style: TextStyle(color: WardrobeTheme.textPrimary)),
                   trailing: widget.controller.sortBy == 'created_at' &&
                           widget.controller.sortOrder == 'desc'
-                      ? const Icon(Icons.check,
+                      ? Icon(Icons.check,
                           color: WardrobeTheme.electricViolet)
                       : null,
                   onTap: () {
@@ -290,11 +290,11 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                 ),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Name (A-Z)',
+                  title: Text('Name (A-Z)',
                       style: TextStyle(color: WardrobeTheme.textPrimary)),
                   trailing: widget.controller.sortBy == 'name' &&
                           widget.controller.sortOrder == 'asc'
-                      ? const Icon(Icons.check,
+                      ? Icon(Icons.check,
                           color: WardrobeTheme.electricViolet)
                       : null,
                   onTap: () {
@@ -304,11 +304,11 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                 ),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Recently Updated',
+                  title: Text('Recently Updated',
                       style: TextStyle(color: WardrobeTheme.textPrimary)),
                   trailing: widget.controller.sortBy == 'updated_at' &&
                           widget.controller.sortOrder == 'desc'
-                      ? const Icon(Icons.check,
+                      ? Icon(Icons.check,
                           color: WardrobeTheme.electricViolet)
                       : null,
                   onTap: () {
@@ -357,10 +357,10 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'My Wardrobe',
           style: TextStyle(
             fontSize: 18,
@@ -371,7 +371,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.sort_rounded,
+            icon: Icon(Icons.sort_rounded,
                 color: WardrobeTheme.textSecondary, size: 20),
             tooltip: 'Sort Options',
             onPressed: _showSortModal,
@@ -380,7 +380,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
             alignment: Alignment.center,
             children: [
               IconButton(
-                icon: const Icon(Icons.tune_rounded,
+                icon: Icon(Icons.tune_rounded,
                     color: WardrobeTheme.textSecondary, size: 20),
                 tooltip: 'Filter Options',
                 onPressed: _showFilterModal,
@@ -391,7 +391,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                   right: 8,
                   child: Container(
                     padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: WardrobeTheme.electricViolet,
                       shape: BoxShape.circle,
                     ),
@@ -411,7 +411,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
             ],
           ),
           IconButton(
-            icon: const Icon(Icons.add_rounded,
+            icon: Icon(Icons.add_rounded,
                 color: WardrobeTheme.electricCyan, size: 24),
             tooltip: 'Add Garment',
             onPressed: _navigateToAddGarment,
@@ -447,17 +447,17 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                   child: TextField(
                     controller: _searchController,
                     onChanged: (val) => widget.controller.setSearchQuery(val),
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 13, color: WardrobeTheme.textPrimary),
                     decoration: InputDecoration(
                       hintText: 'Search garments by name, color, category...',
-                      hintStyle: const TextStyle(
+                      hintStyle: TextStyle(
                           fontSize: 12, color: WardrobeTheme.textMuted),
-                      prefixIcon: const Icon(Icons.search,
+                      prefixIcon: Icon(Icons.search,
                           size: 18, color: WardrobeTheme.textMuted),
                       suffixIcon: widget.controller.searchQuery.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(Icons.clear,
+                              icon: Icon(Icons.clear,
                                   size: 16, color: WardrobeTheme.textMuted),
                               onPressed: () {
                                 _searchController.clear();
@@ -514,13 +514,13 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.filter_alt_off_outlined,
                                 color: WardrobeTheme.textMuted,
                                 size: 40,
                               ),
                               const SizedBox(height: 12),
-                              const Text(
+                              Text(
                                 'No garments match your filters',
                                 style: TextStyle(
                                   fontSize: 15,
@@ -529,7 +529,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              const Text(
+                              Text(
                                 'Try clearing search terms or selecting another category.',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
@@ -543,7 +543,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                                   _searchController.clear();
                                   widget.controller.clearAllFilters();
                                 },
-                                child: const Text(
+                                child: Text(
                                   'Clear All Filters',
                                   style: TextStyle(
                                       color: WardrobeTheme.electricCyan),
@@ -590,7 +590,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                                                   maxLines: 1,
                                                   overflow:
                                                       TextOverflow.ellipsis,
-                                                  style: const TextStyle(
+                                                  style: TextStyle(
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w700,
                                                     color: WardrobeTheme
@@ -620,7 +620,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                                             children: [
                                               Text(
                                                 garment.id,
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   fontSize: 10,
                                                   fontWeight: FontWeight.w700,
                                                   fontFamily: 'monospace',
@@ -635,7 +635,7 @@ class _WardrobeInventoryScreenState extends State<WardrobeInventoryScreen> {
                                                   maxLines: 1,
                                                   overflow:
                                                       TextOverflow.ellipsis,
-                                                  style: const TextStyle(
+                                                  style: TextStyle(
                                                     fontSize: 11,
                                                     color: WardrobeTheme
                                                         .textSecondary,

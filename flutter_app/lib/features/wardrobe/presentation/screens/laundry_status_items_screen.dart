@@ -72,7 +72,7 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Column(
@@ -80,7 +80,7 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
           children: [
             Text(
               widget.statusTitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: WardrobeTheme.textPrimary,
@@ -89,7 +89,7 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
             Text(
               '${widget.controller.currentStatusItems.length} items',
               style:
-                  const TextStyle(fontSize: 11, color: WardrobeTheme.textMuted),
+                  TextStyle(fontSize: 11, color: WardrobeTheme.textMuted),
             ),
           ],
         ),
@@ -105,7 +105,7 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
               },
               child: Text(
                 _isSelectionMode ? 'Cancel' : 'Select',
-                style: const TextStyle(
+                style: TextStyle(
                     color: WardrobeTheme.electricViolet,
                     fontWeight: FontWeight.w700),
               ),
@@ -116,7 +116,7 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
         animation: widget.controller,
         builder: (context, _) {
           if (widget.controller.isLoading) {
-            return const Center(
+            return Center(
                 child: CircularProgressIndicator(
                     color: WardrobeTheme.electricViolet));
           }
@@ -139,13 +139,13 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.checkroom_rounded,
+                    Icon(Icons.checkroom_rounded,
                         size: 48, color: WardrobeTheme.textMuted),
                     const SizedBox(height: 12),
                     Text(
                       'No garments currently in "${widget.statusTitle}"',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                           color: WardrobeTheme.textSecondary),
@@ -163,24 +163,24 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: TextField(
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: WardrobeTheme.textPrimary, fontSize: 13),
                   decoration: InputDecoration(
                     hintText: 'Search by name or CLO-ID...',
-                    hintStyle: const TextStyle(
+                    hintStyle: TextStyle(
                         color: WardrobeTheme.textMuted, fontSize: 13),
-                    prefixIcon: const Icon(Icons.search_rounded,
+                    prefixIcon: Icon(Icons.search_rounded,
                         color: WardrobeTheme.textMuted, size: 18),
                     filled: true,
                     fillColor: WardrobeTheme.spatialSurface,
                     contentPadding: const EdgeInsets.symmetric(vertical: 10),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: WardrobeTheme.border),
+                      borderSide: BorderSide(color: WardrobeTheme.border),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: WardrobeTheme.border),
+                      borderSide: BorderSide(color: WardrobeTheme.border),
                     ),
                   ),
                   onChanged: (val) => setState(() => _searchQuery = val),
@@ -278,7 +278,7 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
                                       children: [
                                         Text(
                                           garment.id,
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 10,
                                             fontWeight: FontWeight.w700,
                                             color: WardrobeTheme.textMuted,
@@ -288,7 +288,7 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
                                         const SizedBox(width: 6),
                                         Text(
                                           '• ${garment.mainCategory}',
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                               fontSize: 11,
                                               color:
                                                   WardrobeTheme.textSecondary),
@@ -300,7 +300,7 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
                                       garment.name,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w800,
                                         color: WardrobeTheme.textPrimary,
@@ -315,7 +315,7 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
                                                 right: 8.0),
                                             child: Text(
                                               'Worn: ${garment.wearCount}x',
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                   fontSize: 11,
                                                   color: WardrobeTheme
                                                       .statusWarning),
@@ -324,7 +324,7 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
                                         if (garment.washCount > 0)
                                           Text(
                                             'Washed: ${garment.washCount}x',
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                                 fontSize: 11,
                                                 color:
                                                     WardrobeTheme.electricCyan),
@@ -337,7 +337,7 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
 
                               // Quick status change button
                               IconButton(
-                                icon: const Icon(Icons.swap_horiz_rounded,
+                                icon: Icon(Icons.swap_horiz_rounded,
                                     color: WardrobeTheme.electricViolet,
                                     size: 22),
                                 tooltip: 'Change Status',
@@ -356,7 +356,7 @@ class _LaundryStatusItemsScreenState extends State<LaundryStatusItemsScreen> {
               if (_isSelectionMode && _selectedGarmentIds.isNotEmpty)
                 Container(
                   padding: const EdgeInsets.all(16.0),
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: WardrobeTheme.elevatedSurface,
                     border: Border(
                         top: BorderSide(color: WardrobeTheme.borderSubtle)),

@@ -23,7 +23,7 @@ class OutfitGarmentPreview extends StatelessWidget {
       return Container(
         height: cardHeight,
         alignment: Alignment.center,
-        child: const Text(
+        child: Text(
           'No garments in this combination',
           style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
         ),
@@ -80,7 +80,7 @@ class OutfitGarmentPreview extends StatelessWidget {
                           children: [
                             Text(
                               item.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
                                 color: WardrobeTheme.textPrimary,
@@ -90,7 +90,7 @@ class OutfitGarmentPreview extends StatelessWidget {
                             ),
                             Text(
                               item.mainCategory,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 9,
                                 color: WardrobeTheme.textMuted,
                               ),

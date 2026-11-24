@@ -109,7 +109,7 @@ class GarmentCandidateCard extends StatelessWidget {
                       ),
                       child: Text(
                         candidate.mainCategory,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                           color: WardrobeTheme.textPrimary,
@@ -170,7 +170,7 @@ class GarmentCandidateCard extends StatelessWidget {
                           candidate.suggestedName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w800,
                             color: WardrobeTheme.textPrimary,
@@ -178,7 +178,7 @@ class GarmentCandidateCard extends StatelessWidget {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.edit_note_rounded,
+                        icon: Icon(Icons.edit_note_rounded,
                             color: WardrobeTheme.electricCyan, size: 22),
                         tooltip: 'Edit Attributes',
                         onPressed: onEdit,
@@ -190,7 +190,7 @@ class GarmentCandidateCard extends StatelessWidget {
                   // Key attributes line
                   Text(
                     '${candidate.primaryColor} • ${candidate.pattern ?? "Solid"}${candidate.sleeveLength != null ? " • ${candidate.sleeveLength}" : ""}${candidate.fabricMaterial != null ? " • ${candidate.fabricMaterial}" : ""}',
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 12, color: WardrobeTheme.textSecondary),
                   ),
 
@@ -229,13 +229,13 @@ class GarmentCandidateCard extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.info_outline_rounded,
+                          Icon(Icons.info_outline_rounded,
                               color: WardrobeTheme.statusWarning, size: 14),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
                               candidate.uncertaintyNotes!,
-                              style: const TextStyle(
+                              style: TextStyle(
                                   fontSize: 11,
                                   color: WardrobeTheme.textSecondary),
                             ),
@@ -251,9 +251,9 @@ class GarmentCandidateCard extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: TextButton.icon(
                       onPressed: onEdit,
-                      icon: const Icon(Icons.tune_rounded,
+                      icon: Icon(Icons.tune_rounded,
                           size: 14, color: WardrobeTheme.electricCyan),
-                      label: const Text(
+                      label: Text(
                         'Refine Details',
                         style: TextStyle(
                             color: WardrobeTheme.electricCyan,

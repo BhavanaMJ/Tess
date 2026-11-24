@@ -31,7 +31,7 @@ class NeglectedGarmentCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: WardrobeTheme.border),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.inventory_2_outlined,
               color: WardrobeTheme.statusWarning,
               size: 22,
@@ -44,7 +44,7 @@ class NeglectedGarmentCard extends StatelessWidget {
               children: [
                 Text(
                   usage.garmentName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: WardrobeTheme.textPrimary,
@@ -63,7 +63,7 @@ class NeglectedGarmentCard extends StatelessWidget {
                       ),
                       child: Text(
                         usage.neglectReason?.label ?? 'Neglected',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
                           color: WardrobeTheme.statusWarning,
@@ -73,7 +73,7 @@ class NeglectedGarmentCard extends StatelessWidget {
                     const SizedBox(width: 6),
                     Text(
                       '${usage.wearCount} wears',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
                         color: WardrobeTheme.textMuted,
                       ),
@@ -90,7 +90,7 @@ class NeglectedGarmentCard extends StatelessWidget {
                 visualDensity: VisualDensity.compact,
                 padding: const EdgeInsets.symmetric(horizontal: 10),
               ),
-              child: const Text(
+              child: Text(
                 'Wear',
                 style: TextStyle(
                   fontSize: 12,

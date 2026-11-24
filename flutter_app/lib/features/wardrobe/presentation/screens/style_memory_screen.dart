@@ -71,7 +71,7 @@ class _StyleMemoryScreenState extends State<StyleMemoryScreen> {
               color: WardrobeTheme.textPrimary,
               onPressed: () => Navigator.of(context).pop(),
             ),
-            title: const Text(
+            title: Text(
               'Personal Style Memory',
               style: TextStyle(
                 fontSize: 18,
@@ -81,7 +81,7 @@ class _StyleMemoryScreenState extends State<StyleMemoryScreen> {
             ),
           ),
           body: mem == null
-              ? const Center(
+              ? Center(
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(WardrobeTheme.statusSuccess),
                   ),
@@ -116,7 +116,7 @@ class _StyleMemoryScreenState extends State<StyleMemoryScreen> {
                                   color: WardrobeTheme.statusSuccess.withOpacity(0.15),
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.psychology_rounded,
                                   color: WardrobeTheme.statusSuccess,
                                   size: 22,
@@ -127,13 +127,13 @@ class _StyleMemoryScreenState extends State<StyleMemoryScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
+                                    Text(
                                       'Style Persona',
                                       style: TextStyle(fontSize: 11, color: WardrobeTheme.textMuted),
                                     ),
                                     Text(
                                       mem.stylePersona,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w800,
                                         color: WardrobeTheme.textPrimary,
@@ -147,7 +147,7 @@ class _StyleMemoryScreenState extends State<StyleMemoryScreen> {
                           const SizedBox(height: 14),
                           Text(
                             mem.interactionSummary,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
                               color: WardrobeTheme.textSecondary,
                               height: 1.4,
@@ -172,7 +172,7 @@ class _StyleMemoryScreenState extends State<StyleMemoryScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Most Worn Colors',
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: WardrobeTheme.textSecondary),
                           ),
@@ -182,14 +182,14 @@ class _StyleMemoryScreenState extends State<StyleMemoryScreen> {
                             runSpacing: 8,
                             children: mem.topWornColors.map((c) {
                               return Chip(
-                                label: Text(c, style: const TextStyle(fontSize: 11, color: WardrobeTheme.textPrimary)),
+                                label: Text(c, style: TextStyle(fontSize: 11, color: WardrobeTheme.textPrimary)),
                                 backgroundColor: WardrobeTheme.elevatedSurface,
-                                side: const BorderSide(color: WardrobeTheme.border),
+                                side: BorderSide(color: WardrobeTheme.border),
                               );
                             }).toList(),
                           ),
                           const SizedBox(height: 14),
-                          const Text(
+                          Text(
                             'Most Worn Categories',
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: WardrobeTheme.textSecondary),
                           ),
@@ -199,9 +199,9 @@ class _StyleMemoryScreenState extends State<StyleMemoryScreen> {
                             runSpacing: 8,
                             children: mem.topWornCategories.map((c) {
                               return Chip(
-                                label: Text(c, style: const TextStyle(fontSize: 11, color: WardrobeTheme.textPrimary)),
+                                label: Text(c, style: TextStyle(fontSize: 11, color: WardrobeTheme.textPrimary)),
                                 backgroundColor: WardrobeTheme.elevatedSurface,
-                                side: const BorderSide(color: WardrobeTheme.border),
+                                side: BorderSide(color: WardrobeTheme.border),
                               );
                             }).toList(),
                           ),
@@ -224,25 +224,25 @@ class _StyleMemoryScreenState extends State<StyleMemoryScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Persona Name',
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: WardrobeTheme.textSecondary),
                           ),
                           const SizedBox(height: 6),
                           TextField(
                             controller: _personaController,
-                            style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
+                            style: TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: WardrobeTheme.elevatedSurface,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                borderSide: const BorderSide(color: WardrobeTheme.border),
+                                borderSide: BorderSide(color: WardrobeTheme.border),
                               ),
                             ),
                           ),
                           const SizedBox(height: 14),
-                          const Text(
+                          Text(
                             'Style Notes & Rules',
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: WardrobeTheme.textSecondary),
                           ),
@@ -250,16 +250,16 @@ class _StyleMemoryScreenState extends State<StyleMemoryScreen> {
                           TextField(
                             controller: _notesController,
                             maxLines: 3,
-                            style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
+                            style: TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: WardrobeTheme.elevatedSurface,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                borderSide: const BorderSide(color: WardrobeTheme.border),
+                                borderSide: BorderSide(color: WardrobeTheme.border),
                               ),
                               hintText: 'e.g. Always pair monochrome neutrals, avoid pastels',
-                              hintStyle: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
+                              hintStyle: TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -300,7 +300,7 @@ class _StyleMemoryScreenState extends State<StyleMemoryScreen> {
   Widget _buildSectionHeader(String title) {
     return Text(
       title,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 11,
         fontWeight: FontWeight.w700,
         letterSpacing: 1.2,

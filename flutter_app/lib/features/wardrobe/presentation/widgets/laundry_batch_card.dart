@@ -59,7 +59,7 @@ class LaundryBatchCard extends StatelessWidget {
                         ),
                         child: Text(
                           batch.batchNumber,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                             color: WardrobeTheme.textSecondary,
@@ -89,7 +89,7 @@ class LaundryBatchCard extends StatelessWidget {
                   ),
                   Text(
                     '${batch.itemsCount} ${batch.itemsCount == 1 ? "item" : "items"}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: WardrobeTheme.textSecondary,
@@ -100,7 +100,7 @@ class LaundryBatchCard extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 batch.name,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
                   color: WardrobeTheme.textPrimary,
@@ -112,7 +112,7 @@ class LaundryBatchCard extends StatelessWidget {
                   batch.notes!,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 12, color: WardrobeTheme.textMuted),
                 ),
               ],

@@ -61,7 +61,7 @@ class LaundryHistoryTimeline extends StatelessWidget {
                   size: 36,
                   color: WardrobeTheme.textMuted.withValues(alpha: 0.5)),
               const SizedBox(height: 10),
-              const Text(
+              Text(
                 'No Laundry History Yet',
                 style: TextStyle(
                     fontSize: 14,
@@ -69,7 +69,7 @@ class LaundryHistoryTimeline extends StatelessWidget {
                     color: WardrobeTheme.textSecondary),
               ),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 'Lifecycle changes, wears and wash cycles will appear here chronologically.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 11, color: WardrobeTheme.textMuted),
@@ -145,7 +145,7 @@ class LaundryHistoryTimeline extends StatelessWidget {
                             ),
                             Text(
                               _formatTimestamp(entry.createdAt),
-                              style: const TextStyle(
+                              style: TextStyle(
                                   fontSize: 10, color: WardrobeTheme.textMuted),
                             ),
                           ],
@@ -155,7 +155,7 @@ class LaundryHistoryTimeline extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             '${entry.previousStatus ?? "UNASSIGNED"}  ➔  ${entry.newStatus ?? "UNASSIGNED"}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
                               color: WardrobeTheme.textPrimary,
@@ -166,7 +166,7 @@ class LaundryHistoryTimeline extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             entry.notes!,
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 11,
                                 color: WardrobeTheme.textSecondary),
                           ),

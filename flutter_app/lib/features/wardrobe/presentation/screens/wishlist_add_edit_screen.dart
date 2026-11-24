@@ -133,7 +133,7 @@ class _WishlistAddEditScreenState extends State<WishlistAddEditScreen> {
         backgroundColor: WardrobeTheme.voidBlack,
         title: Text(
           isEditing ? 'Edit Wishlist Item' : 'Add to Wishlist',
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w800,
             color: WardrobeTheme.textPrimary,
           ),
@@ -178,7 +178,7 @@ class _WishlistAddEditScreenState extends State<WishlistAddEditScreen> {
             // Item Name
             TextFormField(
               controller: _nameController,
-              style: const TextStyle(color: WardrobeTheme.textPrimary),
+              style: TextStyle(color: WardrobeTheme.textPrimary),
               decoration: _buildInputDecoration('Item Name *', 'e.g. Black Formal Trousers'),
               validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter an item name' : null,
             ),
@@ -191,7 +191,7 @@ class _WishlistAddEditScreenState extends State<WishlistAddEditScreen> {
                   child: DropdownButtonFormField<String>(
                     value: _selectedCategory,
                     dropdownColor: WardrobeTheme.spatialSurface,
-                    style: const TextStyle(color: WardrobeTheme.textPrimary),
+                    style: TextStyle(color: WardrobeTheme.textPrimary),
                     decoration: _buildInputDecoration('Category *', ''),
                     items: _categories.map((cat) {
                       return DropdownMenuItem(value: cat, child: Text(cat));
@@ -205,7 +205,7 @@ class _WishlistAddEditScreenState extends State<WishlistAddEditScreen> {
                 Expanded(
                   child: TextFormField(
                     controller: _subcategoryController,
-                    style: const TextStyle(color: WardrobeTheme.textPrimary),
+                    style: TextStyle(color: WardrobeTheme.textPrimary),
                     decoration: _buildInputDecoration('Subcategory', 'e.g. Pants'),
                   ),
                 ),
@@ -221,7 +221,7 @@ class _WishlistAddEditScreenState extends State<WishlistAddEditScreen> {
                   child: TextFormField(
                     controller: _expectedPriceController,
                     keyboardType: TextInputType.number,
-                    style: const TextStyle(color: WardrobeTheme.textPrimary),
+                    style: TextStyle(color: WardrobeTheme.textPrimary),
                     decoration: _buildInputDecoration('Expected Price', 'e.g. 3500'),
                   ),
                 ),
@@ -231,7 +231,7 @@ class _WishlistAddEditScreenState extends State<WishlistAddEditScreen> {
                   child: DropdownButtonFormField<String>(
                     value: _selectedCurrency,
                     dropdownColor: WardrobeTheme.spatialSurface,
-                    style: const TextStyle(color: WardrobeTheme.textPrimary),
+                    style: TextStyle(color: WardrobeTheme.textPrimary),
                     decoration: _buildInputDecoration('Currency', ''),
                     items: _currencies.map((c) {
                       return DropdownMenuItem(value: c, child: Text(c));
@@ -246,7 +246,7 @@ class _WishlistAddEditScreenState extends State<WishlistAddEditScreen> {
             const SizedBox(height: 16),
 
             // Purchase Priority Selector
-            const Text(
+            Text(
               'PURCHASE PRIORITY',
               style: TextStyle(
                 fontSize: 11,
@@ -273,7 +273,7 @@ class _WishlistAddEditScreenState extends State<WishlistAddEditScreen> {
                 Expanded(
                   child: TextFormField(
                     controller: _desiredColorController,
-                    style: const TextStyle(color: WardrobeTheme.textPrimary),
+                    style: TextStyle(color: WardrobeTheme.textPrimary),
                     decoration: _buildInputDecoration('Target Color', 'e.g. Black / Navy'),
                   ),
                 ),
@@ -281,7 +281,7 @@ class _WishlistAddEditScreenState extends State<WishlistAddEditScreen> {
                 Expanded(
                   child: TextFormField(
                     controller: _desiredPatternController,
-                    style: const TextStyle(color: WardrobeTheme.textPrimary),
+                    style: TextStyle(color: WardrobeTheme.textPrimary),
                     decoration: _buildInputDecoration('Pattern', 'e.g. Solid / Plaid'),
                   ),
                 ),
@@ -292,7 +292,7 @@ class _WishlistAddEditScreenState extends State<WishlistAddEditScreen> {
             // Occasion
             TextFormField(
               controller: _occasionController,
-              style: const TextStyle(color: WardrobeTheme.textPrimary),
+              style: TextStyle(color: WardrobeTheme.textPrimary),
               decoration: _buildInputDecoration('Occasion', 'e.g. Work, Casual, Festive'),
             ),
             const SizedBox(height: 14),
@@ -301,7 +301,7 @@ class _WishlistAddEditScreenState extends State<WishlistAddEditScreen> {
             TextFormField(
               controller: _notesController,
               maxLines: 3,
-              style: const TextStyle(color: WardrobeTheme.textPrimary),
+              style: TextStyle(color: WardrobeTheme.textPrimary),
               decoration: _buildInputDecoration('Notes / Why do you want this?', 'Enter notes...'),
             ),
             const SizedBox(height: 24),
@@ -330,11 +330,11 @@ class _WishlistAddEditScreenState extends State<WishlistAddEditScreen> {
   }
 
   Widget _buildAddPhotoPlaceholder() {
-    return const Column(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(Icons.add_a_photo_outlined, size: 28, color: WardrobeTheme.softViolet),
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
         Text(
           'Inspiration Photo',
           style: TextStyle(fontSize: 10, color: WardrobeTheme.textMuted),
@@ -379,21 +379,21 @@ class _WishlistAddEditScreenState extends State<WishlistAddEditScreen> {
     return InputDecoration(
       labelText: label,
       hintText: hint,
-      labelStyle: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
-      hintStyle: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
+      labelStyle: TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
+      hintStyle: TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
       filled: true,
       fillColor: WardrobeTheme.spatialSurface,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: WardrobeTheme.subtleBorder),
+        borderSide: BorderSide(color: WardrobeTheme.subtleBorder),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: WardrobeTheme.subtleBorder),
+        borderSide: BorderSide(color: WardrobeTheme.subtleBorder),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: WardrobeTheme.electricViolet),
+        borderSide: BorderSide(color: WardrobeTheme.electricViolet),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     );

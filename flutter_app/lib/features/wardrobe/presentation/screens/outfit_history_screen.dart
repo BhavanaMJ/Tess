@@ -47,7 +47,7 @@ class _OutfitHistoryScreenState extends State<OutfitHistoryScreen>
           appBar: AppBar(
             backgroundColor: WardrobeTheme.voidBg,
             elevation: 0,
-            title: const Text(
+            title: Text(
               'Wear History & Intelligence',
               style: TextStyle(color: WardrobeTheme.textPrimary, fontSize: 18),
             ),
@@ -69,7 +69,7 @@ class _OutfitHistoryScreenState extends State<OutfitHistoryScreen>
             children: [
               // 1. Wear History Tab
               if (wears.isEmpty)
-                const Center(
+                Center(
                   child: Text(
                     'No recorded outfit wear history yet.\nConfirm what you wear from the Outfit Calendar.',
                     textAlign: TextAlign.center,
@@ -85,7 +85,7 @@ class _OutfitHistoryScreenState extends State<OutfitHistoryScreen>
 
               // 2. Unused Garments Tab
               if (unused.isEmpty)
-                const Center(
+                Center(
                   child: Text(
                     'All your garments have been worn recently!',
                     style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 14),
@@ -114,7 +114,7 @@ class _OutfitHistoryScreenState extends State<OutfitHistoryScreen>
                               color: WardrobeTheme.railBg,
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(Icons.checkroom_rounded, size: 20, color: WardrobeTheme.textMuted),
+                            child: Icon(Icons.checkroom_rounded, size: 20, color: WardrobeTheme.textMuted),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -123,7 +123,7 @@ class _OutfitHistoryScreenState extends State<OutfitHistoryScreen>
                               children: [
                                 Text(
                                   item.garmentName,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: WardrobeTheme.textPrimary,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 14,
@@ -132,7 +132,7 @@ class _OutfitHistoryScreenState extends State<OutfitHistoryScreen>
                                 const SizedBox(height: 2),
                                 Text(
                                   '${item.mainCategory} • ${item.primaryColor}',
-                                  style: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
+                                  style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
                                 ),
                               ],
                             ),
@@ -145,7 +145,7 @@ class _OutfitHistoryScreenState extends State<OutfitHistoryScreen>
                             ),
                             child: Text(
                               item.wearCount == 0 ? 'Never Worn' : '30+ Days Unused',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: WardrobeTheme.statusWarning,
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
@@ -160,7 +160,7 @@ class _OutfitHistoryScreenState extends State<OutfitHistoryScreen>
 
               // 3. Recently Worn Garments Tab
               if (recent.isEmpty)
-                const Center(
+                Center(
                   child: Text(
                     'No garment wear history available.',
                     style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 14),
@@ -189,7 +189,7 @@ class _OutfitHistoryScreenState extends State<OutfitHistoryScreen>
                               color: WardrobeTheme.railBg,
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(Icons.dry_cleaning_rounded, size: 20, color: WardrobeTheme.electricCyan),
+                            child: Icon(Icons.dry_cleaning_rounded, size: 20, color: WardrobeTheme.electricCyan),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -198,7 +198,7 @@ class _OutfitHistoryScreenState extends State<OutfitHistoryScreen>
                               children: [
                                 Text(
                                   item.garmentName,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: WardrobeTheme.textPrimary,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 14,
@@ -207,14 +207,14 @@ class _OutfitHistoryScreenState extends State<OutfitHistoryScreen>
                                 const SizedBox(height: 2),
                                 Text(
                                   '${item.mainCategory} • ${item.primaryColor}',
-                                  style: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
+                                  style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
                                 ),
                               ],
                             ),
                           ),
                           Text(
                             'Worn ${item.wearCount}x',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: WardrobeTheme.electricCyan,
                               fontSize: 12,
                               fontWeight: FontWeight.w500,

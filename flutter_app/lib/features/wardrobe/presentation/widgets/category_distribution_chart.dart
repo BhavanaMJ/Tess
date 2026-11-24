@@ -20,7 +20,7 @@ class CategoryDistributionChart extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: WardrobeTheme.border),
         ),
-        child: const Center(
+        child: Center(
           child: Text(
             'No category data available',
             style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
@@ -44,7 +44,7 @@ class CategoryDistributionChart extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'CATEGORY COMPOSITION',
                 style: TextStyle(
                   fontSize: 11,
@@ -55,7 +55,7 @@ class CategoryDistributionChart extends StatelessWidget {
               ),
               Text(
                 '${distribution.length} Categories',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: WardrobeTheme.electricViolet,
@@ -75,7 +75,7 @@ class CategoryDistributionChart extends StatelessWidget {
                     children: [
                       Text(
                         item.category,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: WardrobeTheme.textPrimary,
@@ -83,7 +83,7 @@ class CategoryDistributionChart extends StatelessWidget {
                       ),
                       Text(
                         '${item.count} items (${item.percentageOfWardrobe}%)',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: WardrobeTheme.textMuted,
                           fontWeight: FontWeight.w500,
@@ -98,7 +98,7 @@ class CategoryDistributionChart extends StatelessWidget {
                       value: (item.percentageOfWardrobe / 100.0).clamp(0.0, 1.0),
                       minHeight: 6,
                       backgroundColor: Colors.white.withOpacity(0.06),
-                      valueColor: const AlwaysStoppedAnimation<Color>(WardrobeTheme.electricViolet),
+                      valueColor: AlwaysStoppedAnimation<Color>(WardrobeTheme.electricViolet),
                     ),
                   ),
                 ],

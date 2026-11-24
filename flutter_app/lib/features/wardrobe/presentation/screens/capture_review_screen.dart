@@ -49,7 +49,7 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
           backgroundColor: WardrobeTheme.elevatedSurface,
           content: Text(
             'Successfully registered $count garments to My Wardrobe!',
-            style: const TextStyle(
+            style: TextStyle(
                 color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600),
           ),
         ),
@@ -67,10 +67,10 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'Review Detected Clothes',
           style: TextStyle(
             fontSize: 18,
@@ -96,7 +96,7 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(
                     horizontal: 16.0, vertical: 12.0),
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: WardrobeTheme.spatialSurface,
                   border: Border(
                       bottom: BorderSide(color: WardrobeTheme.borderSubtle)),
@@ -116,7 +116,7 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
                           ),
                           child: Text(
                             '$total DETECTED',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w800,
                               color: WardrobeTheme.softViolet,
@@ -126,7 +126,7 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
                         const SizedBox(width: 8),
                         Text(
                           '$included selected for wardrobe',
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontSize: 13, color: WardrobeTheme.textSecondary),
                         ),
                       ],
@@ -140,7 +140,7 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
                             }
                           }
                         },
-                        child: const Text(
+                        child: Text(
                           'Select All',
                           style: TextStyle(
                               color: WardrobeTheme.electricCyan, fontSize: 12),
@@ -162,7 +162,7 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
                             .withValues(alpha: 0.3)),
                   ),
                   child: Text(error,
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 12, color: WardrobeTheme.statusCritical)),
                 ),
               ],
@@ -170,7 +170,7 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
               // Candidate List
               Expanded(
                 child: candidates.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Text(
                           'No garment candidates available.',
                           style: TextStyle(color: WardrobeTheme.textMuted),
@@ -194,7 +194,7 @@ class _CaptureReviewScreenState extends State<CaptureReviewScreen> {
               // Bottom Confirmation Action Bar
               Container(
                 padding: const EdgeInsets.all(16.0),
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: WardrobeTheme.elevatedSurface,
                   border: Border(
                       top: BorderSide(color: WardrobeTheme.borderSubtle)),

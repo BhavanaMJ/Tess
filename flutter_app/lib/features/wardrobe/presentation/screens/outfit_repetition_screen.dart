@@ -39,7 +39,7 @@ class _OutfitRepetitionScreenState extends State<OutfitRepetitionScreen> {
               color: WardrobeTheme.textPrimary,
               onPressed: () => Navigator.of(context).pop(),
             ),
-            title: const Text(
+            title: Text(
               'Outfit Repetition Analysis',
               style: TextStyle(
                 fontSize: 18,
@@ -49,7 +49,7 @@ class _OutfitRepetitionScreenState extends State<OutfitRepetitionScreen> {
             ),
           ),
           body: ctrl.isLoading && list.isEmpty
-              ? const Center(
+              ? Center(
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(WardrobeTheme.softViolet),
                   ),
@@ -72,7 +72,7 @@ class _OutfitRepetitionScreenState extends State<OutfitRepetitionScreen> {
                               color: WardrobeTheme.softViolet.withOpacity(0.15),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.repeat_rounded,
                               color: WardrobeTheme.softViolet,
                               size: 20,
@@ -83,7 +83,7 @@ class _OutfitRepetitionScreenState extends State<OutfitRepetitionScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Recurring Combinations',
                                   style: TextStyle(
                                     fontSize: 14,
@@ -115,7 +115,7 @@ class _OutfitRepetitionScreenState extends State<OutfitRepetitionScreen> {
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(color: WardrobeTheme.border),
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Text(
                             'No repeated outfits recorded yet. Log your looks in the Outfit Calendar to track repetition intervals.',
                             style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
@@ -142,7 +142,7 @@ class _OutfitRepetitionScreenState extends State<OutfitRepetitionScreen> {
                                   children: [
                                     Text(
                                       rep.outfitName,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w700,
                                         color: WardrobeTheme.textPrimary,
@@ -156,7 +156,7 @@ class _OutfitRepetitionScreenState extends State<OutfitRepetitionScreen> {
                                       ),
                                       child: Text(
                                         '${rep.wearCount} Wears',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 11,
                                           fontWeight: FontWeight.w700,
                                           color: WardrobeTheme.softViolet,
@@ -168,7 +168,7 @@ class _OutfitRepetitionScreenState extends State<OutfitRepetitionScreen> {
                                 const SizedBox(height: 6),
                                 Text(
                                   rep.garmentNames.join(' • '),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13,
                                     color: WardrobeTheme.textMuted,
                                   ),
@@ -181,14 +181,14 @@ class _OutfitRepetitionScreenState extends State<OutfitRepetitionScreen> {
                                       rep.averageIntervalDays != null
                                           ? 'Avg interval: every ${rep.averageIntervalDays} days'
                                           : 'First repeated log',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 11,
                                         color: WardrobeTheme.textSecondary,
                                       ),
                                     ),
                                     Text(
                                       rep.occasion,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w600,
                                         color: WardrobeTheme.electricCyan,

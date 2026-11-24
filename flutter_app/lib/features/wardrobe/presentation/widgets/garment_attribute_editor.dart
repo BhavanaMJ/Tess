@@ -101,21 +101,21 @@ class _GarmentAttributeEditorState extends State<GarmentAttributeEditor> {
     return InputDecoration(
       labelText: label,
       labelStyle:
-          const TextStyle(color: WardrobeTheme.textSecondary, fontSize: 13),
+          TextStyle(color: WardrobeTheme.textSecondary, fontSize: 13),
       filled: true,
       fillColor: WardrobeTheme.spatialSurface,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: WardrobeTheme.border),
+        borderSide: BorderSide(color: WardrobeTheme.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: WardrobeTheme.border),
+        borderSide: BorderSide(color: WardrobeTheme.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide:
-            const BorderSide(color: WardrobeTheme.electricViolet, width: 1.5),
+            BorderSide(color: WardrobeTheme.electricViolet, width: 1.5),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
     );
@@ -139,7 +139,7 @@ class _GarmentAttributeEditorState extends State<GarmentAttributeEditor> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Correct Detected Attributes',
                     style: TextStyle(
                         fontSize: 16,
@@ -148,7 +148,7 @@ class _GarmentAttributeEditorState extends State<GarmentAttributeEditor> {
                   ),
                   IconButton(
                     icon:
-                        const Icon(Icons.close, color: WardrobeTheme.textMuted),
+                        Icon(Icons.close, color: WardrobeTheme.textMuted),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
@@ -158,7 +158,7 @@ class _GarmentAttributeEditorState extends State<GarmentAttributeEditor> {
               // Name
               TextFormField(
                 controller: _nameController,
-                style: const TextStyle(
+                style: TextStyle(
                     color: WardrobeTheme.textPrimary, fontSize: 14),
                 decoration: _inputDeco('Garment Name'),
               ),
@@ -168,7 +168,7 @@ class _GarmentAttributeEditorState extends State<GarmentAttributeEditor> {
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
                 dropdownColor: WardrobeTheme.elevatedSurface,
-                style: const TextStyle(
+                style: TextStyle(
                     color: WardrobeTheme.textPrimary, fontSize: 14),
                 decoration: _inputDeco('Category'),
                 items: _categories
@@ -186,7 +186,7 @@ class _GarmentAttributeEditorState extends State<GarmentAttributeEditor> {
                   Expanded(
                     child: TextFormField(
                       controller: _primaryColorController,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: WardrobeTheme.textPrimary, fontSize: 14),
                       decoration: _inputDeco('Primary Color'),
                     ),
@@ -195,7 +195,7 @@ class _GarmentAttributeEditorState extends State<GarmentAttributeEditor> {
                   Expanded(
                     child: TextFormField(
                       controller: _patternController,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: WardrobeTheme.textPrimary, fontSize: 14),
                       decoration: _inputDeco('Pattern'),
                     ),
@@ -210,7 +210,7 @@ class _GarmentAttributeEditorState extends State<GarmentAttributeEditor> {
                   Expanded(
                     child: TextFormField(
                       controller: _sleeveController,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: WardrobeTheme.textPrimary, fontSize: 14),
                       decoration: _inputDeco('Sleeve Length'),
                     ),
@@ -219,7 +219,7 @@ class _GarmentAttributeEditorState extends State<GarmentAttributeEditor> {
                   Expanded(
                     child: TextFormField(
                       controller: _necklineController,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: WardrobeTheme.textPrimary, fontSize: 14),
                       decoration: _inputDeco('Neckline'),
                     ),
@@ -234,7 +234,7 @@ class _GarmentAttributeEditorState extends State<GarmentAttributeEditor> {
                   Expanded(
                     child: TextFormField(
                       controller: _fabricController,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: WardrobeTheme.textPrimary, fontSize: 14),
                       decoration: _inputDeco('Fabric Appearance'),
                     ),
@@ -243,7 +243,7 @@ class _GarmentAttributeEditorState extends State<GarmentAttributeEditor> {
                   Expanded(
                     child: TextFormField(
                       controller: _fitController,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: WardrobeTheme.textPrimary, fontSize: 14),
                       decoration: _inputDeco('Fit'),
                     ),
@@ -254,7 +254,7 @@ class _GarmentAttributeEditorState extends State<GarmentAttributeEditor> {
 
               TextFormField(
                 controller: _brandController,
-                style: const TextStyle(
+                style: TextStyle(
                     color: WardrobeTheme.textPrimary, fontSize: 14),
                 decoration: _inputDeco('Brand / Retailer'),
               ),

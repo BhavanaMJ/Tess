@@ -57,7 +57,7 @@ class WardrobeUtilisationCard extends StatelessWidget {
                     size: 20,
                   ),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     'WARDROBE UTILISATION',
                     style: TextStyle(
                       fontSize: 11,
@@ -105,7 +105,7 @@ class WardrobeUtilisationCard extends StatelessWidget {
                   ),
                   Text(
                     '${utilisationPercentage.toStringAsFixed(0)}%',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
                       color: WardrobeTheme.textPrimary,
@@ -121,7 +121,7 @@ class WardrobeUtilisationCard extends StatelessWidget {
                   children: [
                     Text(
                       '$uniqueGarmentsWorn of $totalActiveGarments Pieces Worn',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: WardrobeTheme.textPrimary,
@@ -130,7 +130,7 @@ class WardrobeUtilisationCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       '$totalOutfitsWorn total outfit logged appearances',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: WardrobeTheme.textMuted,
                       ),
@@ -155,7 +155,7 @@ class WardrobeUtilisationCard extends StatelessWidget {
             const SizedBox(height: 14),
             Text(
               summaryText!,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
                 color: WardrobeTheme.textSecondary,
                 height: 1.4,

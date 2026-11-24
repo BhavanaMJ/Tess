@@ -51,17 +51,17 @@ class _SavedOutfitsScreenState extends State<SavedOutfitsScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: WardrobeTheme.elevatedSurface,
-        title: const Text('Wear this Outfit today?',
+        title: Text('Wear this Outfit today?',
             style: TextStyle(color: WardrobeTheme.textPrimary)),
         content: Text(
           'Wearing "${outfit.name}" will update ${outfit.items.length} garments to WORN in Laundry Manager and record this wear event.',
           style:
-              const TextStyle(color: WardrobeTheme.textSecondary, fontSize: 13),
+              TextStyle(color: WardrobeTheme.textSecondary, fontSize: 13),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel',
+            child: Text('Cancel',
                 style: TextStyle(color: WardrobeTheme.textMuted)),
           ),
           ElevatedButton(
@@ -104,10 +104,10 @@ class _SavedOutfitsScreenState extends State<SavedOutfitsScreen> {
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'Saved Lookbook',
           style: TextStyle(
             color: WardrobeTheme.textPrimary,
@@ -144,12 +144,12 @@ class _SavedOutfitsScreenState extends State<SavedOutfitsScreen> {
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 child: TextField(
                   controller: _searchController,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: WardrobeTheme.textPrimary, fontSize: 13),
                   decoration: InputDecoration(
                     hintText: 'Search saved looks...',
-                    hintStyle: const TextStyle(color: WardrobeTheme.textMuted),
-                    prefixIcon: const Icon(Icons.search,
+                    hintStyle: TextStyle(color: WardrobeTheme.textMuted),
+                    prefixIcon: Icon(Icons.search,
                         color: WardrobeTheme.textMuted, size: 20),
                     filled: true,
                     fillColor: WardrobeTheme.elevatedSurface,
@@ -157,12 +157,12 @@ class _SavedOutfitsScreenState extends State<SavedOutfitsScreen> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide:
-                          const BorderSide(color: WardrobeTheme.borderSubtle),
+                          BorderSide(color: WardrobeTheme.borderSubtle),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide:
-                          const BorderSide(color: WardrobeTheme.borderSubtle),
+                          BorderSide(color: WardrobeTheme.borderSubtle),
                     ),
                   ),
                   onChanged: (q) => controller.setSearchQuery(q.trim()),
@@ -182,7 +182,7 @@ class _SavedOutfitsScreenState extends State<SavedOutfitsScreen> {
 
               Expanded(
                 child: controller.isLoading
-                    ? const Center(
+                    ? Center(
                         child: CircularProgressIndicator(
                             color: WardrobeTheme.electricViolet))
                     : controller.savedOutfits.isEmpty
@@ -192,16 +192,16 @@ class _SavedOutfitsScreenState extends State<SavedOutfitsScreen> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.bookmarks_rounded,
+                                  Icon(Icons.bookmarks_rounded,
                                       size: 48, color: WardrobeTheme.textMuted),
                                   const SizedBox(height: 12),
-                                  const Text('No saved outfits yet',
+                                  Text('No saved outfits yet',
                                       style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700,
                                           color: WardrobeTheme.textPrimary)),
                                   const SizedBox(height: 6),
-                                  const Text(
+                                  Text(
                                       'Create outfits in Automatic, Guided or Manual mode to build your lookbook.',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(

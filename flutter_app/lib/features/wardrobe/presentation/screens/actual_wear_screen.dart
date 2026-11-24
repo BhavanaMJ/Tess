@@ -95,7 +95,7 @@ class _ActualWearScreenState extends State<ActualWearScreen> {
       appBar: AppBar(
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Confirm Actual Wear',
           style: TextStyle(color: WardrobeTheme.textPrimary, fontSize: 18),
         ),
@@ -113,10 +113,10 @@ class _ActualWearScreenState extends State<ActualWearScreen> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: WardrobeTheme.borderCyan),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Icon(Icons.check_circle_rounded, color: WardrobeTheme.electricCyan, size: 20),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'Confirming wear transitions all constituent garments to Worn and increments wear counts in your digital wardrobe.',
@@ -129,7 +129,7 @@ class _ActualWearScreenState extends State<ActualWearScreen> {
             const SizedBox(height: 20),
 
             // Date
-            const Text(
+            Text(
               'Date Worn',
               style: TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600, fontSize: 14),
             ),
@@ -143,11 +143,11 @@ class _ActualWearScreenState extends State<ActualWearScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.event_available_rounded, color: WardrobeTheme.electricCyan, size: 20),
+                  Icon(Icons.event_available_rounded, color: WardrobeTheme.electricCyan, size: 20),
                   const SizedBox(width: 12),
                   Text(
                     '${_wearDate.year}-${_wearDate.month.toString().padLeft(2, '0')}-${_wearDate.day.toString().padLeft(2, '0')}',
-                    style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 15, fontWeight: FontWeight.w500),
+                    style: TextStyle(color: WardrobeTheme.textPrimary, fontSize: 15, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -156,7 +156,7 @@ class _ActualWearScreenState extends State<ActualWearScreen> {
 
             // If there's a planned look, show it with Workflow A vs Workflow B toggle
             if (hasPlan && !_woreDifferentOutfit) ...[
-              const Text(
+              Text(
                 'Planned Look (Workflow A)',
                 style: TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600, fontSize: 14),
               ),
@@ -173,12 +173,12 @@ class _ActualWearScreenState extends State<ActualWearScreen> {
                   children: [
                     Text(
                       plan!.outfitName,
-                      style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: WardrobeTheme.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Occasion: ${plan.occasion}',
-                      style: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
+                      style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
                     ),
                     const SizedBox(height: 12),
                     Wrap(
@@ -193,7 +193,7 @@ class _ActualWearScreenState extends State<ActualWearScreen> {
                           ),
                           child: Text(
                             it.name,
-                            style: const TextStyle(color: WardrobeTheme.textSecondary, fontSize: 11),
+                            style: TextStyle(color: WardrobeTheme.textSecondary, fontSize: 11),
                           ),
                         );
                       }).toList(),
@@ -210,8 +210,8 @@ class _ActualWearScreenState extends State<ActualWearScreen> {
                     _selectedOutfitName = null;
                   });
                 },
-                icon: const Icon(Icons.swap_horiz_rounded, size: 16, color: WardrobeTheme.softViolet),
-                label: const Text(
+                icon: Icon(Icons.swap_horiz_rounded, size: 16, color: WardrobeTheme.softViolet),
+                label: Text(
                   'I wore a different outfit instead (Workflow B)',
                   style: TextStyle(color: WardrobeTheme.softViolet, fontSize: 12),
                 ),
@@ -221,7 +221,7 @@ class _ActualWearScreenState extends State<ActualWearScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Select Worn Outfit',
                     style: TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600, fontSize: 14),
                   ),
@@ -234,7 +234,7 @@ class _ActualWearScreenState extends State<ActualWearScreen> {
                           _selectedOutfitName = plan.outfitName;
                         });
                       },
-                      child: const Text('Back to planned look', style: TextStyle(color: WardrobeTheme.softViolet, fontSize: 12)),
+                      child: Text('Back to planned look', style: TextStyle(color: WardrobeTheme.softViolet, fontSize: 12)),
                     ),
                 ],
               ),
@@ -260,10 +260,10 @@ class _ActualWearScreenState extends State<ActualWearScreen> {
                         ),
                         subtitle: Text(
                           '${outfit.occasion} • ${outfit.items.length} items',
-                          style: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
+                          style: TextStyle(color: WardrobeTheme.textMuted, fontSize: 12),
                         ),
                         trailing: isSelected
-                            ? const Icon(Icons.check_circle_rounded, color: WardrobeTheme.electricCyan)
+                            ? Icon(Icons.check_circle_rounded, color: WardrobeTheme.electricCyan)
                             : null,
                         onTap: () {
                           setState(() {
@@ -285,7 +285,7 @@ class _ActualWearScreenState extends State<ActualWearScreen> {
                   ),
                   child: Text(
                     _selectedOutfitName ?? 'Custom Outfit',
-                    style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
+                    style: TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
                   ),
                 ),
             ],
@@ -293,7 +293,7 @@ class _ActualWearScreenState extends State<ActualWearScreen> {
             const SizedBox(height: 20),
 
             // Notes
-            const Text(
+            Text(
               'Wear Notes (Optional)',
               style: TextStyle(color: WardrobeTheme.textPrimary, fontWeight: FontWeight.w600, fontSize: 14),
             ),
@@ -301,15 +301,15 @@ class _ActualWearScreenState extends State<ActualWearScreen> {
             TextField(
               controller: _notesController,
               maxLines: 2,
-              style: const TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
+              style: TextStyle(color: WardrobeTheme.textPrimary, fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'e.g. Worn to conference, received compliments',
-                hintStyle: const TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
+                hintStyle: TextStyle(color: WardrobeTheme.textMuted, fontSize: 13),
                 filled: true,
                 fillColor: WardrobeTheme.spatialSurface,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: WardrobeTheme.border)),
-                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: WardrobeTheme.border)),
-                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: WardrobeTheme.borderCyan)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: WardrobeTheme.border)),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: WardrobeTheme.border)),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: WardrobeTheme.borderCyan)),
               ),
             ),
 

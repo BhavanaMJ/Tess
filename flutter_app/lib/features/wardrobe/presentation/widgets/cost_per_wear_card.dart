@@ -48,7 +48,7 @@ class CostPerWearCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: WardrobeTheme.border),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.monetization_on_outlined,
               color: WardrobeTheme.electricCyan,
               size: 22,
@@ -61,7 +61,7 @@ class CostPerWearCard extends StatelessWidget {
               children: [
                 Text(
                   item.garmentName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: WardrobeTheme.textPrimary,
@@ -74,7 +74,7 @@ class CostPerWearCard extends StatelessWidget {
                   item.purchasePrice != null
                       ? 'Bought: ₹${item.purchasePrice!.toStringAsFixed(0)} • ${item.wearCount} Wears'
                       : 'Price unrecorded • ${item.wearCount} Wears',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     color: WardrobeTheme.textMuted,
                   ),
@@ -94,7 +94,7 @@ class CostPerWearCard extends StatelessWidget {
                     color: tierColor,
                   ),
                 ),
-                const Text(
+                Text(
                   '/ wear',
                   style: TextStyle(
                     fontSize: 10,

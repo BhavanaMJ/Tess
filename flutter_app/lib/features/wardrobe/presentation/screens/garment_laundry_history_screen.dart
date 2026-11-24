@@ -83,10 +83,10 @@ class _GarmentLaundryHistoryScreenState
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'Laundry History',
           style: TextStyle(
             fontSize: 17,
@@ -133,7 +133,7 @@ class _GarmentLaundryHistoryScreenState
                           children: [
                             Text(
                               _garment.id,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
                                 color: WardrobeTheme.textMuted,
@@ -150,7 +150,7 @@ class _GarmentLaundryHistoryScreenState
                           _garment.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w800,
                             color: WardrobeTheme.textPrimary,
@@ -159,14 +159,14 @@ class _GarmentLaundryHistoryScreenState
                         const SizedBox(height: 2),
                         Text(
                           '${_garment.mainCategory} • ${_garment.primaryColor}',
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontSize: 12, color: WardrobeTheme.textSecondary),
                         ),
                       ],
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.swap_horiz_rounded,
+                    icon: Icon(Icons.swap_horiz_rounded,
                         color: WardrobeTheme.electricViolet),
                     tooltip: 'Change Status',
                     onPressed: _showStatusSelector,
@@ -191,20 +191,20 @@ class _GarmentLaundryHistoryScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('TOTAL WEARS',
+                        Text('TOTAL WEARS',
                             style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
                                 color: WardrobeTheme.textMuted)),
                         const SizedBox(height: 4),
                         Text('${_garment.wearCount}',
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w900,
                                 color: WardrobeTheme.statusWarning)),
                         const SizedBox(height: 2),
                         Text('Last: ${_formatDate(_garment.lastWornDate)}',
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 10,
                                 color: WardrobeTheme.textSecondary)),
                       ],
@@ -223,20 +223,20 @@ class _GarmentLaundryHistoryScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('TOTAL WASHES',
+                        Text('TOTAL WASHES',
                             style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
                                 color: WardrobeTheme.textMuted)),
                         const SizedBox(height: 4),
                         Text('${_garment.washCount}',
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w900,
                                 color: WardrobeTheme.electricCyan)),
                         const SizedBox(height: 2),
                         Text('Last: ${_formatDate(_garment.lastWashedDate)}',
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 10,
                                 color: WardrobeTheme.textSecondary)),
                       ],
@@ -249,7 +249,7 @@ class _GarmentLaundryHistoryScreenState
             const SizedBox(height: 24),
 
             // History Timeline Section
-            const Text(
+            Text(
               'LIFECYCLE TIMELINE',
               style: TextStyle(
                 fontSize: 12,
@@ -262,7 +262,7 @@ class _GarmentLaundryHistoryScreenState
             const SizedBox(height: 12),
 
             _isLoading
-                ? const Center(
+                ? Center(
                     child: CircularProgressIndicator(
                         color: WardrobeTheme.electricViolet))
                 : LaundryHistoryTimeline(history: _history),

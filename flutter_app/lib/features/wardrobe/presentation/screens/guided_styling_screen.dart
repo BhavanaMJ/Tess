@@ -97,7 +97,7 @@ class _GuidedStylingScreenState extends State<GuidedStylingScreen> {
         backgroundColor: WardrobeTheme.voidBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
+          icon: Icon(Icons.arrow_back, color: WardrobeTheme.textPrimary),
           onPressed: () {
             if (_selectedSeed != null) {
               setState(() => _selectedSeed = null);
@@ -109,7 +109,7 @@ class _GuidedStylingScreenState extends State<GuidedStylingScreen> {
         ),
         title: Text(
           _selectedSeed == null ? 'Select Key Garment' : 'Guided Styling',
-          style: const TextStyle(
+          style: TextStyle(
             color: WardrobeTheme.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -118,9 +118,9 @@ class _GuidedStylingScreenState extends State<GuidedStylingScreen> {
         actions: [
           if (_selectedSeed != null)
             TextButton.icon(
-              icon: const Icon(Icons.change_circle_outlined,
+              icon: Icon(Icons.change_circle_outlined,
                   size: 16, color: WardrobeTheme.electricCyan),
-              label: const Text('Change Key',
+              label: Text('Change Key',
                   style: TextStyle(
                       color: WardrobeTheme.electricCyan, fontSize: 12)),
               onPressed: () {
@@ -131,16 +131,16 @@ class _GuidedStylingScreenState extends State<GuidedStylingScreen> {
         ],
       ),
       body: _isLoadingGarments
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(
                   color: WardrobeTheme.electricViolet))
           : _selectedSeed == null
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Padding(
+                    Padding(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       child: Text(
                         'Choose a garment you want to wear today, and TESS will recommend complementary pieces from your wardrobe.',
                         style: TextStyle(
@@ -185,7 +185,7 @@ class _GuidedStylingScreenState extends State<GuidedStylingScreen> {
                                       .withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: const Icon(Icons.push_pin_rounded,
+                                child: Icon(Icons.push_pin_rounded,
                                     color: WardrobeTheme.softViolet, size: 20),
                               ),
                               const SizedBox(width: 12),
@@ -193,14 +193,14 @@ class _GuidedStylingScreenState extends State<GuidedStylingScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text('ANCHOR GARMENT',
+                                    Text('ANCHOR GARMENT',
                                         style: TextStyle(
                                             fontSize: 10,
                                             color: WardrobeTheme.softViolet,
                                             fontWeight: FontWeight.w700)),
                                     Text(
                                       _selectedSeed!.name,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w700,
                                           color: WardrobeTheme.textPrimary),
@@ -209,7 +209,7 @@ class _GuidedStylingScreenState extends State<GuidedStylingScreen> {
                                     ),
                                     Text(
                                       '${_selectedSeed!.mainCategory} • ${_selectedSeed!.primaryColor}',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                           fontSize: 11,
                                           color: WardrobeTheme.textMuted),
                                     ),
@@ -217,7 +217,7 @@ class _GuidedStylingScreenState extends State<GuidedStylingScreen> {
                                 ),
                               ),
                               IconButton(
-                                icon: const Icon(Icons.refresh_rounded,
+                                icon: Icon(Icons.refresh_rounded,
                                     color: WardrobeTheme.electricCyan),
                                 tooltip: 'Regenerate Pairings',
                                 onPressed: () => controller
@@ -230,13 +230,13 @@ class _GuidedStylingScreenState extends State<GuidedStylingScreen> {
                         // Recommendations List
                         Expanded(
                           child: controller.isLoading
-                              ? const Center(
+                              ? Center(
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       CircularProgressIndicator(
                                           color: WardrobeTheme.electricViolet),
-                                      SizedBox(height: 12),
+                                      const SizedBox(height: 12),
                                       Text('Curating matching partners...',
                                           style: TextStyle(
                                               color: WardrobeTheme.textMuted,
@@ -245,7 +245,7 @@ class _GuidedStylingScreenState extends State<GuidedStylingScreen> {
                                   ),
                                 )
                               : controller.guidedRecommendations.isEmpty
-                                  ? const Center(
+                                  ? Center(
                                       child: Text(
                                         'No matching clean items found for this garment.',
                                         style: TextStyle(

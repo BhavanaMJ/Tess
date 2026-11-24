@@ -70,7 +70,7 @@ class WardrobeActionCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                           color: WardrobeTheme.textPrimary,
@@ -109,7 +109,7 @@ class WardrobeActionCard extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   subtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     color: WardrobeTheme.textSecondary,
                     height: 1.3,
@@ -119,7 +119,7 @@ class WardrobeActionCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          const Icon(
+          Icon(
             Icons.chevron_right_rounded,
             color: WardrobeTheme.textMuted,
             size: 20,

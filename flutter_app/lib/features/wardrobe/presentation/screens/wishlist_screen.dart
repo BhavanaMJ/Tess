@@ -93,7 +93,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
       backgroundColor: WardrobeTheme.voidBlack,
       appBar: AppBar(
         backgroundColor: WardrobeTheme.voidBlack,
-        title: const Text(
+        title: Text(
           'Wardrobe Wishlist',
           style: TextStyle(
             fontWeight: FontWeight.w800,
@@ -109,7 +109,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
               borderRadius: BorderRadius.circular(6),
               border: Border.all(color: WardrobeTheme.electricViolet.withValues(alpha: 0.3)),
             ),
-            child: const Text(
+            child: Text(
               'PHASE 8',
               style: TextStyle(
                 fontSize: 10,
@@ -133,7 +133,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
         listenable: _controller,
         builder: (context, _) {
           if (_controller.isLoading && _controller.items.isEmpty) {
-            return const Center(
+            return Center(
               child: CircularProgressIndicator(color: WardrobeTheme.electricViolet),
             );
           }
@@ -168,7 +168,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.auto_awesome_rounded,
+                          Icon(Icons.auto_awesome_rounded,
                               size: 20, color: WardrobeTheme.electricCyan),
                           const SizedBox(width: 10),
                           Expanded(
@@ -177,14 +177,14 @@ class _WishlistScreenState extends State<WishlistScreen> {
                               children: [
                                 Text(
                                   '${_controller.gaps.length} Wardrobe Gaps Identified',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700,
                                     color: WardrobeTheme.textPrimary,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
-                                const Text(
+                                Text(
                                   'See items that maximize combinations with your existing wardrobe.',
                                   style: TextStyle(
                                     fontSize: 11,
@@ -194,7 +194,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                               ],
                             ),
                           ),
-                          const Icon(Icons.arrow_forward_ios_rounded,
+                          Icon(Icons.arrow_forward_ios_rounded,
                               size: 14, color: WardrobeTheme.electricCyan),
                         ],
                       ),

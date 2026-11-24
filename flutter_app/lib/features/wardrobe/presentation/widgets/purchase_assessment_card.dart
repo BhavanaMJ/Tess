@@ -77,7 +77,7 @@ class PurchaseAssessmentCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             assessment.headline,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w800,
               color: WardrobeTheme.textPrimary,
@@ -86,7 +86,7 @@ class PurchaseAssessmentCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             assessment.explanation,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               color: WardrobeTheme.textMuted,
               height: 1.4,
@@ -94,7 +94,7 @@ class PurchaseAssessmentCard extends StatelessWidget {
           ),
           if (assessment.contributingFactors.isNotEmpty) ...[
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'Analysis Factors:',
               style: TextStyle(
                 fontSize: 11,
@@ -114,7 +114,7 @@ class PurchaseAssessmentCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         f,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: WardrobeTheme.textMuted,
                         ),
@@ -135,13 +135,13 @@ class PurchaseAssessmentCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.recommend_rounded,
+                Icon(Icons.recommend_rounded,
                     size: 16, color: WardrobeTheme.electricViolet),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     assessment.recommendationAction,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: WardrobeTheme.textPrimary,
