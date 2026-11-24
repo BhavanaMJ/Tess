@@ -27,6 +27,9 @@ import 'outfit_calendar_screen.dart';
 import '../../data/repositories/insights_repository_impl.dart';
 import '../controllers/insights_controller.dart';
 import 'wardrobe_insights_screen.dart';
+import '../../data/repositories/wishlist_repository_impl.dart';
+import '../controllers/wishlist_controller.dart';
+import 'wishlist_screen.dart';
 
 /// WardrobeOverviewScreen: Foundational Home Dashboard for TESS Clothes Organizer.
 /// Implements persistent inventory navigation, real-time telemetry summary, and module routing.
@@ -167,6 +170,24 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
     });
   }
 
+  void _navigateToWishlist() {
+    Navigator.of(context)
+        .push(
+      MaterialPageRoute(
+        builder: (_) => WishlistScreen(
+          controller: WishlistController(
+            repository: WishlistRepositoryImpl(
+              wardrobeRepository: widget.repository,
+            ),
+          ),
+        ),
+      ),
+    )
+        .then((_) {
+      _controller.loadInitialData();
+    });
+  }
+
   void _showAddClothesSheet() {
     showModalBottomSheet(
       context: context,
@@ -250,29 +271,6 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
     );
   }
 
-  void _showComingSoonSnackbar(String moduleName, String phase) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: WardrobeTheme.elevatedSurface,
-        content: Row(
-          children: [
-            const Icon(Icons.info_outline,
-                color: WardrobeTheme.softViolet, size: 18),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                '$moduleName will be activated in $phase.',
-                style: const TextStyle(
-                    color: WardrobeTheme.textPrimary, fontSize: 13),
-              ),
-            ),
-          ],
-        ),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final userId = _authService.currentUser?.id ?? 'tess_user';
@@ -309,7 +307,7 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                 ),
               ),
               child: const Text(
-                'PHASE 7',
+                'PHASE 8',
                 style: TextStyle(
                   fontSize: 9,
                   fontWeight: FontWeight.w700,
@@ -503,10 +501,10 @@ class _WardrobeOverviewScreenState extends State<WardrobeOverviewScreen> {
                     icon: Icons.bookmark_border_rounded,
                     title: 'Wardrobe Wishlist',
                     subtitle: 'Targeted shopping & capsule gap fillers',
-                    badge: 'PHASE 8',
-                    badgeColor: WardrobeTheme.textMuted,
-                    onTap: () =>
-                        _showComingSoonSnackbar('Wardrobe Wishlist', 'Phase 8'),
+                    badge: 'ACTIVE',
+                    badgeColor: WardrobeTheme.electricViolet,
+                    isFeatured: true,
+                    onTap: _navigateToWishlist,
                   ),
 
                   const SizedBox(height: 20),

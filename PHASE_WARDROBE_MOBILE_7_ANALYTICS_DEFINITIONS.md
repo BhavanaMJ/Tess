@@ -89,3 +89,4 @@ $$\text{Average Interval (Days)} = \frac{T_{\text{last}} - T_{\text{first}}}{\te
 
 If worn only once, interval is reported as $0.0$.
 Identifies high-frequency signature uniforms versus rarely repeated novelty combinations.
+

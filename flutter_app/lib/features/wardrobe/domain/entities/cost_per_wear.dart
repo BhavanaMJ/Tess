@@ -80,3 +80,4 @@ class CostPerWearSummary {
     required this.highestCostPerWearGarments,
   });
 }
+

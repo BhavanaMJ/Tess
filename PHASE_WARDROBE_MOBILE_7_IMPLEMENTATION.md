@@ -52,3 +52,4 @@ All new screens strictly adhere to the **Dark Spatial Void** theme:
 - Electric accents: Electric Violet (`#8B5CF6`) and Electric Cyan (`#22D3EE`)
 - Value Tier semantic colors: Emerald (`#10B981`), Amber (`#F59E0B`), Rose (`#F43F5E`)
 - Typography: Inter with explicit font weights and high contrast labels
+

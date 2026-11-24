@@ -196,3 +196,4 @@ class WardrobeRecommendation {
     required this.confidenceScore,
   });
 }
+

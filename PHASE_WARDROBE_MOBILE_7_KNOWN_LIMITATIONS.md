@@ -10,3 +10,4 @@
    - Capsule compatibility currently evaluates category pairings (e.g. Tops + Bottoms) and color compatibility. Advanced generative aesthetic scoring across micro-patterns (plaid vs. houndstooth) will be expanded in future AI models.
 4. **Historical Depreciation Curves**:
    - Cost-per-wear calculates straight-line nominal CPW ($\text{price} / \text{wears}$). Secondary market resale value depreciation curves (e.g., Poshmark/The RealReal valuation models) are not calculated.
+

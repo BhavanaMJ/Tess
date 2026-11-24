@@ -27,9 +27,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Check App bar title and Phase 7 tag
+      // Check App bar title and Phase 8 tag
       expect(find.text('Wardrobe Intelligence'), findsOneWidget);
-      expect(find.text('PHASE 7'), findsOneWidget);
+      expect(find.text('PHASE 8'), findsOneWidget);
 
       // Check Contextual intro
       expect(find.text('Personal Clothes Organizer'), findsOneWidget);
@@ -81,7 +81,7 @@ void main() {
       expect(find.text('Your Wardrobe is Ready to Populate'), findsNothing);
     });
 
-    testWidgets('clicking coming soon modules displays informative snackbar', (tester) async {
+    testWidgets('clicking Wardrobe Wishlist navigates to WishlistScreen', (tester) async {
       final repo = WardrobeRepositoryImpl();
 
       await tester.pumpWidget(
@@ -91,14 +91,15 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Tap Wardrobe Wishlist (Phase 8)
+      // Tap Wardrobe Wishlist (Phase 8 active module)
       final wishlist = find.text('Wardrobe Wishlist');
       await tester.ensureVisible(wishlist);
       await tester.pumpAndSettle();
       await tester.tap(wishlist);
       await tester.pumpAndSettle();
 
-      expect(find.text('Wardrobe Wishlist will be activated in Phase 8.'), findsOneWidget);
+      expect(find.text('PHASE 8'), findsOneWidget);
+      expect(find.text('Add to Wishlist'), findsOneWidget);
     });
   });
 

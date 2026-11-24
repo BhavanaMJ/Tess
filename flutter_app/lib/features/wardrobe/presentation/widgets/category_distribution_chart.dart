@@ -110,3 +110,4 @@ class CategoryDistributionChart extends StatelessWidget {
     );
   }
 }
+

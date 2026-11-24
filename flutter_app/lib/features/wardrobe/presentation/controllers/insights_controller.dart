@@ -169,3 +169,4 @@ class InsightsController extends ChangeNotifier {
     }
   }
 }
+

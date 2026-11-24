@@ -116,3 +116,4 @@ erDiagram
 1. **`purchase_currency` Defaults**: Defaults to `'INR'` with non-breaking backwards compatibility.
 2. **Safe Fallbacks for Unpriced Items**: `purchase_price` is nullable (`NUMERIC(10,2)`). Items without purchase prices are safely partitioned into `ValueTier.missingPrice` without runtime exceptions or falsified cost per wear.
 3. **Cascading Safety**: Dropping or deleting a user cleanly cascades to `wardrobe_style_preferences` via `ON DELETE CASCADE`.
+

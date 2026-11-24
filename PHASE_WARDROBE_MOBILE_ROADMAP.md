@@ -106,8 +106,24 @@
 
 ---
 
-## Phase 8 — Wishlist & Advanced Capabilities
-**Focus**: Mindful shopping, wardrobe gap analysis, and cross-platform desktop rollout.
-- [ ] Smart Wishlist with priority ratings and target budget.
-- [ ] "Does it match my wardrobe?" simulator before purchasing new items.
-- [ ] Desktop TESS Clothes Organizer rollout (mirroring mobile features into Tauri desktop client).
+## Phase 8 — Wardrobe Wishlist, Shopping Intelligence & Wardrobe Gap Analysis (COMPLETED)
+**Focus**: Mindful shopping, wardrobe gap analysis, purchase intelligence, and wishlist-to-wardrobe conversion.
+- [x] Dedicated Wardrobe Wishlist dashboard with budget tracking, priority filtering, and item counts.
+- [x] CRUD management for wishlist items with price estimates, brand/retailer, priority ratings, and target seasons.
+- [x] Existing Garment Matcher: Detects similar existing clothes before purchasing to prevent redundant buying.
+- [x] Wardrobe Gap Analysis: Identifies missing core essentials, formal/weather voids, and capsule imbalances.
+- [x] Purchase Intelligence Assessment: Generates 0–100 recommendation scores, verdict classifications, and versatility forecasts.
+- [x] Wishlist-to-Wardrobe Conversion: Seamless registration into My Wardrobe with sequential `CLO-xxx` IDs and mandatory `UNASSIGNED` laundry safety.
+- [x] Economic integrity: Distinct separation of `expected_price` (estimate) and `actual_purchase_price` (expenditure).
+- [x] Offline-first local repository caching, fallback gap analysis, and synthetic purchase assessment.
+- [x] FastAPI REST endpoints (`/api/v1/wardrobe/wishlist/*` and `/api/v1/wardrobe/shopping-intelligence/*`).
+- [x] Database migration `007_wardrobe_wishlist.sql` with user RLS policies, performance indexes, and foreign key cascades.
+- [x] Automated test suites: 14 new Flutter tests (88 total wardrobe passing), 11 new backend tests (63 total wardrobe passing).
+
+---
+
+## Phase 9 — Desktop Rollout & Cross-Platform Expansion
+**Focus**: Porting mobile wardrobe features to the TESS Tauri desktop client and cross-platform sync.
+- [ ] Tauri / React / Tailwind desktop client parity for Wardrobe, Laundry, Outfits, Calendar, Insights, and Wishlist.
+- [ ] Shared backend API consumption across desktop and mobile.
+- [ ] High-resolution multi-panel desktop dashboard for styling and capsule planning.

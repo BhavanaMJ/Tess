@@ -197,3 +197,4 @@ Returns actionable AI advice (e.g. revive neglected piece, MVP garment celebrate
 
 #### 10. `GET /style-memory` & `PUT /style-memory`
 Retrieves or updates user style persona, preferred colors, categories, occasions, and personal style notes.
+

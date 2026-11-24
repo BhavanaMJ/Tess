@@ -121,3 +121,4 @@ class InsightsApiService {
     return StyleMemoryModel.fromJson(res as Map<String, dynamic>);
   }
 }
+

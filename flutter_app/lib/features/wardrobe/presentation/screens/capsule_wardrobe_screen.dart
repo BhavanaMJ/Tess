@@ -280,3 +280,4 @@ class CapsuleWardrobeScreen extends StatelessWidget {
     );
   }
 }
+

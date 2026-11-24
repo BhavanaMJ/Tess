@@ -37,3 +37,4 @@ class CapsuleWardrobeSummary {
     required this.potentialOutfitCombinations,
   });
 }
+

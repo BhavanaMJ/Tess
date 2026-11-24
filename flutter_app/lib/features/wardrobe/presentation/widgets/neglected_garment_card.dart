@@ -104,3 +104,4 @@ class NeglectedGarmentCard extends StatelessWidget {
     );
   }
 }
+

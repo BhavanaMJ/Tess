@@ -309,3 +309,4 @@ class _StyleMemoryScreenState extends State<StyleMemoryScreen> {
     );
   }
 }
+

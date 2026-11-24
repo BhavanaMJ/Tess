@@ -35,6 +35,12 @@ class WardrobeTheme {
   static const Color textMuted = Color(0xFF64748B);
   static const Color textDim = Color(0xFF475569);
 
+  // Convenience Aliases for Design System Tokens
+  static const Color voidBlack = voidBg;
+  static const Color subtleBorder = borderSubtle;
+  static const Color successEmerald = statusSuccess;
+  static const Color warningRose = statusCritical;
+
   // Garment Photography Studio Background
   static const Color studioBackground = Color(0xFFFAFAFA);
 }

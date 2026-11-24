@@ -136,3 +136,4 @@ class ColourDistributionChart extends StatelessWidget {
     );
   }
 }
+
