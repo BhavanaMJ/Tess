@@ -2,10 +2,65 @@ from typing import List, Optional, Dict, Any, Union
 from datetime import date, datetime
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-VALID_CATEGORIES = [
-    "Tops", "Bottoms", "Ethnic wear", "Dresses", "Outerwear",
+CANONICAL_CATEGORIES = [
+    "Tops", "Bottoms", "Ethnic Wear", "Dresses", "Outerwear",
     "Activewear", "Innerwear", "Sleepwear", "Footwear", "Accessories"
 ]
+
+CATEGORY_ALIASES: Dict[str, str] = {
+    # Bottoms aliases
+    "bottoms": "Bottoms",
+    "bottomwear": "Bottoms",
+    "bottom wear": "Bottoms",
+    "pants": "Bottoms",
+    "pant": "Bottoms",
+    "trousers": "Bottoms",
+    "trouser": "Bottoms",
+    "lowerwear": "Bottoms",
+    # Tops aliases
+    "tops": "Tops",
+    "top": "Tops",
+    "topwear": "Tops",
+    "upperwear": "Tops",
+    # Ethnic Wear aliases
+    "ethnic wear": "Ethnic Wear",
+    "ethnicwear": "Ethnic Wear",
+    # Dresses aliases
+    "dresses": "Dresses",
+    "dress": "Dresses",
+    # Outerwear aliases
+    "outerwear": "Outerwear",
+    # Activewear aliases
+    "activewear": "Activewear",
+    # Innerwear aliases
+    "innerwear": "Innerwear",
+    # Sleepwear aliases
+    "sleepwear": "Sleepwear",
+    # Footwear aliases
+    "footwear": "Footwear",
+    # Accessories aliases
+    "accessories": "Accessories",
+}
+
+VALID_CATEGORIES = CANONICAL_CATEGORIES
+
+def normalize_category(category: Optional[str]) -> Optional[str]:
+    """
+    Normalizes category aliases to canonical TESS categories (case-insensitive, trimmed).
+    Returns None if category cannot be normalized.
+    """
+    if not category or not isinstance(category, str):
+        return None
+    cleaned = category.strip()
+    if not cleaned:
+        return None
+    lower = cleaned.lower()
+    if lower in CATEGORY_ALIASES:
+        return CATEGORY_ALIASES[lower]
+    for canonical in CANONICAL_CATEGORIES:
+        if canonical.lower() == lower:
+            return canonical
+    return None
 
 class IdentitySection(BaseModel):
     garment_name: Optional[str] = None
@@ -15,6 +70,15 @@ class IdentitySection(BaseModel):
     description: Optional[str] = None
     gender_section: Optional[str] = None
     custom_category: Optional[str] = None
+
+    @field_validator("category", mode="before")
+    def normalize_category_field(cls, v: Any) -> Any:
+        if isinstance(v, str):
+            norm = normalize_category(v)
+            if norm:
+                return norm
+            return v.strip()
+        return v
 
 class AppearanceSection(BaseModel):
     primary_colour: Optional[str] = None
@@ -186,6 +250,7 @@ class MetadataValidationResponse(BaseModel):
     errors: List[str] = Field(default_factory=list)
     warnings: List[str] = Field(default_factory=list)
     normalized_metadata: Optional[Dict[str, Any]] = None
+    diagnostics: Dict[str, Any] = Field(default_factory=dict)
 
 class GarmentImportRegisterRequest(BaseModel):
     catalogue_image_ref: str
@@ -198,3 +263,4 @@ class GarmentImportRegisterResponse(BaseModel):
     garment_id: str
     message: str
     garment: Dict[str, Any]
+

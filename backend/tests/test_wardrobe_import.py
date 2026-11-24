@@ -194,7 +194,7 @@ def test_validate_valid_metadata_schema_success():
     assert len(res.errors) == 0
     assert res.normalized_metadata is not None
     assert res.normalized_metadata["identity"]["garment_name"] == "Silk Embroidered Anarkali"
-    assert res.normalized_metadata["identity"]["category"] == "Ethnic wear"
+    assert res.normalized_metadata["identity"]["category"] == "Ethnic Wear"
     assert res.normalized_metadata["category_specific"]["anarkali_flare_meters"] == 4.5
 
 def test_validate_malformed_json_syntax_error():
@@ -233,7 +233,7 @@ def test_validate_invalid_category_rejected():
     data["identity"]["category"] = "Automotive"
     res = service.validate_metadata(metadata_dict=data)
     assert res.valid is False
-    assert any("Select a supported garment category" in e for e in res.errors)
+    assert any("Unsupported garment category" in e or "Select a supported garment category" in e for e in res.errors)
 
 def test_validate_preserves_null_scalars_and_empty_arrays():
     service = WardrobeImportService(MockSupabase(), "user-test-123")
@@ -295,3 +295,169 @@ def test_register_imported_garment_missing_catalogue_fails():
 
     with pytest.raises(ValueError, match="Please upload a catalogue image"):
         service.register_garment(req, wardrobe_service)
+
+def test_category_normalization_bottoms_aliases():
+    service = WardrobeImportService(MockSupabase(), "user-test-norm")
+    aliases = [
+        "Bottoms",
+        "Bottomwear",
+        "Bottom Wear",
+        "Pants",
+        "Trousers",
+        "Lowerwear",
+        "bottomwear",
+        "BOTTOMWEAR",
+        "   trousers   ",
+        "  Bottom Wear  ",
+    ]
+    for alias in aliases:
+        meta = {
+            "schema_version": "1.1",
+            "record_type": "garment",
+            "identity": {
+                "garment_name": f"Test {alias}",
+                "category": alias,
+                "subcategory": "Pants",
+            }
+        }
+        res = service.validate_metadata(metadata_dict=meta)
+        assert res.valid is True, f"Failed for alias: {alias}, errors: {res.errors}"
+        assert res.normalized_metadata["identity"]["category"] == "Bottoms", f"Expected Bottoms for {alias}, got {res.normalized_metadata['identity']['category']}"
+
+def test_category_normalization_other_canonical_aliases():
+    service = WardrobeImportService(MockSupabase(), "user-test-norm")
+    mappings = {
+        "Tops": "Tops",
+        "Topwear": "Tops",
+        "Upperwear": "Tops",
+        "topwear": "Tops",
+        "  upperwear  ": "Tops",
+        "Ethnic Wear": "Ethnic Wear",
+        "Ethnicwear": "Ethnic Wear",
+        "ethnic wear": "Ethnic Wear",
+        "ethnicwear": "Ethnic Wear",
+        "Dresses": "Dresses",
+        "Dress": "Dresses",
+        "dress": "Dresses",
+        "Outerwear": "Outerwear",
+        "Activewear": "Activewear",
+        "Innerwear": "Innerwear",
+        "Sleepwear": "Sleepwear",
+        "Footwear": "Footwear",
+        "Accessories": "Accessories",
+    }
+    for alias, expected in mappings.items():
+        meta = {
+            "schema_version": "1.1",
+            "record_type": "garment",
+            "identity": {
+                "garment_name": f"Test {alias}",
+                "category": alias,
+            }
+        }
+        res = service.validate_metadata(metadata_dict=meta)
+        assert res.valid is True, f"Failed for alias: {alias}, errors: {res.errors}"
+        assert res.normalized_metadata["identity"]["category"] == expected
+
+def test_regression_fixture_orange_blue_homewear_pants():
+    """
+    Regression fixture required by prompt:
+    {
+      "schema_version": "1.1",
+      "record_type": "garment",
+      "identity": {
+        "garment_name": "Orange and Blue Geometric Printed Homewear Pants",
+        "category": "Bottomwear",
+        "subcategory": "Lounge Pants",
+        "garment_type": "Printed Homewear Trousers"
+      }
+    }
+    Expected normalized category: Bottoms
+    Expected preserved subcategory: Lounge Pants
+    Expected preserved garment_type: Printed Homewear Trousers
+    """
+    mock_supabase = MockSupabase()
+    user_id = "user-test-homewear"
+    service = WardrobeImportService(mock_supabase, user_id)
+    wardrobe_service = WardrobeService(mock_supabase, user_id)
+
+    fixture_meta = {
+        "schema_version": "1.1",
+        "record_type": "garment",
+        "identity": {
+            "garment_name": "Orange and Blue Geometric Printed Homewear Pants",
+            "category": "Bottomwear",
+            "subcategory": "Lounge Pants",
+            "garment_type": "Printed Homewear Trousers"
+        }
+    }
+
+    # 1. Validation test
+    val_res = service.validate_metadata(metadata_dict=fixture_meta)
+    assert val_res.valid is True
+    assert len(val_res.errors) == 0
+    assert val_res.normalized_metadata["identity"]["category"] == "Bottoms"
+    assert val_res.normalized_metadata["identity"]["subcategory"] == "Lounge Pants"
+    assert val_res.normalized_metadata["identity"]["garment_type"] == "Printed Homewear Trousers"
+    assert val_res.diagnostics.get("category_normalization", {}).get("original_category") == "Bottomwear"
+    assert val_res.diagnostics.get("category_normalization", {}).get("canonical_category") == "Bottoms"
+
+    # 2. Registration test
+    reg_req = GarmentImportRegisterRequest(
+        catalogue_image_ref="https://example.com/cat_homewear.jpg",
+        metadata=fixture_meta,
+    )
+    reg_res = service.register_garment(reg_req, wardrobe_service)
+    assert reg_res.success is True
+    assert reg_res.garment["name"] == "Orange and Blue Geometric Printed Homewear Pants"
+    assert reg_res.garment["main_category"] == "Bottoms"
+    assert reg_res.garment["subcategory"] == "Lounge Pants"
+    assert reg_res.garment["metadata_payload"]["identity"]["garment_type"] == "Printed Homewear Trousers"
+    assert reg_res.garment["metadata_payload"]["ai_metadata"]["diagnostics"]["category_normalization"]["canonical_category"] == "Bottoms"
+
+def test_subcategory_preservation_examples():
+    """
+    Other examples required by prompt:
+    - Jeans -> category Bottoms, subcategory Jeans
+    - Leggings -> category Bottoms, subcategory Leggings
+    - Kurta -> category Ethnic Wear, subcategory Kurta
+    - T-shirt -> category Tops, subcategory T-shirt
+    """
+    service = WardrobeImportService(MockSupabase(), "user-test-subcat")
+    cases = [
+        ("Bottomwear", "Jeans", "Bottoms", "Jeans"),
+        ("pants", "Leggings", "Bottoms", "Leggings"),
+        ("Ethnicwear", "Kurta", "Ethnic Wear", "Kurta"),
+        ("Topwear", "T-shirt", "Tops", "T-shirt"),
+    ]
+    for in_cat, in_sub, exp_cat, exp_sub in cases:
+        meta = {
+            "schema_version": "1.1",
+            "record_type": "garment",
+            "identity": {
+                "garment_name": f"Test {in_sub}",
+                "category": in_cat,
+                "subcategory": in_sub,
+            }
+        }
+        res = service.validate_metadata(metadata_dict=meta)
+        assert res.valid is True
+        assert res.normalized_metadata["identity"]["category"] == exp_cat
+        assert res.normalized_metadata["identity"]["subcategory"] == exp_sub
+
+def test_unknown_category_rejection_helpful_error():
+    service = WardrobeImportService(MockSupabase(), "user-test-err")
+    meta = {
+        "schema_version": "1.1",
+        "record_type": "garment",
+        "identity": {
+            "garment_name": "Test Gadget",
+            "category": "Spacesuit",
+        }
+    }
+    res = service.validate_metadata(metadata_dict=meta)
+    assert res.valid is False
+    assert any("Unsupported garment category: 'Spacesuit'" in e for e in res.errors)
+    assert any("Supported categories are Tops, Bottoms, Ethnic Wear, Dresses, Outerwear, Activewear, Innerwear, Sleepwear, Footwear and Accessories" in e for e in res.errors)
+
+

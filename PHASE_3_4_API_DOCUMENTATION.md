@@ -219,3 +219,48 @@ Atomically generates the next sequential `CLO-xxx` garment ID, maps core attribu
   "detail": "Garment metadata validation failed: Select a supported garment category."
 }
 ```
+
+---
+
+### Category Mapping & Normalization Reference
+
+The TESS import pipeline enforces canonical taxonomy while accepting commonly generated external AI aliases (case-insensitive, whitespace-trimmed).
+
+#### Canonical Taxonomy & Accepted Aliases
+
+| Accepted Input / Alias | Canonical TESS Category |
+|---|---|
+| `Bottoms`, `Bottomwear`, `Bottom Wear`, `Pants`, `Trousers`, `Lowerwear` | `Bottoms` |
+| `Tops`, `Topwear`, `Upperwear` | `Tops` |
+| `Ethnic Wear`, `Ethnicwear` | `Ethnic Wear` |
+| `Dresses`, `Dress` | `Dresses` |
+| `Outerwear` | `Outerwear` |
+| `Activewear` | `Activewear` |
+| `Innerwear` | `Innerwear` |
+| `Sleepwear` | `Sleepwear` |
+| `Footwear` | `Footwear` |
+| `Accessories` | `Accessories` |
+
+#### Subcategory & Garment Type Preservation
+The normalization process preserves the exact descriptive `subcategory` (e.g., `Lounge Pants`, `Jeans`, `Leggings`, `Kurta`) and `garment_type` (e.g., `Printed Homewear Trousers`, `Casual Graphic Tee`) without modification.
+
+#### Diagnostics & Provenance
+When normalization occurs:
+- A non-blocking warning is added to `warnings`: `"Category '[alias]' was automatically mapped to canonical category '[canonical]'."`
+- The diagnostic is stored in `ai_metadata.diagnostics`:
+  ```json
+  {
+    "category_normalization": {
+      "category_normalized": true,
+      "original_category": "Bottomwear",
+      "canonical_category": "Bottoms"
+    }
+  }
+  ```
+- The user's raw JSON draft remains untouched.
+
+#### Unsupported Category Handling
+When an unrecognized category is provided without a valid `custom_category`, validation rejects the payload with:
+`"Unsupported garment category: '<input>'. Supported categories are Tops, Bottoms, Ethnic Wear, Dresses, Outerwear, Activewear, Innerwear, Sleepwear, Footwear and Accessories."`
+
+

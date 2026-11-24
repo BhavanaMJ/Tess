@@ -1,5 +1,75 @@
 library;
 
+/// Canonical category normalization system for TESS Smart Capture
+class CategoryNormalization {
+  static const List<String> canonicalCategories = [
+    'Tops',
+    'Bottoms',
+    'Ethnic Wear',
+    'Dresses',
+    'Outerwear',
+    'Activewear',
+    'Innerwear',
+    'Sleepwear',
+    'Footwear',
+    'Accessories',
+  ];
+
+  static const Map<String, String> categoryAliases = {
+    // Bottoms aliases
+    'bottoms': 'Bottoms',
+    'bottomwear': 'Bottoms',
+    'bottom wear': 'Bottoms',
+    'pants': 'Bottoms',
+    'pant': 'Bottoms',
+    'trousers': 'Bottoms',
+    'trouser': 'Bottoms',
+    'lowerwear': 'Bottoms',
+    // Tops aliases
+    'tops': 'Tops',
+    'top': 'Tops',
+    'topwear': 'Tops',
+    'upperwear': 'Tops',
+    // Ethnic Wear aliases
+    'ethnic wear': 'Ethnic Wear',
+    'ethnicwear': 'Ethnic Wear',
+    // Dresses aliases
+    'dresses': 'Dresses',
+    'dress': 'Dresses',
+    // Outerwear aliases
+    'outerwear': 'Outerwear',
+    // Activewear aliases
+    'activewear': 'Activewear',
+    // Innerwear aliases
+    'innerwear': 'Innerwear',
+    // Sleepwear aliases
+    'sleepwear': 'Sleepwear',
+    // Footwear aliases
+    'footwear': 'Footwear',
+    // Accessories aliases
+    'accessories': 'Accessories',
+  };
+
+  /// Normalizes any recognized category alias or canonical category to its canonical form.
+  /// Matching is case-insensitive and ignores leading/trailing whitespace.
+  /// Returns null if the category is not recognized.
+  static String? normalize(String? input) {
+    if (input == null) return null;
+    final trimmed = input.trim();
+    if (trimmed.isEmpty) return null;
+    final lower = trimmed.toLowerCase();
+    if (categoryAliases.containsKey(lower)) {
+      return categoryAliases[lower];
+    }
+    for (final canonical in canonicalCategories) {
+      if (canonical.toLowerCase() == lower) {
+        return canonical;
+      }
+    }
+    return null;
+  }
+}
+
 /// TESS Garment Metadata Schema Version 1.1 Domain Entity
 /// Represents structured interchange contract between ChatGPT and TESS.
 

@@ -74,3 +74,4 @@ During garment registration via `POST /api/v1/wardrobe/import/register`, core se
 1. **Zero Impact on Baseline Records**: Existing seed garments `CLO-001` through `CLO-018` remain unmodified with `metadata_payload` as `NULL`.
 2. **Sequential Atomic ID Generation**: Garment IDs are generated sequentially on the server (`CLO-019`, `CLO-020`, etc.) using row-locking atomic transactions. IDs from ChatGPT are never accepted.
 3. **Initial Laundry State**: Newly imported garments always have `laundry_status = NULL`. They must not appear in dirty laundry bins or active wash batches until explicitly worn or queued.
+

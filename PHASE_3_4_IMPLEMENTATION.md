@@ -46,15 +46,23 @@ TESS strictly handles validation, storage, relational indexing, draft auto-recov
    - **Transparent Provenance**: Metadata clearly records `import_provenance: "User Imported (ChatGPT Project)"`. No pseudo-automated OpenAI API calls are fabricated.
    - **Draft Persistence**: Auto-saves in-progress form inputs, photo paths, and pasted JSON to device local storage (`SharedPreferences`) under `tess_wardrobe_import_draft_<userId>` to prevent data loss on app switching or reload.
 
+5. **Category Normalization & Alias Mapping**:
+   - Implemented `normalize_category` in FastAPI and `CategoryNormalization` in Flutter.
+   - Normalizes external aliases (e.g. `Bottomwear`, `Bottom Wear`, `Pants`, `Trousers`, `Lowerwear` -> `Bottoms`; `Topwear`, `Upperwear` -> `Tops`; `Ethnicwear` -> `Ethnic Wear`; `Dress` -> `Dresses`).
+   - Guarantees 100% preservation of `subcategory` (e.g., `Lounge Pants`) and `garment_type` (e.g., `Printed Homewear Trousers`).
+   - Records non-destructive diagnostics under `ai_metadata.diagnostics` without mutating user raw draft JSON.
+   - Enforces standardized helpful rejection message for unmapped categories.
+
 ---
 
 ### Verification and Test Suite
 
 - **Backend Pytest**:
-  - `backend/tests/test_wardrobe_import.py`: 10/10 tests passing covering Schema 1.1 validation, version rejection, invalid category rejection, custom category acceptance, image upload validation, mandatory catalogue image enforcement, and atomic registration.
-  - Full wardrobe backend test suite: 75/75 tests passing.
+  - `backend/tests/test_wardrobe_import.py`: 15/15 tests passing covering Schema 1.1 validation, category alias normalization, subcategory preservation, regression fixture validation, version rejection, invalid category rejection, custom category acceptance, image upload validation, mandatory catalogue image enforcement, and atomic registration.
+  - Full wardrobe backend test suite: 70/70 tests passing.
 - **Flutter Test Suite**:
-  - `flutter_app/test/wardrobe_phase3_4_test.dart`: 19/19 tests passing covering entity serialization, validation logic, controller stepping and validation guards, draft persistence, and all 4 stage widgets.
-  - Full Flutter repository test suite: 225/225 tests passing (0 failures).
+  - `flutter_app/test/wardrobe_phase3_4_test.dart`: 24/24 tests passing covering entity serialization, validation logic, category normalization, regression fixture, controller stepping and validation guards, draft persistence, and all 4 stage widgets.
+  - Full Flutter repository test suite: 230/230 tests passing (0 failures).
 - **Static Analysis**:
   - `flutter analyze`: 0 issues found.
+

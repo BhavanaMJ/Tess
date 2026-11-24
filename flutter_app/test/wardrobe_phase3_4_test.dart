@@ -277,7 +277,7 @@ void main() {
       expect(result.errors.any((e) => e.contains('Please provide a garment name')), isTrue);
     });
 
-    test('rejects unrecognized category without custom_category', () {
+    test('rejects unrecognized category without custom_category with helpful error message', () {
       final unknownCatJson = jsonEncode({
         "schema_version": "1.1",
         "record_type": "garment",
@@ -286,7 +286,123 @@ void main() {
       final result = GarmentMetadataModelV1_1.validateJsonString(unknownCatJson);
 
       expect(result.isValid, isFalse);
-      expect(result.errors.any((e) => e.contains('Select a supported garment category')), isTrue);
+      expect(result.errors.any((e) => e.contains('Unsupported garment category') || e.contains('Select a supported garment category')), isTrue);
+      expect(result.errors.first, contains('Supported categories are Tops, Bottoms, Ethnic Wear, Dresses, Outerwear, Activewear, Innerwear, Sleepwear, Footwear and Accessories'));
+    });
+
+    test('normalizes Bottomwear, Bottom Wear, Pants, Trousers, Lowerwear to canonical Bottoms', () {
+      final aliases = [
+        'Bottoms',
+        'Bottomwear',
+        'Bottom Wear',
+        'Pants',
+        'Trousers',
+        'Lowerwear',
+        'bottomwear',
+        'BOTTOMWEAR',
+        '  trousers  ',
+        '  Bottom Wear  ',
+      ];
+
+      for (final alias in aliases) {
+        final jsonStr = jsonEncode({
+          "schema_version": "1.1",
+          "record_type": "garment",
+          "identity": {
+            "garment_name": "Test Garment",
+            "category": alias,
+            "subcategory": "Pants",
+          },
+        });
+        final result = GarmentMetadataModelV1_1.validateJsonString(jsonStr);
+        expect(result.isValid, isTrue, reason: 'Failed for alias: $alias');
+        expect(result.entity?.identity.category, 'Bottoms', reason: 'Failed for alias: $alias');
+      }
+    });
+
+    test('normalizes other category aliases (Ethnicwear, Topwear, Dress)', () {
+      final cases = {
+        'Topwear': 'Tops',
+        'Upperwear': 'Tops',
+        'topwear': 'Tops',
+        '  upperwear  ': 'Tops',
+        'Ethnicwear': 'Ethnic Wear',
+        'ethnic wear': 'Ethnic Wear',
+        'Dress': 'Dresses',
+        'dress': 'Dresses',
+        'Outerwear': 'Outerwear',
+        'Activewear': 'Activewear',
+        'Innerwear': 'Innerwear',
+        'Sleepwear': 'Sleepwear',
+        'Footwear': 'Footwear',
+        'Accessories': 'Accessories',
+      };
+
+      cases.forEach((alias, expected) {
+        final jsonStr = jsonEncode({
+          "schema_version": "1.1",
+          "record_type": "garment",
+          "identity": {
+            "garment_name": "Test Garment",
+            "category": alias,
+          },
+        });
+        final result = GarmentMetadataModelV1_1.validateJsonString(jsonStr);
+        expect(result.isValid, isTrue, reason: 'Failed for alias: $alias');
+        expect(result.entity?.identity.category, expected, reason: 'Failed for alias: $alias');
+      });
+    });
+
+    test('regression fixture: Orange and Blue Geometric Printed Homewear Pants preserves subcategory', () {
+      const regressionFixture = '''
+      {
+        "schema_version": "1.1",
+        "record_type": "garment",
+        "identity": {
+          "garment_name": "Orange and Blue Geometric Printed Homewear Pants",
+          "category": "Bottomwear",
+          "subcategory": "Lounge Pants",
+          "garment_type": "Printed Homewear Trousers"
+        }
+      }
+      ''';
+
+      final result = GarmentMetadataModelV1_1.validateJsonString(regressionFixture);
+      expect(result.isValid, isTrue);
+      expect(result.errors, isEmpty);
+      expect(result.warnings, isNotEmpty);
+      expect(result.warnings.first, contains("Category 'Bottomwear' was automatically mapped to canonical category 'Bottoms'."));
+
+      final entity = result.entity!;
+      expect(entity.identity.category, 'Bottoms');
+      expect(entity.identity.subcategory, 'Lounge Pants');
+      expect(entity.identity.garmentType, 'Printed Homewear Trousers');
+      expect(entity.identity.garmentName, 'Orange and Blue Geometric Printed Homewear Pants');
+    });
+
+    test('preserves subcategories across distinct garments (Jeans, Leggings, Kurta, T-shirt)', () {
+      final samples = [
+        {'cat': 'Bottomwear', 'sub': 'Jeans', 'expCat': 'Bottoms', 'expSub': 'Jeans'},
+        {'cat': 'pants', 'sub': 'Leggings', 'expCat': 'Bottoms', 'expSub': 'Leggings'},
+        {'cat': 'Ethnicwear', 'sub': 'Kurta', 'expCat': 'Ethnic Wear', 'expSub': 'Kurta'},
+        {'cat': 'Topwear', 'sub': 'T-shirt', 'expCat': 'Tops', 'expSub': 'T-shirt'},
+      ];
+
+      for (final sample in samples) {
+        final jsonStr = jsonEncode({
+          "schema_version": "1.1",
+          "record_type": "garment",
+          "identity": {
+            "garment_name": "Sample Garment",
+            "category": sample['cat'],
+            "subcategory": sample['sub'],
+          },
+        });
+        final result = GarmentMetadataModelV1_1.validateJsonString(jsonStr);
+        expect(result.isValid, isTrue);
+        expect(result.entity?.identity.category, sample['expCat']);
+        expect(result.entity?.identity.subcategory, sample['expSub']);
+      }
     });
 
     test('accepts unrecognized category when custom_category is provided', () {
@@ -391,6 +507,37 @@ void main() {
       controller.updateMetadata(updated);
 
       expect(controller.metadata?.appearance.primaryColour, 'Deep Royal Blue');
+    });
+
+    test('controller end-to-end import wizard flow with Bottomwear regression fixture', () async {
+      const bottomwearFixture = '''
+      {
+        "schema_version": "1.1",
+        "record_type": "garment",
+        "identity": {
+          "garment_name": "Orange and Blue Geometric Printed Homewear Pants",
+          "category": "Bottomwear",
+          "subcategory": "Lounge Pants",
+          "garment_type": "Printed Homewear Trousers"
+        }
+      }
+      ''';
+
+      controller.setRawJson(bottomwearFixture);
+      final validated = await controller.validateMetadata();
+      expect(validated, isTrue);
+      expect(controller.metadata, isNotNull);
+      expect(controller.metadata!.identity.category, 'Bottoms');
+      expect(controller.metadata!.identity.subcategory, 'Lounge Pants');
+      expect(controller.metadata!.identity.garmentType, 'Printed Homewear Trousers');
+      expect(controller.rawJson, bottomwearFixture); // Raw user draft preserved
+
+      // Add catalogue image and register
+      controller.setCatalogueImageBytes([1, 2, 3], 'studio_pants.jpg');
+      final registered = await controller.registerGarment();
+      expect(registered, isTrue);
+      expect(controller.registeredGarment?.mainCategory, 'Bottoms');
+      expect(controller.registeredGarment?.subcategory, 'Lounge Pants');
     });
 
     test('registerGarment enforces mandatory catalogue image and initial null laundry status', () async {

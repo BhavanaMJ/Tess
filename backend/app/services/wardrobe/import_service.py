@@ -8,11 +8,14 @@ from datetime import datetime, timezone, date
 
 from app.schemas.wardrobe import GarmentCreate
 from app.schemas.wardrobe_import import (
+    CANONICAL_CATEGORIES,
+    CATEGORY_ALIASES,
+    VALID_CATEGORIES,
+    normalize_category,
     GarmentMetadataInterchangeV1_1,
     MetadataValidationResponse,
     GarmentImportRegisterRequest,
     GarmentImportRegisterResponse,
-    VALID_CATEGORIES,
 )
 from app.services.wardrobe.service import WardrobeService
 from app.services.wardrobe.capture_service import MEDIA_ROOT
@@ -81,21 +84,37 @@ class WardrobeImportService:
             errors.append(f"Schema validation error: {str(e)}")
             return MetadataValidationResponse(valid=False, errors=errors)
 
-        # 4. Mandatory Identity Validation
+        # 4. Mandatory Identity Validation & Category Normalization
+        diagnostics = {}
+        raw_identity = parsed_data.get("identity") if isinstance(parsed_data.get("identity"), dict) else {}
+        raw_category = raw_identity.get("category")
+
         identity = model.identity
         if not identity.garment_name or not identity.garment_name.strip():
             errors.append("Please provide a garment name.")
 
         category = identity.category
-        if not category or not category.strip():
+        if not category or not str(category).strip():
             errors.append("Select a supported garment category.")
         else:
-            # Case-insensitive category resolution
-            matched_cat = next((c for c in VALID_CATEGORIES if c.lower() == category.strip().lower()), None)
-            if not matched_cat and not identity.custom_category:
-                errors.append(f"Select a supported garment category. '{category}' is not recognized. Supported categories: {', '.join(VALID_CATEGORIES)}.")
-            elif matched_cat:
-                identity.category = matched_cat
+            normalized_cat = normalize_category(category)
+            if not normalized_cat and not identity.custom_category:
+                raw_display = raw_category.strip() if isinstance(raw_category, str) and raw_category.strip() else str(category).strip()
+                errors.append(
+                    f"Unsupported garment category: '{raw_display}'. "
+                    f"Select a supported garment category. "
+                    f"Supported categories are {', '.join(CANONICAL_CATEGORIES[:-1])} and {CANONICAL_CATEGORIES[-1]}."
+                )
+            elif normalized_cat:
+                if raw_category and raw_category.strip() != normalized_cat:
+                    logger.info(f"[WardrobeImport] Category normalized from '{raw_category}' to '{normalized_cat}'")
+                    diagnostics["category_normalization"] = {
+                        "category_normalized": True,
+                        "original_category": raw_category.strip(),
+                        "canonical_category": normalized_cat
+                    }
+                    warnings.append(f"Category '{raw_category.strip()}' was automatically mapped to canonical category '{normalized_cat}'.")
+                identity.category = normalized_cat
 
         # 5. Purchase Date Format Validation
         purchase = model.purchase
@@ -124,6 +143,7 @@ class WardrobeImportService:
             errors=[],
             warnings=warnings,
             normalized_metadata=model.model_dump(),
+            diagnostics=diagnostics,
         )
 
     def save_import_image(
@@ -222,6 +242,13 @@ class WardrobeImportService:
             raise ValueError(f"Metadata validation failed: {'; '.join(val_res.errors)}")
 
         meta = val_res.normalized_metadata or request.metadata
+        if val_res.diagnostics.get("category_normalization"):
+            if "ai_metadata" not in meta or not isinstance(meta["ai_metadata"], dict):
+                meta["ai_metadata"] = {}
+            if "diagnostics" not in meta["ai_metadata"] or not isinstance(meta["ai_metadata"]["diagnostics"], dict):
+                meta["ai_metadata"]["diagnostics"] = {}
+            meta["ai_metadata"]["diagnostics"]["category_normalization"] = val_res.diagnostics["category_normalization"]
+
         identity = meta.get("identity", {})
         appearance = meta.get("appearance", {})
         construction = meta.get("construction", {})
@@ -308,3 +335,4 @@ class WardrobeImportService:
             message=f"Successfully registered {created_garment.name} ({garment_id}) to My Wardrobe.",
             garment=garment_dict,
         )
+

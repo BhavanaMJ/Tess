@@ -17,18 +17,7 @@ class MetadataValidationResult {
 
 // ignore: camel_case_types
 class GarmentMetadataModelV1_1 {
-  static const List<String> validCategories = [
-    'Tops',
-    'Bottoms',
-    'Ethnic wear',
-    'Dresses',
-    'Outerwear',
-    'Activewear',
-    'Innerwear',
-    'Sleepwear',
-    'Footwear',
-    'Accessories',
-  ];
+  static const List<String> validCategories = CategoryNormalization.canonicalCategories;
 
   static MetadataValidationResult validateJsonString(String rawJson) {
     if (rawJson.trim().isEmpty) {
@@ -81,17 +70,20 @@ class GarmentMetadataModelV1_1 {
       errors.add('Please provide a garment name.');
     }
 
-    final category = identityMap['category']?.toString().trim();
+    final category = identityMap['category']?.toString();
     final customCategory = identityMap['custom_category']?.toString().trim();
-    if (category == null || category.isEmpty) {
+    if (category == null || category.trim().isEmpty) {
       errors.add('Select a supported garment category.');
     } else {
-      final matched = validCategories.firstWhere(
-        (c) => c.toLowerCase() == category.toLowerCase(),
-        orElse: () => '',
-      );
-      if (matched.isEmpty && (customCategory == null || customCategory.isEmpty)) {
-        errors.add("Select a supported garment category. '$category' is not recognized.");
+      final normalized = CategoryNormalization.normalize(category);
+      if (normalized == null && (customCategory == null || customCategory.isEmpty)) {
+        errors.add(
+          "Unsupported garment category: '${category.trim()}'. "
+          "Select a supported garment category. "
+          "Supported categories are Tops, Bottoms, Ethnic Wear, Dresses, Outerwear, Activewear, Innerwear, Sleepwear, Footwear and Accessories."
+        );
+      } else if (normalized != null && normalized != category.trim()) {
+        warnings.add("Category '${category.trim()}' was automatically mapped to canonical category '$normalized'.");
       }
     }
 
@@ -298,9 +290,11 @@ class GarmentMetadataModelV1_1 {
 
   static IdentitySection _parseIdentity(Map<String, dynamic>? m) {
     if (m == null) return const IdentitySection();
+    final rawCat = m['category']?.toString();
+    final normalizedCat = CategoryNormalization.normalize(rawCat) ?? rawCat?.trim();
     return IdentitySection(
-      garmentName: m['garment_name']?.toString(),
-      category: m['category']?.toString(),
+      garmentName: m['garment_name']?.toString().trim(),
+      category: normalizedCat,
       subcategory: m['subcategory']?.toString(),
       garmentType: m['garment_type']?.toString(),
       description: m['description']?.toString(),

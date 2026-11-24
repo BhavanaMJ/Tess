@@ -9,3 +9,4 @@ ALTER TABLE public.wardrobe_items
 -- GIN index for high-performance JSONB querying and attribute indexing
 CREATE INDEX IF NOT EXISTS idx_wardrobe_items_metadata_payload
     ON public.wardrobe_items USING GIN (metadata_payload);
+

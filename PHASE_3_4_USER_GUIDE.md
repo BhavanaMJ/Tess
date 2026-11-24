@@ -50,6 +50,9 @@ Welcome to the new **AI Garment Catalogue & Metadata Import** experience in TESS
   - If valid, green success badges indicate validation passed.
 - Tap **Review Garment**.
 
+> [!NOTE]
+> **Flexible Category Support**: ChatGPT frequently outputs category variants such as `Bottomwear`, `Pants`, `Trousers`, or `Topwear`. TESS automatically normalizes these to canonical categories (`Bottoms`, `Tops`, `Ethnic Wear`, etc.) while preserving your exact subcategory (such as `Lounge Pants`, `Jeans`, `Kurta`) and garment type descriptions intact!
+
 ---
 
 #### Stage 4: Review & Register
@@ -64,3 +67,4 @@ Welcome to the new **AI Garment Catalogue & Metadata Import** experience in TESS
 - **Inline Editing**: Tap the pencil icon next to any attribute to edit or correct values prior to registration.
 - **Add to My Wardrobe**: Tap **Add to My Wardrobe**, review the confirmation summary, and tap **Confirm & Register**.
 - Your garment is assigned a unique sequential ID (e.g. `CLO-019`) and added to your wardrobe inventory with all metadata preserved!
+

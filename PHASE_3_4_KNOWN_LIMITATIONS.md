@@ -16,3 +16,4 @@
 ### 4. Custom Categories and Search Normalization
 - **Description**: While Schema 1.1 supports arbitrary `custom_category` values (e.g. "Spacesuit", "Fencing Jacket"), top-level wardrobe filtering in TESS is optimized for the standard 10 core categories (`Tops`, `Bottoms`, `Ethnic wear`, `Dresses`, `Outerwear`, `Activewear`, `Innerwear`, `Sleepwear`, `Footwear`, `Accessories`).
 - **Handling**: Garments with a custom category are grouped under `Other` in high-level category filters while retaining their exact `custom_category` in the details view, search queries, and `metadata_payload`.
+
