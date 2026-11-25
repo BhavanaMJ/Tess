@@ -29,6 +29,8 @@ backups/
 
 # Local media storage
 backend/app/media/
+*.sqlite3*
+backend/app/data/*.sqlite3*
 
 # Python caches and virtualenvs
 __pycache__/

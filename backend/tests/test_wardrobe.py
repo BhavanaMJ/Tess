@@ -5,6 +5,19 @@ from app.core.auth import get_current_user
 
 AUTH_HEADERS = {"Authorization": "Bearer dev-token"}
 
+@pytest.fixture(scope="module", autouse=True)
+def clean_test_wardrobe_module():
+    from app.services.wardrobe.service import _SESSION_WARDROBE_STORE
+    _SESSION_WARDROBE_STORE.pop("test-wardrobe-user-1", None)
+    from app.core.local_db import LocalWardrobeDB
+    db = LocalWardrobeDB.get_instance()
+    for item in db.get_items("test-wardrobe-user-1", include_archived=True):
+        db.delete_item(item["id"], "test-wardrobe-user-1", hard_delete=True)
+    yield
+    _SESSION_WARDROBE_STORE.pop("test-wardrobe-user-1", None)
+    for item in db.get_items("test-wardrobe-user-1", include_archived=True):
+        db.delete_item(item["id"], "test-wardrobe-user-1", hard_delete=True)
+
 @pytest.fixture(autouse=True)
 def auth_override():
     app.dependency_overrides[get_current_user] = lambda: {"id": "test-wardrobe-user-1", "email": "wardrobe@tess.ai"}

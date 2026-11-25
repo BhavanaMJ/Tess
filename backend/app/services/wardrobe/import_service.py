@@ -206,6 +206,14 @@ class WardrobeImportService:
             except Exception as e:
                 logger.warning(f"[WardrobeImport] Database query for max ID failed, checking wardrobe_service: {e}")
 
+            # 2. Check local SQLite DB
+            try:
+                db_max = wardrobe_service.local_db.get_max_clo_id(self.user_id)
+                if db_max > max_num:
+                    max_num = db_max
+            except Exception as e:
+                logger.warning(f"[WardrobeImport] Querying local DB max ID: {e}")
+
             # 2. Check wardrobe service memory store
             items_resp = wardrobe_service.get_items(limit=1000)
             for item in items_resp.items:
@@ -315,7 +323,8 @@ class WardrobeImportService:
             "import_provenance": "CHATGPT_IMPORT",
         }
 
-        # Update in-memory session store
+        # Update local SQLite database & in-memory session store
+        wardrobe_service.local_db.update_item_fields(garment_id, self.user_id, record_update)
         local_store = wardrobe_service._get_local_store()
         if garment_id in local_store:
             local_store[garment_id].update(record_update)

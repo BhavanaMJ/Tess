@@ -71,6 +71,8 @@ def _save_persisted_store(store: Dict[str, Dict[str, Dict[str, Any]]]) -> None:
     except Exception as e:
         logger.warning(f"[WardrobeService] Failed to save local wardrobe store: {e}")
 
+from app.core.local_db import LocalWardrobeDB
+
 # Session memory store with persistent disk backup when Supabase tables are unavailable
 _SESSION_WARDROBE_STORE: Dict[str, Dict[str, Dict[str, Any]]] = _load_persisted_store()
 
@@ -78,6 +80,7 @@ class WardrobeService:
     def __init__(self, supabase: Client, user_id: str):
         self.supabase = supabase
         self.user_id = user_id
+        self.local_db = LocalWardrobeDB.get_instance()
         if self.user_id not in _SESSION_WARDROBE_STORE:
             _SESSION_WARDROBE_STORE[self.user_id] = {}
             _save_persisted_store(_SESSION_WARDROBE_STORE)
@@ -117,15 +120,25 @@ class WardrobeService:
             if res.data is not None:
                 records = res.data
         except Exception as e:
-            logger.warning(f"[WardrobeService] Remote query failed, using session store: {e}")
-            local = self._get_local_store()
-            records = [
-                item for item in local.values()
-                if (include_archived or not item.get("is_archived", False))
-                and (category is None or item.get("main_category", "").lower() == category.lower())
-                and (laundry_status is None or item.get("laundry_status") == laundry_status)
-                and (is_favorite is None or item.get("is_favorite", False) == is_favorite)
-            ]
+            logger.warning(f"[WardrobeService] Remote query failed, using local database: {e}")
+            db_records = self.local_db.get_items(
+                user_id=self.user_id,
+                category=category,
+                laundry_status=laundry_status,
+                is_favorite=is_favorite,
+                include_archived=include_archived,
+            )
+            if db_records:
+                records = db_records
+            else:
+                local = self._get_local_store()
+                records = [
+                    item for item in local.values()
+                    if (include_archived or not item.get("is_archived", False))
+                    and (category is None or item.get("main_category", "").lower() == category.lower())
+                    and (laundry_status is None or item.get("laundry_status") == laundry_status)
+                    and (is_favorite is None or item.get("is_favorite", False) == is_favorite)
+                ]
 
         # In-memory search filtering across multiple fields
         if search and search.strip():
@@ -166,7 +179,12 @@ class WardrobeService:
             if res.data and len(res.data) > 0:
                 return GarmentResponse(**res.data[0])
         except Exception as e:
-            logger.warning(f"[WardrobeService] Remote get_item failed, checking session store: {e}")
+            logger.warning(f"[WardrobeService] Remote get_item failed, checking local database: {e}")
+
+        # Check local SQLite DB first, then in-memory session store
+        db_item = self.local_db.get_item(item_id, self.user_id)
+        if db_item:
+            return GarmentResponse(**db_item)
 
         local = self._get_local_store()
         if item_id in local:
@@ -209,14 +227,15 @@ class WardrobeService:
             "updated_at": now,
         }
 
-        # Keep in local session store
+        # Keep in local SQLite DB and session store
+        self.local_db.save_item(record)
         self._get_local_store()[item_id] = record
         self._persist_local_store()
 
         try:
             self.supabase.table("wardrobe_items").insert(record).execute()
         except Exception as e:
-            logger.warning(f"[WardrobeService] Remote insert failed, kept in session store: {e}")
+            logger.warning(f"[WardrobeService] Remote insert failed, kept in local database: {e}")
 
         return GarmentResponse(**record)
 
@@ -238,13 +257,14 @@ class WardrobeService:
                 current_dict[k] = v
 
         current_dict["updated_at"] = now
+        self.local_db.save_item(current_dict)
         self._get_local_store()[item_id] = current_dict
         self._persist_local_store()
 
         try:
             self.supabase.table("wardrobe_items").update(current_dict).eq("id", item_id).eq("user_id", self.user_id).execute()
         except Exception as e:
-            logger.warning(f"[WardrobeService] Remote update failed, kept in session store: {e}")
+            logger.warning(f"[WardrobeService] Remote update failed, kept in local database: {e}")
 
         return GarmentResponse(**current_dict)
 
@@ -254,6 +274,7 @@ class WardrobeService:
             return False
 
         if hard_delete:
+            self.local_db.delete_item(item_id, self.user_id, hard_delete=True)
             self._get_local_store().pop(item_id, None)
             self._persist_local_store()
             try:
@@ -266,11 +287,17 @@ class WardrobeService:
             return self.update_item(item_id, GarmentUpdate(is_favorite=False)) is not None and self._archive_item(item_id)
 
     def _archive_item(self, item_id: str) -> bool:
+        self.local_db.delete_item(item_id, self.user_id, hard_delete=False)
         local = self._get_local_store()
         if item_id in local:
             local[item_id]["is_archived"] = True
             local[item_id]["updated_at"] = datetime.now(timezone.utc).isoformat()
             self._persist_local_store()
+        try:
+            self.supabase.table("wardrobe_items").update({"is_archived": True, "updated_at": "now()"}).eq("id", item_id).eq("user_id", self.user_id).execute()
+        except Exception as e:
+            logger.warning(f"[WardrobeService] Remote archive error: {e}")
+        return True
         try:
             self.supabase.table("wardrobe_items").update({"is_archived": True, "updated_at": "now()"}).eq("id", item_id).eq("user_id", self.user_id).execute()
         except Exception as e:
