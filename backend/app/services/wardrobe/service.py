@@ -41,8 +41,38 @@ DEFAULT_CATEGORIES = [
                      subcategories=["Bags", "Belts", "Scarves", "Jewelry", "Sunglasses", "Hats", "Dupattas"]),
 ]
 
-# Session memory store when Supabase tables are unavailable
-_SESSION_WARDROBE_STORE: Dict[str, Dict[str, Dict[str, Any]]] = {}
+import os
+import json
+
+# Local JSON persistence path for session store when Supabase tables are unavailable
+LOCAL_STORE_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "media",
+    "wardrobe",
+    "local_wardrobe_store.json",
+)
+
+def _load_persisted_store() -> Dict[str, Dict[str, Dict[str, Any]]]:
+    try:
+        if os.path.exists(LOCAL_STORE_PATH):
+            with open(LOCAL_STORE_PATH, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, dict):
+                    return data
+    except Exception as e:
+        logger.warning(f"[WardrobeService] Failed to load local wardrobe store: {e}")
+    return {}
+
+def _save_persisted_store(store: Dict[str, Dict[str, Dict[str, Any]]]) -> None:
+    try:
+        os.makedirs(os.path.dirname(LOCAL_STORE_PATH), exist_ok=True)
+        with open(LOCAL_STORE_PATH, "w", encoding="utf-8") as f:
+            json.dump(store, f, indent=2, default=str)
+    except Exception as e:
+        logger.warning(f"[WardrobeService] Failed to save local wardrobe store: {e}")
+
+# Session memory store with persistent disk backup when Supabase tables are unavailable
+_SESSION_WARDROBE_STORE: Dict[str, Dict[str, Dict[str, Any]]] = _load_persisted_store()
 
 class WardrobeService:
     def __init__(self, supabase: Client, user_id: str):
@@ -50,6 +80,10 @@ class WardrobeService:
         self.user_id = user_id
         if self.user_id not in _SESSION_WARDROBE_STORE:
             _SESSION_WARDROBE_STORE[self.user_id] = {}
+            _save_persisted_store(_SESSION_WARDROBE_STORE)
+
+    def _persist_local_store(self) -> None:
+        _save_persisted_store(_SESSION_WARDROBE_STORE)
 
     def _get_local_store(self) -> Dict[str, Dict[str, Any]]:
         return _SESSION_WARDROBE_STORE[self.user_id]
@@ -177,6 +211,7 @@ class WardrobeService:
 
         # Keep in local session store
         self._get_local_store()[item_id] = record
+        self._persist_local_store()
 
         try:
             self.supabase.table("wardrobe_items").insert(record).execute()
@@ -204,6 +239,7 @@ class WardrobeService:
 
         current_dict["updated_at"] = now
         self._get_local_store()[item_id] = current_dict
+        self._persist_local_store()
 
         try:
             self.supabase.table("wardrobe_items").update(current_dict).eq("id", item_id).eq("user_id", self.user_id).execute()
@@ -219,6 +255,7 @@ class WardrobeService:
 
         if hard_delete:
             self._get_local_store().pop(item_id, None)
+            self._persist_local_store()
             try:
                 self.supabase.table("wardrobe_items").delete().eq("id", item_id).eq("user_id", self.user_id).execute()
             except Exception as e:
@@ -233,6 +270,7 @@ class WardrobeService:
         if item_id in local:
             local[item_id]["is_archived"] = True
             local[item_id]["updated_at"] = datetime.now(timezone.utc).isoformat()
+            self._persist_local_store()
         try:
             self.supabase.table("wardrobe_items").update({"is_archived": True, "updated_at": "now()"}).eq("id", item_id).eq("user_id", self.user_id).execute()
         except Exception as e:

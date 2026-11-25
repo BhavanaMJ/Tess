@@ -319,6 +319,7 @@ class WardrobeImportService:
         local_store = wardrobe_service._get_local_store()
         if garment_id in local_store:
             local_store[garment_id].update(record_update)
+            wardrobe_service._persist_local_store()
 
         # Update Supabase database table
         try:
